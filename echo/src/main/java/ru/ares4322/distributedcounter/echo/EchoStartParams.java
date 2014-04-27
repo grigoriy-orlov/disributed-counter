@@ -1,18 +1,20 @@
 package ru.ares4322.distributedcounter.echo;
 
+import java.nio.file.Path;
+
 public class EchoStartParams {
 
 	private int senderThreads;
 	private int receiverThreads;
 	private int serverPort;
 	private String serverAddress;
-	private String filePath;
+	private Path filePath;
 
-	public String getFilePath() {
+	public Path getFilePath() {
 		return filePath;
 	}
 
-	public void setFilePath(String filePath) {
+	public void setFilePath(Path filePath) {
 		this.filePath = filePath;
 	}
 

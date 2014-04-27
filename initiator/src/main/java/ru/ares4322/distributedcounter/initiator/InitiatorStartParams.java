@@ -1,13 +1,15 @@
 package ru.ares4322.distributedcounter.initiator;
 
+import java.nio.file.Path;
+
 public class InitiatorStartParams {
 
 	private int senderThreads;
 	private int receiverThreads;
 	private int serverPort;
 	private String serverAddress;
-	private String senderFilePath;
-	private String receiverFilePath;
+	private Path senderFilePath;
+	private Path receiverFilePath;
 
 	@Override
 	public boolean equals(Object o) {
@@ -40,19 +42,19 @@ public class InitiatorStartParams {
 		return result;
 	}
 
-	public String getReceiverFilePath() {
+	public Path getReceiverFilePath() {
 		return receiverFilePath;
 	}
 
-	public void setReceiverFilePath(String receiverFilePath) {
+	public void setReceiverFilePath(Path receiverFilePath) {
 		this.receiverFilePath = receiverFilePath;
 	}
 
-	public String getSenderFilePath() {
+	public Path getSenderFilePath() {
 		return senderFilePath;
 	}
 
-	public void setSenderFilePath(String senderFilePath) {
+	public void setSenderFilePath(Path senderFilePath) {
 		this.senderFilePath = senderFilePath;
 	}
 

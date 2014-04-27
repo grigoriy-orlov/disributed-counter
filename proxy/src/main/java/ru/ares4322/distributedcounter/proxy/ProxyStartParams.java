@@ -1,6 +1,6 @@
 package ru.ares4322.distributedcounter.proxy;
 
-public class ProxyEchoStartParams {
+public class ProxyStartParams {
 
 	private int senderThreads;
 	private int receiverThreads;
@@ -60,9 +60,9 @@ public class ProxyEchoStartParams {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (!(o instanceof ProxyEchoStartParams)) return false;
+		if (!(o instanceof ProxyStartParams)) return false;
 
-		ProxyEchoStartParams that = (ProxyEchoStartParams) o;
+		ProxyStartParams that = (ProxyStartParams) o;
 
 		if (echoServerPort != that.echoServerPort) return false;
 		if (initiatorServerPort != that.initiatorServerPort) return false;
@@ -89,7 +89,7 @@ public class ProxyEchoStartParams {
 
 	@Override
 	public String toString() {
-		return "ProxyEchoStartParams{" +
+		return "ProxyStartParams{" +
 			"senderThreads=" + senderThreads +
 			", receiverThreads=" + receiverThreads +
 			", initiatorServerPort=" + initiatorServerPort +
