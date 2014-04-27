@@ -2,9 +2,12 @@ package ru.ares4322.distributedcounter.initiator;
 
 import ru.ares4322.distributedcounter.common.Config;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.nio.file.Path;
 
-//TODO add builder
+@Singleton
 public class InitiatorConfig extends Config {
 
 	private final Integer remoteServerPort;
@@ -12,15 +15,16 @@ public class InitiatorConfig extends Config {
 	private final Path senderFilePath;
 	private final Path receiverFilePath;
 
+	@Inject
 	public InitiatorConfig(
-		int senderThreads,
-		int receiverThreads,
-		int localServerPort,
-		String localServerAddress,
-		int remoteServerPort,
-		String remoteServerAddress,
-		Path senderFilePath,
-		Path receiverFilePath
+		@Named("senderThreads") Integer senderThreads,
+		@Named("receiverThreads") Integer receiverThreads,
+		@Named("localServerPort") Integer localServerPort,
+		@Named("localServerAddress") String localServerAddress,
+		@Named("remoteServerPort") Integer remoteServerPort,
+		@Named("remoteServerAddress") String remoteServerAddress,
+		@Named("senderFilePath") Path senderFilePath,
+		@Named("receiverFilePath") Path receiverFilePath
 	) {
 		super(senderThreads, receiverThreads, localServerPort, localServerAddress);
 		this.remoteServerPort = remoteServerPort;

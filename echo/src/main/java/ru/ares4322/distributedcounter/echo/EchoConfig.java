@@ -2,23 +2,27 @@ package ru.ares4322.distributedcounter.echo;
 
 import ru.ares4322.distributedcounter.common.Config;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.nio.file.Path;
 
-//TODO add builder
+@Singleton
 public class EchoConfig extends Config {
 
 	private final Integer remoteServerPort;
 	private final String remoteServerAddress;
 	private final Path filePath;
 
+	@Inject
 	public EchoConfig(
-		Integer senderThreads,
-		Integer receiverThreads,
-		Integer localServerPort,
-		String localServerAddress,
-		Integer remoteServerPort,
-		String remoteServerAddress,
-		Path filePath
+		@Named("senderThreads") Integer senderThreads,
+		@Named("receiverThreads") Integer receiverThreads,
+		@Named("localServerPort") Integer localServerPort,
+		@Named("localServerAddress") String localServerAddress,
+		@Named("remoteServerPort") Integer remoteServerPort,
+		@Named("remoteServerAddress") String remoteServerAddress,
+		@Named("filePath") Path filePath
 	) {
 		super(senderThreads, receiverThreads, localServerPort, localServerAddress);
 		this.remoteServerPort = remoteServerPort;

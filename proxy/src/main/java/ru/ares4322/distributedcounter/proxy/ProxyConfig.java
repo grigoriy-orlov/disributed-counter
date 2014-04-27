@@ -2,7 +2,11 @@ package ru.ares4322.distributedcounter.proxy;
 
 import ru.ares4322.distributedcounter.common.Config;
 
-//TODO add builder
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+@Singleton
 public class ProxyConfig extends Config {
 
 	private final Integer initiatorServerPort;
@@ -12,17 +16,18 @@ public class ProxyConfig extends Config {
 	private final Integer otherLocalServerPort;    //TODO add set of address-port pair
 	private final String otherLocalServerAddress;
 
+	@Inject
 	public ProxyConfig(
-		Integer senderThreads,
-		Integer receiverThreads,
-		Integer localServerPort,
-		String localServerAddress,
-		Integer initiatorServerPort,
-		String initiatorServerAddress,
-		Integer echoServerPort,
-		String echoServerAddress,
-		Integer otherLocalServerPort,
-		String otherLocalServerAddress
+		@Named("senderThreads") Integer senderThreads,
+		@Named("receiverThreads") Integer receiverThreads,
+		@Named("localServerPort") Integer localServerPort,
+		@Named("localServerAddress") String localServerAddress,
+		@Named("initiatorServerPort") Integer initiatorServerPort,
+		@Named("initiatorServerAddress") String initiatorServerAddress,
+		@Named("echoServerPort") Integer echoServerPort,
+		@Named("echoServerAddress") String echoServerAddress,
+		@Named("otherLocalServerPort") Integer otherLocalServerPort,
+		@Named("otherLocalServerAddress") String otherLocalServerAddress
 	) {
 		super(senderThreads, receiverThreads, localServerPort, localServerAddress);
 		this.initiatorServerPort = initiatorServerPort;
