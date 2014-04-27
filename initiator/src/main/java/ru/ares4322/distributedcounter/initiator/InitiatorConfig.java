@@ -7,7 +7,7 @@ import java.nio.file.Path;
 //TODO add builder
 public class InitiatorConfig extends Config {
 
-	private final int remoteServerPort;
+	private final Integer remoteServerPort;
 	private final String remoteServerAddress;
 	private final Path senderFilePath;
 	private final Path receiverFilePath;
@@ -29,7 +29,7 @@ public class InitiatorConfig extends Config {
 		this.receiverFilePath = receiverFilePath;
 	}
 
-	public int getRemoteServerPort() {
+	public Integer getRemoteServerPort() {
 		return remoteServerPort;
 	}
 
@@ -53,10 +53,11 @@ public class InitiatorConfig extends Config {
 
 		InitiatorConfig that = (InitiatorConfig) o;
 
-		if (remoteServerPort != that.remoteServerPort) return false;
 		if (receiverFilePath != null ? !receiverFilePath.equals(that.receiverFilePath) : that.receiverFilePath != null)
 			return false;
 		if (remoteServerAddress != null ? !remoteServerAddress.equals(that.remoteServerAddress) : that.remoteServerAddress != null)
+			return false;
+		if (remoteServerPort != null ? !remoteServerPort.equals(that.remoteServerPort) : that.remoteServerPort != null)
 			return false;
 		if (senderFilePath != null ? !senderFilePath.equals(that.senderFilePath) : that.senderFilePath != null)
 			return false;
@@ -67,7 +68,7 @@ public class InitiatorConfig extends Config {
 	@Override
 	public int hashCode() {
 		int result = super.hashCode();
-		result = 31 * result + remoteServerPort;
+		result = 31 * result + (remoteServerPort != null ? remoteServerPort.hashCode() : 0);
 		result = 31 * result + (remoteServerAddress != null ? remoteServerAddress.hashCode() : 0);
 		result = 31 * result + (senderFilePath != null ? senderFilePath.hashCode() : 0);
 		result = 31 * result + (receiverFilePath != null ? receiverFilePath.hashCode() : 0);

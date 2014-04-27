@@ -1,27 +1,27 @@
 package ru.ares4322.distributedcounter.common;
 
 public abstract class Config {
-	private final int senderThreads;
-	private final int receiverThreads;
-	private final int localServerPort;
+	private final Integer senderThreads;
+	private final Integer receiverThreads;
+	private final Integer localServerPort;
 	private final String localServerAddress;
 
-	protected Config(int senderThreads, int receiverThreads, int localServerPort, String localServerAddress) {
+	protected Config(Integer senderThreads, Integer receiverThreads, Integer localServerPort, String localServerAddress) {
 		this.senderThreads = senderThreads;
 		this.receiverThreads = receiverThreads;
 		this.localServerPort = localServerPort;
 		this.localServerAddress = localServerAddress;
 	}
 
-	public int getSenderThreads() {
+	public Integer getSenderThreads() {
 		return senderThreads;
 	}
 
-	public int getReceiverThreads() {
+	public Integer getReceiverThreads() {
 		return receiverThreads;
 	}
 
-	public int getLocalServerPort() {
+	public Integer getLocalServerPort() {
 		return localServerPort;
 	}
 
@@ -36,10 +36,13 @@ public abstract class Config {
 
 		Config config = (Config) o;
 
-		if (receiverThreads != config.receiverThreads) return false;
-		if (senderThreads != config.senderThreads) return false;
-		if (localServerPort != config.localServerPort) return false;
 		if (localServerAddress != null ? !localServerAddress.equals(config.localServerAddress) : config.localServerAddress != null)
+			return false;
+		if (localServerPort != null ? !localServerPort.equals(config.localServerPort) : config.localServerPort != null)
+			return false;
+		if (receiverThreads != null ? !receiverThreads.equals(config.receiverThreads) : config.receiverThreads != null)
+			return false;
+		if (senderThreads != null ? !senderThreads.equals(config.senderThreads) : config.senderThreads != null)
 			return false;
 
 		return true;
@@ -47,9 +50,9 @@ public abstract class Config {
 
 	@Override
 	public int hashCode() {
-		int result = senderThreads;
-		result = 31 * result + receiverThreads;
-		result = 31 * result + localServerPort;
+		int result = senderThreads != null ? senderThreads.hashCode() : 0;
+		result = 31 * result + (receiverThreads != null ? receiverThreads.hashCode() : 0);
+		result = 31 * result + (localServerPort != null ? localServerPort.hashCode() : 0);
 		result = 31 * result + (localServerAddress != null ? localServerAddress.hashCode() : 0);
 		return result;
 	}

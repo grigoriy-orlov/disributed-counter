@@ -7,16 +7,16 @@ import java.nio.file.Path;
 //TODO add builder
 public class EchoConfig extends Config {
 
-	private final int remoteServerPort;
+	private final Integer remoteServerPort;
 	private final String remoteServerAddress;
 	private final Path filePath;
 
 	public EchoConfig(
-		int senderThreads,
-		int receiverThreads,
-		int localServerPort,
+		Integer senderThreads,
+		Integer receiverThreads,
+		Integer localServerPort,
 		String localServerAddress,
-		int remoteServerPort,
+		Integer remoteServerPort,
 		String remoteServerAddress,
 		Path filePath
 	) {
@@ -26,7 +26,7 @@ public class EchoConfig extends Config {
 		this.filePath = filePath;
 	}
 
-	public int getRemoteServerPort() {
+	public Integer getRemoteServerPort() {
 		return remoteServerPort;
 	}
 
@@ -46,9 +46,10 @@ public class EchoConfig extends Config {
 
 		EchoConfig that = (EchoConfig) o;
 
-		if (remoteServerPort != that.remoteServerPort) return false;
 		if (filePath != null ? !filePath.equals(that.filePath) : that.filePath != null) return false;
 		if (remoteServerAddress != null ? !remoteServerAddress.equals(that.remoteServerAddress) : that.remoteServerAddress != null)
+			return false;
+		if (remoteServerPort != null ? !remoteServerPort.equals(that.remoteServerPort) : that.remoteServerPort != null)
 			return false;
 
 		return true;
@@ -57,7 +58,7 @@ public class EchoConfig extends Config {
 	@Override
 	public int hashCode() {
 		int result = super.hashCode();
-		result = 31 * result + remoteServerPort;
+		result = 31 * result + (remoteServerPort != null ? remoteServerPort.hashCode() : 0);
 		result = 31 * result + (remoteServerAddress != null ? remoteServerAddress.hashCode() : 0);
 		result = 31 * result + (filePath != null ? filePath.hashCode() : 0);
 		return result;

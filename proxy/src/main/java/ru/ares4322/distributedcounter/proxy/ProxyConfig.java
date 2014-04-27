@@ -5,23 +5,23 @@ import ru.ares4322.distributedcounter.common.Config;
 //TODO add builder
 public class ProxyConfig extends Config {
 
-	private final int initiatorServerPort;
+	private final Integer initiatorServerPort;
 	private final String initiatorServerAddress;
-	private final int echoServerPort;
+	private final Integer echoServerPort;
 	private final String echoServerAddress;
-	private final int otherLocalServerPort;    //TODO add set of address-port pair
+	private final Integer otherLocalServerPort;    //TODO add set of address-port pair
 	private final String otherLocalServerAddress;
 
 	public ProxyConfig(
-		int senderThreads,
-		int receiverThreads,
-		int localServerPort,
+		Integer senderThreads,
+		Integer receiverThreads,
+		Integer localServerPort,
 		String localServerAddress,
-		int initiatorServerPort,
+		Integer initiatorServerPort,
 		String initiatorServerAddress,
-		int echoServerPort,
+		Integer echoServerPort,
 		String echoServerAddress,
-		int otherLocalServerPort,
+		Integer otherLocalServerPort,
 		String otherLocalServerAddress
 	) {
 		super(senderThreads, receiverThreads, localServerPort, localServerAddress);
@@ -33,7 +33,7 @@ public class ProxyConfig extends Config {
 		this.otherLocalServerAddress = otherLocalServerAddress;
 	}
 
-	public int getInitiatorServerPort() {
+	public Integer getInitiatorServerPort() {
 		return initiatorServerPort;
 	}
 
@@ -41,7 +41,7 @@ public class ProxyConfig extends Config {
 		return initiatorServerAddress;
 	}
 
-	public int getEchoServerPort() {
+	public Integer getEchoServerPort() {
 		return echoServerPort;
 	}
 
@@ -49,7 +49,7 @@ public class ProxyConfig extends Config {
 		return echoServerAddress;
 	}
 
-	public int getOtherLocalServerPort() {
+	public Integer getOtherLocalServerPort() {
 		return otherLocalServerPort;
 	}
 
@@ -65,14 +65,17 @@ public class ProxyConfig extends Config {
 
 		ProxyConfig that = (ProxyConfig) o;
 
-		if (echoServerPort != that.echoServerPort) return false;
-		if (initiatorServerPort != that.initiatorServerPort) return false;
-		if (otherLocalServerPort != that.otherLocalServerPort) return false;
 		if (echoServerAddress != null ? !echoServerAddress.equals(that.echoServerAddress) : that.echoServerAddress != null)
+			return false;
+		if (echoServerPort != null ? !echoServerPort.equals(that.echoServerPort) : that.echoServerPort != null)
 			return false;
 		if (initiatorServerAddress != null ? !initiatorServerAddress.equals(that.initiatorServerAddress) : that.initiatorServerAddress != null)
 			return false;
+		if (initiatorServerPort != null ? !initiatorServerPort.equals(that.initiatorServerPort) : that.initiatorServerPort != null)
+			return false;
 		if (otherLocalServerAddress != null ? !otherLocalServerAddress.equals(that.otherLocalServerAddress) : that.otherLocalServerAddress != null)
+			return false;
+		if (otherLocalServerPort != null ? !otherLocalServerPort.equals(that.otherLocalServerPort) : that.otherLocalServerPort != null)
 			return false;
 
 		return true;
@@ -81,11 +84,11 @@ public class ProxyConfig extends Config {
 	@Override
 	public int hashCode() {
 		int result = super.hashCode();
-		result = 31 * result + initiatorServerPort;
+		result = 31 * result + (initiatorServerPort != null ? initiatorServerPort.hashCode() : 0);
 		result = 31 * result + (initiatorServerAddress != null ? initiatorServerAddress.hashCode() : 0);
-		result = 31 * result + echoServerPort;
+		result = 31 * result + (echoServerPort != null ? echoServerPort.hashCode() : 0);
 		result = 31 * result + (echoServerAddress != null ? echoServerAddress.hashCode() : 0);
-		result = 31 * result + otherLocalServerPort;
+		result = 31 * result + (otherLocalServerPort != null ? otherLocalServerPort.hashCode() : 0);
 		result = 31 * result + (otherLocalServerAddress != null ? otherLocalServerAddress.hashCode() : 0);
 		return result;
 	}
