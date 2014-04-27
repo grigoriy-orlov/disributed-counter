@@ -1,78 +1,54 @@
 package ru.ares4322.distributedcounter.echo;
 
+import ru.ares4322.distributedcounter.common.StartParams;
+
 import java.nio.file.Path;
 
-public class EchoStartParams {
+//TODO add builder
+public class EchoStartParams extends StartParams {
 
-	private int senderThreads;
-	private int receiverThreads;
-	private int serverPort;
-	private String serverAddress;
-	private Path filePath;
+	private final int remoteServerPort;
+	private final String remoteServerAddress;
+	private final Path filePath;
 
-	public Path getFilePath() {
-		return filePath;
-	}
-
-	public void setFilePath(Path filePath) {
+	public EchoStartParams(
+		int senderThreads,
+		int receiverThreads,
+		int localServerPort,
+		String localServerAddress,
+		int remoteServerPort,
+		String remoteServerAddress,
+		Path filePath
+	) {
+		super(senderThreads, receiverThreads, localServerPort, localServerAddress);
+		this.remoteServerPort = remoteServerPort;
+		this.remoteServerAddress = remoteServerAddress;
 		this.filePath = filePath;
 	}
 
-	public int getSenderThreads() {
-		return senderThreads;
+	public int getRemoteServerPort() {
+		return remoteServerPort;
 	}
 
-	public void setSenderThreads(int senderThreads) {
-		this.senderThreads = senderThreads;
+	public String getRemoteServerAddress() {
+		return remoteServerAddress;
 	}
 
-	public int getReceiverThreads() {
-		return receiverThreads;
-	}
-
-	public void setReceiverThreads(int receiverThreads) {
-		this.receiverThreads = receiverThreads;
-	}
-
-	public int getServerPort() {
-		return serverPort;
-	}
-
-	public void setServerPort(int serverPort) {
-		this.serverPort = serverPort;
-	}
-
-	public String getServerAddress() {
-		return serverAddress;
-	}
-
-	public void setServerAddress(String serverAddress) {
-		this.serverAddress = serverAddress;
-	}
-
-	@Override
-	public String toString() {
-		return "EchoStartParams{" +
-			"senderThreads=" + senderThreads +
-			", receiverThreads=" + receiverThreads +
-			", serverPort=" + serverPort +
-			", serverAddress='" + serverAddress + '\'' +
-			", filePath='" + filePath + '\'' +
-			'}';
+	public Path getFilePath() {
+		return filePath;
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (!(o instanceof EchoStartParams)) return false;
+		if (!super.equals(o)) return false;
 
 		EchoStartParams that = (EchoStartParams) o;
 
-		if (receiverThreads != that.receiverThreads) return false;
-		if (senderThreads != that.senderThreads) return false;
-		if (serverPort != that.serverPort) return false;
+		if (remoteServerPort != that.remoteServerPort) return false;
 		if (filePath != null ? !filePath.equals(that.filePath) : that.filePath != null) return false;
-		if (serverAddress != null ? !serverAddress.equals(that.serverAddress) : that.serverAddress != null)
+		if (remoteServerAddress != null ? !remoteServerAddress.equals(that.remoteServerAddress) : that.remoteServerAddress != null)
 			return false;
 
 		return true;
@@ -80,12 +56,20 @@ public class EchoStartParams {
 
 	@Override
 	public int hashCode() {
-		int result = senderThreads;
-		result = 31 * result + receiverThreads;
-		result = 31 * result + serverPort;
-		result = 31 * result + (serverAddress != null ? serverAddress.hashCode() : 0);
+		int result = super.hashCode();
+		result = 31 * result + remoteServerPort;
+		result = 31 * result + (remoteServerAddress != null ? remoteServerAddress.hashCode() : 0);
 		result = 31 * result + (filePath != null ? filePath.hashCode() : 0);
 		return result;
 	}
 
+	@Override
+	public String toString() {
+		return "EchoStartParams{" +
+			super.toString() +
+			", remoteServerPort=" + remoteServerPort +
+			", remoteServerAddress='" + remoteServerAddress + '\'' +
+			", filePath=" + filePath +
+			'}';
+	}
 }

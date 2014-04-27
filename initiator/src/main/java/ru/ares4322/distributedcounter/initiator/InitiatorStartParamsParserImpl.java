@@ -18,8 +18,10 @@ import static java.lang.String.valueOf;
 import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static org.slf4j.LoggerFactory.getLogger;
 
-//TODO refactor with other parsers
-//TODO add test
+//TODO refactor help printing
+//TODO refactor params naming
+//TODO add default logic for local server address and port
+//TODO move common code from parsers
 @Singleton
 public class InitiatorStartParamsParserImpl implements InitiatorStartParamsParser {
 
@@ -27,12 +29,19 @@ public class InitiatorStartParamsParserImpl implements InitiatorStartParamsParse
 
 	@Override
 	public InitiatorStartParams parse(String[] params) throws StartParamsParserException {
-		InitiatorStartParams result = new InitiatorStartParams();
+		int senderThreads = 0;
+		int receiverThreads = 0;
+		int localServerPort = 0;
+		String localServerAddress = null;
+		int remoteServerPort = 0;
+		String remoteServerAddress = null;
+		Path senderFilePath = null;
+		Path receiverFilePath = null;
 
 		OptionParser parser = new OptionParser(
 			format(
-				"%s::%s::%s:%s:%s:%s:",
-				SERVER_PORT, SERVER_ADDRESS, SENDER_FILE,
+				"%s::%s::%s::%s::%s:%s:%s:%s:",
+				LOCAL_SERVER_PORT, LOCAL_SERVER_ADDRESS, REMOTE_SERVER_PORT, REMOTE_SERVER_ADDRESS, SENDER_FILE,
 				RECEIVER_FILE, SENDER_THREADS, RECEIVER_THREADS
 			)
 		);
@@ -46,23 +55,42 @@ public class InitiatorStartParamsParserImpl implements InitiatorStartParamsParse
 		StringBuilder errorBuilder = new StringBuilder();
 		boolean hasError = false;
 
-		if (optionSet.has(SERVER_PORT) && optionSet.hasArgument(SERVER_PORT)) {
-			int sp = toInt(valueOf(optionSet.valueOf(SERVER_PORT)), -1);
+		if (optionSet.has(LOCAL_SERVER_PORT) && optionSet.hasArgument(LOCAL_SERVER_PORT)) {
+			int sp = toInt(valueOf(optionSet.valueOf(LOCAL_SERVER_PORT)), -1);
 			if (sp == -1) {
 				errorBuilder.append("server port must be number (1 - 65535); \n");
 				hasError = true;
 			}
-			result.setServerPort(sp);
+			localServerPort = sp;
 		} else {
 			hasError = true;
-			errorBuilder.append(format("enter server port: -%s server_port; \n", SERVER_PORT));
+			errorBuilder.append(format("enter server port: -%s server_port; \n", LOCAL_SERVER_PORT));
 		}
 
-		if (optionSet.has(SERVER_ADDRESS) && optionSet.hasArgument(SERVER_ADDRESS)) {
-			result.setServerAddress(valueOf(optionSet.valueOf(SERVER_ADDRESS)));
+		if (optionSet.has(LOCAL_SERVER_ADDRESS) && optionSet.hasArgument(LOCAL_SERVER_ADDRESS)) {
+			localServerAddress = valueOf(optionSet.valueOf(LOCAL_SERVER_ADDRESS));
 		} else {
 			hasError = true;
-			errorBuilder.append(format("enter server address: -%s server_address; \n", SERVER_ADDRESS));
+			errorBuilder.append(format("enter server address: -%s server_address; \n", LOCAL_SERVER_ADDRESS));
+		}
+
+		if (optionSet.has(REMOTE_SERVER_PORT) && optionSet.hasArgument(REMOTE_SERVER_PORT)) {
+			int sp = toInt(valueOf(optionSet.valueOf(REMOTE_SERVER_PORT)), -1);
+			if (sp == -1) {
+				errorBuilder.append("server port must be number (1 - 65535); \n");
+				hasError = true;
+			}
+			remoteServerPort = sp;
+		} else {
+			hasError = true;
+			errorBuilder.append(format("enter server port: -%s server_port; \n", LOCAL_SERVER_PORT));
+		}
+
+		if (optionSet.has(REMOTE_SERVER_ADDRESS) && optionSet.hasArgument(REMOTE_SERVER_ADDRESS)) {
+			remoteServerAddress = valueOf(optionSet.valueOf(REMOTE_SERVER_ADDRESS));
+		} else {
+			hasError = true;
+			errorBuilder.append(format("enter server address: -%s server_address; \n", LOCAL_SERVER_ADDRESS));
 		}
 
 		try {
@@ -78,7 +106,7 @@ public class InitiatorStartParamsParserImpl implements InitiatorStartParamsParse
 				path = Files.createTempFile(RECEIVE_LOGFILE_NAME, LOGFILE_NAME_SUFFIX);
 				log.info("create temp receiver file: %s", path.toAbsolutePath());
 			}
-			result.setReceiverFilePath(path);
+			receiverFilePath = path;
 		} catch (IOException | InvalidPathException | SecurityException e) {
 			throw new StartParamsParserException("temp receiver file creation error:" + e);
 		}
@@ -96,7 +124,7 @@ public class InitiatorStartParamsParserImpl implements InitiatorStartParamsParse
 				path = Files.createTempFile(SEND_LOGFILE_NAME, LOGFILE_NAME_SUFFIX);
 				log.info("create temp receiver file: %s", path.toAbsolutePath());
 			}
-			result.setSenderFilePath(path);
+			senderFilePath = path;
 		} catch (IOException | InvalidPathException | SecurityException e) {
 			throw new StartParamsParserException("temp receiver file creation error:" + e);
 		}
@@ -107,10 +135,10 @@ public class InitiatorStartParamsParserImpl implements InitiatorStartParamsParse
 				errorBuilder.append("server threads must be number (1 - 3); \n");
 				hasError = true;
 			} else {
-				result.setSenderThreads(sp);
+				senderThreads = sp;
 			}
 		} else {
-			result.setSenderThreads(DEFAULT_SENDER_THREADS);
+			senderThreads = DEFAULT_SENDER_THREADS;
 			log.info("set sender threads to default ({})", DEFAULT_SENDER_THREADS);
 		}
 
@@ -120,10 +148,10 @@ public class InitiatorStartParamsParserImpl implements InitiatorStartParamsParse
 				errorBuilder.append("receiver threads must be number (1 - 3); \n");
 				hasError = true;
 			} else {
-				result.setReceiverThreads(rt);
+				receiverThreads = rt;
 			}
 		} else {
-			result.setReceiverThreads(DEFAULT_RECEIVER_THREADS);
+			receiverThreads = DEFAULT_RECEIVER_THREADS;
 			log.info("set receiver threads to default ({})", DEFAULT_RECEIVER_THREADS);
 		}
 
@@ -131,15 +159,17 @@ public class InitiatorStartParamsParserImpl implements InitiatorStartParamsParse
 			throw new StartParamsParserException(errorBuilder.toString());
 		}
 
-		return result;
+		return new InitiatorStartParams(senderThreads, receiverThreads, localServerPort, localServerAddress, remoteServerPort, remoteServerAddress, senderFilePath, receiverFilePath);
 	}
 
 	static final String SENDER_THREADS = "s";
 	static final String RECEIVER_THREADS = "r";
 	static final String SENDER_FILE = "o";
 	static final String RECEIVER_FILE = "i";
-	static final String SERVER_ADDRESS = "a";
-	static final String SERVER_PORT = "p";
+	static final String LOCAL_SERVER_ADDRESS = "k";
+	static final String LOCAL_SERVER_PORT = "l";
+	static final String REMOTE_SERVER_ADDRESS = "m";
+	static final String REMOTE_SERVER_PORT = "n";
 	private static final String HELP = "help";
 	private static final String SEND_LOGFILE_NAME = "initiator_send";
 	private static final String RECEIVE_LOGFILE_NAME = "initiator_receive";

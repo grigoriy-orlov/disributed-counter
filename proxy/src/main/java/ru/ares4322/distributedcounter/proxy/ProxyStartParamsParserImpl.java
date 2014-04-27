@@ -12,8 +12,10 @@ import static java.lang.String.valueOf;
 import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static org.slf4j.LoggerFactory.getLogger;
 
-//TODO refactor with other parsers
-//TODO add test
+//TODO refactor help printing
+//TODO refactor params naming
+//TODO add default logic for local server address and port
+//TODO move common code from parsers
 @Singleton
 public class ProxyStartParamsParserImpl implements ProxyEchoStartParamsParser {
 
@@ -21,13 +23,23 @@ public class ProxyStartParamsParserImpl implements ProxyEchoStartParamsParser {
 
 	@Override
 	public ProxyStartParams parse(String[] params) throws StartParamsParserException {
-		ProxyStartParams result = new ProxyStartParams();
+		int senderThreads = 0;
+		int receiverThreads = 0;
+		int localServerPort = 0;
+		String localServerAddress = null;
+		int initiatorServerPort = 0;
+		String initiatorServerAddress = null;
+		int echoServerPort = 0;
+		String echoServerAddress = null;
+		int otherLocalServerPort = 0;
+		String otherLocalServerAddress = null;
 
 		OptionParser parser = new OptionParser(
 			format(
-				"%s::%s::%s::%s::%s:%s:",
-				INITIATOR_SERVER_PORT, INITIATOR_SERVER_ADDRESS, ECHO_SERVER_PORT,
-				ECHO_SERVER_ADDRESS, SENDER_THREADS, RECEIVER_THREADS
+				"%s::%s::%s::%s::%s::%s::%s::%s::%s:%s:",
+				INITIATOR_SERVER_PORT, INITIATOR_SERVER_ADDRESS, ECHO_SERVER_PORT, ECHO_SERVER_ADDRESS,
+				LOCAL_SERVER_PORT, LOCAL_SERVER_ADDRESS, OTHER_LOCAL_SERVER_PORT, OTHER_LOCAL_SERVER_ADDRESS,
+				SENDER_THREADS, RECEIVER_THREADS
 			)
 		);
 		parser.accepts(HELP);
@@ -46,14 +58,14 @@ public class ProxyStartParamsParserImpl implements ProxyEchoStartParamsParser {
 				errorBuilder.append("server port must be number (1 - 65535); \n");
 				hasError = true;
 			}
-			result.setInitiatorServerPort(sp);
+			initiatorServerPort = sp;
 		} else {
 			hasError = true;
 			errorBuilder.append(format("enter initiator server port: -%s server_port; \n", INITIATOR_SERVER_PORT));
 		}
 
 		if (optionSet.has(INITIATOR_SERVER_ADDRESS) && optionSet.hasArgument(INITIATOR_SERVER_ADDRESS)) {
-			result.setInitiatorServerAddress(valueOf(optionSet.valueOf(INITIATOR_SERVER_ADDRESS)));
+			initiatorServerAddress = valueOf(optionSet.valueOf(INITIATOR_SERVER_ADDRESS));
 		} else {
 			hasError = true;
 			errorBuilder.append(format("enter initiator server address: -%s server_address; \n", INITIATOR_SERVER_ADDRESS));
@@ -65,17 +77,55 @@ public class ProxyStartParamsParserImpl implements ProxyEchoStartParamsParser {
 				errorBuilder.append("server port must be number (1 - 65535); \n");
 				hasError = true;
 			}
-			result.setEchoServerPort(sp);
+			echoServerPort = sp;
 		} else {
 			hasError = true;
 			errorBuilder.append(format("enter echo server port: -%s server_port; \n", ECHO_SERVER_PORT));
 		}
 
 		if (optionSet.has(ECHO_SERVER_ADDRESS) && optionSet.hasArgument(ECHO_SERVER_ADDRESS)) {
-			result.setEchoServerAddress(valueOf(optionSet.valueOf(ECHO_SERVER_ADDRESS)));
+			echoServerAddress = valueOf(optionSet.valueOf(ECHO_SERVER_ADDRESS));
 		} else {
 			hasError = true;
 			errorBuilder.append(format("enter echo server address: -%s server_address; \n", ECHO_SERVER_ADDRESS));
+		}
+
+		if (optionSet.has(LOCAL_SERVER_PORT) && optionSet.hasArgument(LOCAL_SERVER_PORT)) {
+			int sp = toInt(valueOf(optionSet.valueOf(LOCAL_SERVER_PORT)), -1);
+			if (sp == -1) {
+				errorBuilder.append("server port must be number (1 - 65535); \n");
+				hasError = true;
+			}
+			localServerPort = sp;
+		} else {
+			hasError = true;
+			errorBuilder.append(format("enter server port: -%s server_port; \n", LOCAL_SERVER_PORT));
+		}
+
+		if (optionSet.has(LOCAL_SERVER_ADDRESS) && optionSet.hasArgument(LOCAL_SERVER_ADDRESS)) {
+			localServerAddress = valueOf(optionSet.valueOf(LOCAL_SERVER_ADDRESS));
+		} else {
+			hasError = true;
+			errorBuilder.append(format("enter server address: -%s server_address; \n", LOCAL_SERVER_ADDRESS));
+		}
+
+		if (optionSet.has(OTHER_LOCAL_SERVER_PORT) && optionSet.hasArgument(OTHER_LOCAL_SERVER_PORT)) {
+			int sp = toInt(valueOf(optionSet.valueOf(OTHER_LOCAL_SERVER_PORT)), -1);
+			if (sp == -1) {
+				errorBuilder.append("server port must be number (1 - 65535); \n");
+				hasError = true;
+			}
+			otherLocalServerPort = sp;
+		} else {
+			hasError = true;
+			errorBuilder.append(format("enter server port: -%s server_port; \n", LOCAL_SERVER_PORT));
+		}
+
+		if (optionSet.has(OTHER_LOCAL_SERVER_ADDRESS) && optionSet.hasArgument(OTHER_LOCAL_SERVER_ADDRESS)) {
+			otherLocalServerAddress = valueOf(optionSet.valueOf(OTHER_LOCAL_SERVER_ADDRESS));
+		} else {
+			hasError = true;
+			errorBuilder.append(format("enter server address: -%s server_address; \n", LOCAL_SERVER_ADDRESS));
 		}
 
 		if (optionSet.has(SENDER_THREADS) && optionSet.hasArgument(SENDER_THREADS)) {
@@ -84,10 +134,10 @@ public class ProxyStartParamsParserImpl implements ProxyEchoStartParamsParser {
 				errorBuilder.append("server threads must be number (1 - 3); \n");
 				hasError = true;
 			} else {
-				result.setSenderThreads(st);
+				senderThreads = st;
 			}
 		} else {
-			result.setReceiverThreads(DEFAULT_SENDER_THREADS);
+			senderThreads = DEFAULT_SENDER_THREADS;
 			log.info("set sender threads to default ({})", DEFAULT_SENDER_THREADS);
 		}
 
@@ -97,10 +147,10 @@ public class ProxyStartParamsParserImpl implements ProxyEchoStartParamsParser {
 				errorBuilder.append("receiver threads must be number (1 - 3); \n");
 				hasError = true;
 			} else {
-				result.setReceiverThreads(rt);
+				receiverThreads = rt;
 			}
 		} else {
-			result.setReceiverThreads(DEFAULT_RECEIVER_THREADS);
+			receiverThreads = DEFAULT_RECEIVER_THREADS;
 			log.info("set receiver threads to default ({})", DEFAULT_RECEIVER_THREADS);
 		}
 
@@ -108,7 +158,9 @@ public class ProxyStartParamsParserImpl implements ProxyEchoStartParamsParser {
 			throw new StartParamsParserException(errorBuilder.toString());
 		}
 
-		return result;
+		return new ProxyStartParams(senderThreads, receiverThreads, localServerPort, localServerAddress,
+			initiatorServerPort, initiatorServerAddress, echoServerPort,
+			echoServerAddress, otherLocalServerPort, otherLocalServerAddress);
 	}
 
 	static final String SENDER_THREADS = "s";
@@ -117,6 +169,10 @@ public class ProxyStartParamsParserImpl implements ProxyEchoStartParamsParser {
 	static final String ECHO_SERVER_PORT = "b";
 	static final String INITIATOR_SERVER_ADDRESS = "x";
 	static final String INITIATOR_SERVER_PORT = "y";
+	static final String LOCAL_SERVER_ADDRESS = "c";
+	static final String LOCAL_SERVER_PORT = "d";
+	static final String OTHER_LOCAL_SERVER_ADDRESS = "v";
+	static final String OTHER_LOCAL_SERVER_PORT = "w";
 	private static final String HELP = "help";
 	private static final int DEFAULT_SENDER_THREADS = 3;
 	private static final int DEFAULT_RECEIVER_THREADS = 3;
