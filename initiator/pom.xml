@@ -21,6 +21,10 @@
 			<artifactId>guice</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.mycila.guice.extensions</groupId>
+			<artifactId>mycila-guice-jsr250</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>net.sf.jopt-simple</groupId>
 			<artifactId>jopt-simple</artifactId>
 		</dependency>
