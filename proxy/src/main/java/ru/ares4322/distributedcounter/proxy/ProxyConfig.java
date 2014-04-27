@@ -1,9 +1,9 @@
 package ru.ares4322.distributedcounter.proxy;
 
-import ru.ares4322.distributedcounter.common.StartParams;
+import ru.ares4322.distributedcounter.common.Config;
 
 //TODO add builder
-public class ProxyStartParams extends StartParams {
+public class ProxyConfig extends Config {
 
 	private final int initiatorServerPort;
 	private final String initiatorServerAddress;
@@ -12,7 +12,7 @@ public class ProxyStartParams extends StartParams {
 	private final int otherLocalServerPort;    //TODO add set of address-port pair
 	private final String otherLocalServerAddress;
 
-	public ProxyStartParams(
+	public ProxyConfig(
 		int senderThreads,
 		int receiverThreads,
 		int localServerPort,
@@ -60,10 +60,10 @@ public class ProxyStartParams extends StartParams {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (!(o instanceof ProxyStartParams)) return false;
+		if (!(o instanceof ProxyConfig)) return false;
 		if (!super.equals(o)) return false;
 
-		ProxyStartParams that = (ProxyStartParams) o;
+		ProxyConfig that = (ProxyConfig) o;
 
 		if (echoServerPort != that.echoServerPort) return false;
 		if (initiatorServerPort != that.initiatorServerPort) return false;

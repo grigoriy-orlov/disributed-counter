@@ -1,18 +1,18 @@
 package ru.ares4322.distributedcounter.initiator;
 
-import ru.ares4322.distributedcounter.common.StartParams;
+import ru.ares4322.distributedcounter.common.Config;
 
 import java.nio.file.Path;
 
 //TODO add builder
-public class InitiatorStartParams extends StartParams {
+public class InitiatorConfig extends Config {
 
 	private final int remoteServerPort;
 	private final String remoteServerAddress;
 	private final Path senderFilePath;
 	private final Path receiverFilePath;
 
-	public InitiatorStartParams(
+	public InitiatorConfig(
 		int senderThreads,
 		int receiverThreads,
 		int localServerPort,
@@ -48,10 +48,10 @@ public class InitiatorStartParams extends StartParams {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (!(o instanceof InitiatorStartParams)) return false;
+		if (!(o instanceof InitiatorConfig)) return false;
 		if (!super.equals(o)) return false;
 
-		InitiatorStartParams that = (InitiatorStartParams) o;
+		InitiatorConfig that = (InitiatorConfig) o;
 
 		if (remoteServerPort != that.remoteServerPort) return false;
 		if (receiverFilePath != null ? !receiverFilePath.equals(that.receiverFilePath) : that.receiverFilePath != null)

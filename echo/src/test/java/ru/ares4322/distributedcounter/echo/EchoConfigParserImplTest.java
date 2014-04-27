@@ -7,20 +7,20 @@ import java.nio.file.Path;
 import static java.nio.file.Files.createTempFile;
 import static org.apache.commons.io.FileUtils.forceDeleteOnExit;
 import static org.testng.Assert.assertEquals;
-import static ru.ares4322.distributedcounter.echo.EchoStartParamsParserImpl.*;
+import static ru.ares4322.distributedcounter.echo.EchoConfigParserImpl.*;
 
-public class EchoStartParamsParserImplTest {
+public class EchoConfigParserImplTest {
 
 	//TODO add EchoStartParamsParserImpl injection
 
 	@Test
 	public void parseOk() throws Exception {
-		EchoStartParamsParser parser = new EchoStartParamsParserImpl();
+		EchoConfigParser parser = new EchoConfigParserImpl();
 
 		Path tempFile = createTempFile("test", "tmp");
 		forceDeleteOnExit(tempFile.toFile());
 
-		EchoStartParams expected = new EchoStartParams(2, 1, 2000, "127.0.0.1", 3000, "127.0.0.2", tempFile);
+		EchoConfig expected = new EchoConfig(2, 1, 2000, "127.0.0.1", 3000, "127.0.0.2", tempFile);
 
 		String[] params = new String[]{
 			"-" + LOCAL_SERVER_PORT, expected.getLocalServerPort() + "",
@@ -32,7 +32,7 @@ public class EchoStartParamsParserImplTest {
 			"-" + RECEIVER_THREADS, expected.getReceiverThreads() + ""
 		};
 
-		EchoStartParams actual = parser.parse(params);
+		EchoConfig actual = parser.parse(params);
 		assertEquals(actual, expected);
 	}
 

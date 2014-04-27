@@ -7,22 +7,22 @@ import java.nio.file.Path;
 import static java.nio.file.Files.createTempFile;
 import static org.apache.commons.io.FileUtils.forceDeleteOnExit;
 import static org.testng.Assert.assertEquals;
-import static ru.ares4322.distributedcounter.initiator.InitiatorStartParamsParserImpl.*;
+import static ru.ares4322.distributedcounter.initiator.InitiatorConfigParserImpl.*;
 
-public class InitiatorStartParamsParserImplTest {
+public class InitiatorConfigParserImplTest {
 
 	//TODO add InitiatorStartParamsParserImpl injection
 
 	@Test
 	public void parseOk() throws Exception {
-		InitiatorStartParamsParserImpl parser = new InitiatorStartParamsParserImpl();
+		InitiatorConfigParserImpl parser = new InitiatorConfigParserImpl();
 
 		Path receiverTempFile = createTempFile("receiver_test", ".tmp");
 		forceDeleteOnExit(receiverTempFile.toFile());
 		Path senderTempFile = createTempFile("sender_test", ".tmp");
 		forceDeleteOnExit(senderTempFile.toFile());
 
-		InitiatorStartParams expected = new InitiatorStartParams(
+		InitiatorConfig expected = new InitiatorConfig(
 			2,1, 1000, "127.0.0.1", 2000, "127.0.0.2", receiverTempFile, senderTempFile
 		);
 
@@ -37,7 +37,7 @@ public class InitiatorStartParamsParserImplTest {
 			"--" + RECEIVER_THREADS, expected.getReceiverThreads() + ""
 		};
 
-		InitiatorStartParams actual = parser.parse(params);
+		InitiatorConfig actual = parser.parse(params);
 		assertEquals(actual, expected);
 	}
 

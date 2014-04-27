@@ -1,4 +1,4 @@
-package ru.ares4322.distributedcounter.proxy;
+package ru.ares4322.distributedcounter.echo;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -6,6 +6,12 @@ import org.slf4j.Logger;
 import ru.ares4322.distributedcounter.common.StartParamsParserException;
 
 import javax.inject.Singleton;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
@@ -17,29 +23,25 @@ import static org.slf4j.LoggerFactory.getLogger;
 //TODO add default logic for local server address and port
 //TODO move common code from parsers
 @Singleton
-public class ProxyStartParamsParserImpl implements ProxyEchoStartParamsParser {
+public class EchoConfigParserImpl implements EchoConfigParser {
 
-	private static final Logger log = getLogger(ProxyStartParamsParserImpl.class);
+	private static final Logger log = getLogger(EchoConfigParserImpl.class);
 
 	@Override
-	public ProxyStartParams parse(String[] params) throws StartParamsParserException {
+	public EchoConfig parse(String[] params) throws StartParamsParserException {
 		int senderThreads = 0;
 		int receiverThreads = 0;
 		int localServerPort = 0;
 		String localServerAddress = null;
-		int initiatorServerPort = 0;
-		String initiatorServerAddress = null;
-		int echoServerPort = 0;
-		String echoServerAddress = null;
-		int otherLocalServerPort = 0;
-		String otherLocalServerAddress = null;
+		int remoteServerPort = 0;
+		String remoteServerAddress = null;
+		Path filePath = null;
 
 		OptionParser parser = new OptionParser(
 			format(
-				"%s::%s::%s::%s::%s::%s::%s::%s::%s:%s:",
-				INITIATOR_SERVER_PORT, INITIATOR_SERVER_ADDRESS, ECHO_SERVER_PORT, ECHO_SERVER_ADDRESS,
-				LOCAL_SERVER_PORT, LOCAL_SERVER_ADDRESS, OTHER_LOCAL_SERVER_PORT, OTHER_LOCAL_SERVER_ADDRESS,
-				SENDER_THREADS, RECEIVER_THREADS
+				"%s::%s::%s::%s::%s:%s:%s:",
+				LOCAL_SERVER_PORT, LOCAL_SERVER_ADDRESS, REMOTE_SERVER_PORT,
+				REMOTE_SERVER_ADDRESS, FILE, SENDER_THREADS, RECEIVER_THREADS
 			)
 		);
 		parser.accepts(HELP);
@@ -51,44 +53,6 @@ public class ProxyStartParamsParserImpl implements ProxyEchoStartParamsParser {
 
 		StringBuilder errorBuilder = new StringBuilder();
 		boolean hasError = false;
-
-		if (optionSet.has(INITIATOR_SERVER_PORT) && optionSet.hasArgument(INITIATOR_SERVER_PORT)) {
-			int sp = toInt(valueOf(optionSet.valueOf(INITIATOR_SERVER_PORT)), -1);
-			if (sp == -1) {
-				errorBuilder.append("server port must be number (1 - 65535); \n");
-				hasError = true;
-			}
-			initiatorServerPort = sp;
-		} else {
-			hasError = true;
-			errorBuilder.append(format("enter initiator server port: -%s server_port; \n", INITIATOR_SERVER_PORT));
-		}
-
-		if (optionSet.has(INITIATOR_SERVER_ADDRESS) && optionSet.hasArgument(INITIATOR_SERVER_ADDRESS)) {
-			initiatorServerAddress = valueOf(optionSet.valueOf(INITIATOR_SERVER_ADDRESS));
-		} else {
-			hasError = true;
-			errorBuilder.append(format("enter initiator server address: -%s server_address; \n", INITIATOR_SERVER_ADDRESS));
-		}
-
-		if (optionSet.has(ECHO_SERVER_PORT) && optionSet.hasArgument(ECHO_SERVER_PORT)) {
-			int sp = toInt(valueOf(optionSet.valueOf(ECHO_SERVER_PORT)), -1);
-			if (sp == -1) {
-				errorBuilder.append("server port must be number (1 - 65535); \n");
-				hasError = true;
-			}
-			echoServerPort = sp;
-		} else {
-			hasError = true;
-			errorBuilder.append(format("enter echo server port: -%s server_port; \n", ECHO_SERVER_PORT));
-		}
-
-		if (optionSet.has(ECHO_SERVER_ADDRESS) && optionSet.hasArgument(ECHO_SERVER_ADDRESS)) {
-			echoServerAddress = valueOf(optionSet.valueOf(ECHO_SERVER_ADDRESS));
-		} else {
-			hasError = true;
-			errorBuilder.append(format("enter echo server address: -%s server_address; \n", ECHO_SERVER_ADDRESS));
-		}
 
 		if (optionSet.has(LOCAL_SERVER_PORT) && optionSet.hasArgument(LOCAL_SERVER_PORT)) {
 			int sp = toInt(valueOf(optionSet.valueOf(LOCAL_SERVER_PORT)), -1);
@@ -109,23 +73,41 @@ public class ProxyStartParamsParserImpl implements ProxyEchoStartParamsParser {
 			errorBuilder.append(format("enter server address: -%s server_address; \n", LOCAL_SERVER_ADDRESS));
 		}
 
-		if (optionSet.has(OTHER_LOCAL_SERVER_PORT) && optionSet.hasArgument(OTHER_LOCAL_SERVER_PORT)) {
-			int sp = toInt(valueOf(optionSet.valueOf(OTHER_LOCAL_SERVER_PORT)), -1);
+		if (optionSet.has(REMOTE_SERVER_PORT) && optionSet.hasArgument(REMOTE_SERVER_PORT)) {
+			int sp = toInt(valueOf(optionSet.valueOf(REMOTE_SERVER_PORT)), -1);
 			if (sp == -1) {
 				errorBuilder.append("server port must be number (1 - 65535); \n");
 				hasError = true;
 			}
-			otherLocalServerPort = sp;
+			remoteServerPort = sp;
 		} else {
 			hasError = true;
 			errorBuilder.append(format("enter server port: -%s server_port; \n", LOCAL_SERVER_PORT));
 		}
 
-		if (optionSet.has(OTHER_LOCAL_SERVER_ADDRESS) && optionSet.hasArgument(OTHER_LOCAL_SERVER_ADDRESS)) {
-			otherLocalServerAddress = valueOf(optionSet.valueOf(OTHER_LOCAL_SERVER_ADDRESS));
+		if (optionSet.has(REMOTE_SERVER_ADDRESS) && optionSet.hasArgument(REMOTE_SERVER_ADDRESS)) {
+			remoteServerAddress = valueOf(optionSet.valueOf(REMOTE_SERVER_ADDRESS));
 		} else {
 			hasError = true;
 			errorBuilder.append(format("enter server address: -%s server_address; \n", LOCAL_SERVER_ADDRESS));
+		}
+
+		try {
+			Path path;
+			if (optionSet.has(FILE) && optionSet.hasArgument(FILE)) {
+				path = Paths.get(valueOf(optionSet.valueOf(FILE)));
+				File file = path.toFile();
+				//TODO need recreate file?
+				if (!file.exists()) {
+					path = Files.createFile(path);
+				}
+			} else {
+				path = Files.createTempFile(LOGFILE_NAME, LOGFILE_NAME_SUFFIX);
+				log.info("create temp file: %s", path.toAbsolutePath());
+			}
+			filePath = path;
+		} catch (IOException | InvalidPathException | SecurityException e) {
+			throw new StartParamsParserException("temp file creation error:" + e);
 		}
 
 		if (optionSet.has(SENDER_THREADS) && optionSet.hasArgument(SENDER_THREADS)) {
@@ -158,22 +140,19 @@ public class ProxyStartParamsParserImpl implements ProxyEchoStartParamsParser {
 			throw new StartParamsParserException(errorBuilder.toString());
 		}
 
-		return new ProxyStartParams(senderThreads, receiverThreads, localServerPort, localServerAddress,
-			initiatorServerPort, initiatorServerAddress, echoServerPort,
-			echoServerAddress, otherLocalServerPort, otherLocalServerAddress);
+		return new EchoConfig(senderThreads, receiverThreads, localServerPort, localServerAddress, remoteServerPort, remoteServerAddress, filePath);
 	}
 
 	static final String SENDER_THREADS = "s";
 	static final String RECEIVER_THREADS = "r";
-	static final String ECHO_SERVER_ADDRESS = "a";
-	static final String ECHO_SERVER_PORT = "b";
-	static final String INITIATOR_SERVER_ADDRESS = "x";
-	static final String INITIATOR_SERVER_PORT = "y";
-	static final String LOCAL_SERVER_ADDRESS = "c";
-	static final String LOCAL_SERVER_PORT = "d";
-	static final String OTHER_LOCAL_SERVER_ADDRESS = "v";
-	static final String OTHER_LOCAL_SERVER_PORT = "w";
+	static final String FILE = "f";
+	static final String LOCAL_SERVER_ADDRESS = "a";
+	static final String LOCAL_SERVER_PORT = "p";
+	static final String REMOTE_SERVER_ADDRESS = "b";
+	static final String REMOTE_SERVER_PORT = "q";
 	private static final String HELP = "help";
+	private static final String LOGFILE_NAME = "echo";
+	private static final String LOGFILE_NAME_SUFFIX = ".txt";
 	private static final int DEFAULT_SENDER_THREADS = 3;
 	private static final int DEFAULT_RECEIVER_THREADS = 3;
 

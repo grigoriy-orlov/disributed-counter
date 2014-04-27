@@ -3,16 +3,16 @@ package ru.ares4322.distributedcounter.proxy;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
-import static ru.ares4322.distributedcounter.proxy.ProxyStartParamsParserImpl.*;
+import static ru.ares4322.distributedcounter.proxy.ProxyConfigParserImpl.*;
 
-public class ProxyStartParamsParserImplTest {
+public class ProxyConfigParserImplTest {
 	//TODO add ProxyStartParamsParserImpl injection
 
 	@Test
 	public void parseOk() throws Exception {
-		ProxyStartParamsParserImpl parser = new ProxyStartParamsParserImpl();
+		ProxyConfigParserImpl parser = new ProxyConfigParserImpl();
 
-		ProxyStartParams expected = new ProxyStartParams(
+		ProxyConfig expected = new ProxyConfig(
 			2,1,2000,"127.0.0.1", 3000, "127.0.0.2", 4000, "127.0.0.3", 5000, "127.0.0.4"
 		);
 
@@ -29,7 +29,7 @@ public class ProxyStartParamsParserImplTest {
 			"-" + RECEIVER_THREADS, expected.getReceiverThreads() + ""
 		};
 
-		ProxyStartParams actual = parser.parse(params);
+		ProxyConfig actual = parser.parse(params);
 		assertEquals(actual, expected);
 	}
 

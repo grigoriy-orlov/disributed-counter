@@ -1,12 +1,12 @@
 package ru.ares4322.distributedcounter.common;
 
-public abstract class StartParams {
+public abstract class Config {
 	private final int senderThreads;
 	private final int receiverThreads;
 	private final int localServerPort;
 	private final String localServerAddress;
 
-	protected StartParams(int senderThreads, int receiverThreads, int localServerPort, String localServerAddress) {
+	protected Config(int senderThreads, int receiverThreads, int localServerPort, String localServerAddress) {
 		this.senderThreads = senderThreads;
 		this.receiverThreads = receiverThreads;
 		this.localServerPort = localServerPort;
@@ -32,14 +32,14 @@ public abstract class StartParams {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (!(o instanceof StartParams)) return false;
+		if (!(o instanceof Config)) return false;
 
-		StartParams startParams = (StartParams) o;
+		Config config = (Config) o;
 
-		if (receiverThreads != startParams.receiverThreads) return false;
-		if (senderThreads != startParams.senderThreads) return false;
-		if (localServerPort != startParams.localServerPort) return false;
-		if (localServerAddress != null ? !localServerAddress.equals(startParams.localServerAddress) : startParams.localServerAddress != null)
+		if (receiverThreads != config.receiverThreads) return false;
+		if (senderThreads != config.senderThreads) return false;
+		if (localServerPort != config.localServerPort) return false;
+		if (localServerAddress != null ? !localServerAddress.equals(config.localServerAddress) : config.localServerAddress != null)
 			return false;
 
 		return true;

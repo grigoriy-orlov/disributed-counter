@@ -1,17 +1,17 @@
 package ru.ares4322.distributedcounter.echo;
 
-import ru.ares4322.distributedcounter.common.StartParams;
+import ru.ares4322.distributedcounter.common.Config;
 
 import java.nio.file.Path;
 
 //TODO add builder
-public class EchoStartParams extends StartParams {
+public class EchoConfig extends Config {
 
 	private final int remoteServerPort;
 	private final String remoteServerAddress;
 	private final Path filePath;
 
-	public EchoStartParams(
+	public EchoConfig(
 		int senderThreads,
 		int receiverThreads,
 		int localServerPort,
@@ -41,10 +41,10 @@ public class EchoStartParams extends StartParams {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (!(o instanceof EchoStartParams)) return false;
+		if (!(o instanceof EchoConfig)) return false;
 		if (!super.equals(o)) return false;
 
-		EchoStartParams that = (EchoStartParams) o;
+		EchoConfig that = (EchoConfig) o;
 
 		if (remoteServerPort != that.remoteServerPort) return false;
 		if (filePath != null ? !filePath.equals(that.filePath) : that.filePath != null) return false;

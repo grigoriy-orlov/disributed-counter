@@ -23,12 +23,12 @@ import static org.slf4j.LoggerFactory.getLogger;
 //TODO add default logic for local server address and port
 //TODO move common code from parsers
 @Singleton
-public class InitiatorStartParamsParserImpl implements InitiatorStartParamsParser {
+public class InitiatorConfigParserImpl implements InitiatorConfigParser {
 
-	private static final Logger log = getLogger(InitiatorStartParamsParserImpl.class);
+	private static final Logger log = getLogger(InitiatorConfigParserImpl.class);
 
 	@Override
-	public InitiatorStartParams parse(String[] params) throws StartParamsParserException {
+	public InitiatorConfig parse(String[] params) throws StartParamsParserException {
 		int senderThreads = 0;
 		int receiverThreads = 0;
 		int localServerPort = 0;
@@ -159,7 +159,7 @@ public class InitiatorStartParamsParserImpl implements InitiatorStartParamsParse
 			throw new StartParamsParserException(errorBuilder.toString());
 		}
 
-		return new InitiatorStartParams(senderThreads, receiverThreads, localServerPort, localServerAddress, remoteServerPort, remoteServerAddress, senderFilePath, receiverFilePath);
+		return new InitiatorConfig(senderThreads, receiverThreads, localServerPort, localServerAddress, remoteServerPort, remoteServerAddress, senderFilePath, receiverFilePath);
 	}
 
 	static final String SENDER_THREADS = "s";
