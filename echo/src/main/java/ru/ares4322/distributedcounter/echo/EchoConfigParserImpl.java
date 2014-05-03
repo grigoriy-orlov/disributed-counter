@@ -103,7 +103,7 @@ public class EchoConfigParserImpl implements EchoConfigParser {
 				}
 			} else {
 				path = Files.createTempFile(LOGFILE_NAME, LOGFILE_NAME_SUFFIX);
-				log.info("create temp file: %s", path.toAbsolutePath());
+				log.info("create temp file: {}", path.toAbsolutePath());
 			}
 			filePath = path;
 		} catch (IOException | InvalidPathException | SecurityException e) {

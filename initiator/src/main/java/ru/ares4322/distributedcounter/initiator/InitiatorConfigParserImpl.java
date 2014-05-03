@@ -104,11 +104,11 @@ public class InitiatorConfigParserImpl implements InitiatorConfigParser {
 				}
 			} else {
 				path = Files.createTempFile(RECEIVE_LOGFILE_NAME, LOGFILE_NAME_SUFFIX);
-				log.info("create temp receiver file: %s", path.toAbsolutePath());
+				log.info("create temp receiver file: {}", path.toAbsolutePath());
 			}
 			receiverFilePath = path;
 		} catch (IOException | InvalidPathException | SecurityException e) {
-			throw new StartParamsParserException("temp receiver file creation error:" + e);
+			throw new StartParamsParserException("temp receiver file creation error", e);
 		}
 
 		try {
@@ -122,11 +122,11 @@ public class InitiatorConfigParserImpl implements InitiatorConfigParser {
 				}
 			} else {
 				path = Files.createTempFile(SEND_LOGFILE_NAME, LOGFILE_NAME_SUFFIX);
-				log.info("create temp receiver file: %s", path.toAbsolutePath());
+				log.info("create temp sender file: {}", path.toAbsolutePath());
 			}
 			senderFilePath = path;
 		} catch (IOException | InvalidPathException | SecurityException e) {
-			throw new StartParamsParserException("temp receiver file creation error:" + e);
+			throw new StartParamsParserException("temp sender file creation error", e);
 		}
 
 		if (optionSet.has(SENDER_THREADS) && optionSet.hasArgument(SENDER_THREADS)) {
