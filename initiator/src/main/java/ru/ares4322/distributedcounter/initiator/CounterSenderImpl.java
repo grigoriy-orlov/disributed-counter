@@ -27,10 +27,15 @@ public class CounterSenderImpl implements CounterSender {
 		while ((socket = pool.get()) == null) {
 		}
 
-		try (OutputStream outputStream = socket.getOutputStream()) {
+		try {
+			OutputStream outputStream = socket.getOutputStream();
+			log.debug("send data");
+
 			byte[] bytes;
 			bytes = intToNetworkByteArray(counter);
 			outputStream.write(bytes);
+			outputStream.flush();  //TODO remove
+			//TODO need close?
 		} catch (IOException e) {
 			log.error("socket writing error", e);
 		} finally {

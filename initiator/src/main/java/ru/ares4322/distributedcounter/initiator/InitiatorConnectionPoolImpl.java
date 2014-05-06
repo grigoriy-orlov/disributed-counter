@@ -6,6 +6,7 @@ import ru.ares4322.distributedcounter.common.ConnectionPool;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.net.SocketFactory;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -30,7 +31,7 @@ public class InitiatorConnectionPoolImpl implements ConnectionPool {
 		queue = new ArrayBlockingQueue<>(config.getSenderThreads());
 		for (int i = 0, l = config.getSenderThreads(); i < l; i++) {
 			try {
-				Socket socket = new Socket();
+				Socket socket = SocketFactory.getDefault().createSocket();
 				socket.connect(new InetSocketAddress(getByName(config.getRemoteServerAddress()), config.getRemoteServerPort()));
 				queue.put(socket);
 			} catch (IOException e) {

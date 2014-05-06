@@ -41,9 +41,20 @@
 				<version>3.0</version>
 			</dependency>
 			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>17.0</version>
+			</dependency>
+			<dependency>
 				<groupId>com.mycila.guice.extensions</groupId>
 				<artifactId>mycila-guice-jsr250</artifactId>
 				<version>3.2.ga</version>
+				<exclusions>
+					<exclusion>
+						<groupId>com.google.guava</groupId>
+						<artifactId>guava</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>net.sf.jopt-simple</groupId>

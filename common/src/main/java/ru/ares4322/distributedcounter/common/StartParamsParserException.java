@@ -1,6 +1,6 @@
 package ru.ares4322.distributedcounter.common;
 
-public class StartParamsParserException extends Exception {
+public class StartParamsParserException extends RuntimeException {
 
 	public StartParamsParserException() {
 	}

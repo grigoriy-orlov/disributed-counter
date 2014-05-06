@@ -1,6 +1,9 @@
 package ru.ares4322.distributedcounter.initiator;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Module;
+import org.testng.IModuleFactory;
+import org.testng.ITestContext;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Guice;
@@ -14,8 +17,15 @@ import java.net.Socket;
 
 import static org.mockito.Mockito.*;
 import static ru.ares4322.distributedcounter.common.Utils.intToNetworkByteArray;
+import static ru.ares4322.distributedcounter.initiator.InitiatorConfigParserImpl.*;
 
-@Guice(modules = CounterSenderImplTest.TestModule.class)
+@Guice(
+	modules = {
+		CounterSenderModule.class,
+		CounterSenderImplTest.TestModule.class
+	},
+	moduleFactory = CounterSenderImplTest.ConfigModuleFactory.class
+)
 public class CounterSenderImplTest {
 
 	@Inject
@@ -52,6 +62,23 @@ public class CounterSenderImplTest {
 		@Override
 		protected void configure() {
 			binder().bind(ConnectionPool.class).toInstance(mock(ConnectionPool.class));
+		}
+	}
+
+	public static class ConfigModuleFactory implements IModuleFactory {
+
+		@Override
+		public Module createModule(ITestContext context, Class<?> testClass) {
+			return new ConfigModule(
+				new String[]{
+					"-" + LOCAL_SERVER_PORT, "9999",
+					"-" + LOCAL_SERVER_ADDRESS, "127.0.0.1",
+					"-" + REMOTE_SERVER_PORT, "9999",
+					"-" + REMOTE_SERVER_ADDRESS, "127.0.0.1",
+					"-" + SENDER_THREADS, "3",
+					"-" + RECEIVER_THREADS, "3"
+				}
+			);
 		}
 	}
 }
