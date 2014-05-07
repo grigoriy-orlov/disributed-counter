@@ -10,8 +10,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Writer;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
@@ -24,6 +24,8 @@ import static java.nio.channels.SelectionKey.OP_ACCEPT;
 import static java.nio.channels.SelectionKey.OP_READ;
 import static java.nio.channels.ServerSocketChannel.open;
 import static java.nio.channels.spi.SelectorProvider.provider;
+import static java.nio.charset.Charset.forName;
+import static java.nio.file.Files.newBufferedWriter;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -45,7 +47,7 @@ public class CounterReceiverServiceImpl extends AbstractExecutionThreadService i
 	private ServerSocketChannel serverChannel;
 	private Selector selector;
 	private ByteBuffer readBuffer = allocate(8192);    //TODO set appropriate size
-	private FileOutputStream stream;
+	private Writer writer;
 	private boolean inProgress;
 
 	@PostConstruct
@@ -56,7 +58,7 @@ public class CounterReceiverServiceImpl extends AbstractExecutionThreadService i
 
 		try {
 			this.selector = this.initSelector();
-			stream = new FileOutputStream(config.getReceiverFilePath().toFile());
+			writer = newBufferedWriter(config.getReceiverFilePath(), forName("UTF-8"));
 		} catch (IOException e) {
 			log.error("counter receiver init selector error", e);
 			throw new IllegalStateException("counter receiver starting error");
@@ -71,7 +73,7 @@ public class CounterReceiverServiceImpl extends AbstractExecutionThreadService i
 		if (executor != null) {
 			executor.shutdown();
 		}
-		closeQuietly(stream);
+		closeQuietly(writer);
 		closeQuietly(selector);
 	}
 
@@ -166,7 +168,7 @@ public class CounterReceiverServiceImpl extends AbstractExecutionThreadService i
 			arraycopy(readBuffer.array(), i, data, 0, 4);
 			CounterReceiverTask task = counterReceiverTaskProvider.get();
 			task.setData(data);
-			task.setStream(stream);
+			task.setWriter(writer);
 			executor.execute(task);
 			i += 4;
 			numRead -= 4;
