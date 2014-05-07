@@ -2,6 +2,7 @@ package ru.ares4322.distributedcounter.initiator;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
+import org.apache.commons.lang3.RandomUtils;
 import org.testng.IModuleFactory;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterMethod;
@@ -69,11 +70,12 @@ public class CounterSenderImplTest {
 
 		@Override
 		public Module createModule(ITestContext context, Class<?> testClass) {
+			int port = RandomUtils.nextInt(20000, 40000);
 			return new ConfigModule(
 				new String[]{
-					"-" + LOCAL_SERVER_PORT, "9999",
+					"-" + LOCAL_SERVER_PORT, port + "",
 					"-" + LOCAL_SERVER_ADDRESS, "127.0.0.1",
-					"-" + REMOTE_SERVER_PORT, "9999",
+					"-" + REMOTE_SERVER_PORT, port + "",
 					"-" + REMOTE_SERVER_ADDRESS, "127.0.0.1",
 					"-" + SENDER_THREADS, "3",
 					"-" + RECEIVER_THREADS, "3"
