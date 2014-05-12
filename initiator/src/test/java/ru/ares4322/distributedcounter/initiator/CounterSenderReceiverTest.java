@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.testng.IModuleFactory;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 import ru.ares4322.distributedcounter.common.ConnectionPool;
@@ -56,19 +55,29 @@ public class CounterSenderReceiverTest {
 
 	private final static String CHARSET = "UTF-8";
 
-
-	@BeforeClass
-	public void setUp() throws Exception {
-		senderService.setMaxCounter(100);
-	}
-
 	@Test
 	public void test() throws Exception {
+		senderService.setMaxCounter(100);
+
 		receiverService.startAsync().awaitRunning();
 		pool.init();
 		senderService.startAsync().awaitRunning();
 
+		sleep(100);
+
+		senderService.suspend();
+
+		senderService.setMaxCounter(200);
+
 		sleep(2000);
+
+		assertFileData(config.getReceiverFilePath(), config.getSenderFilePath());
+
+		sleep(2000);
+
+		senderService.resume();
+
+		sleep(100);
 
 		senderService.stopAsync();
 		receiverService.stopAsync();

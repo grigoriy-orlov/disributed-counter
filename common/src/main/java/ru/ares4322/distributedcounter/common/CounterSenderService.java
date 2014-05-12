@@ -5,4 +5,8 @@ import com.google.common.util.concurrent.Service;
 public interface CounterSenderService extends Service {
 
 	void setMaxCounter(Integer maxCounter);
+
+	void suspend();
+
+	void resume();
 }
