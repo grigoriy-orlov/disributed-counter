@@ -19,6 +19,6 @@ public class CounterReceiverTaskImplTest {
 		task.setWriter(mock);
 		task.run();
 
-		verify(mock).write("10000");
+		verify(mock).write("10000" + "\n");
 	}
 }

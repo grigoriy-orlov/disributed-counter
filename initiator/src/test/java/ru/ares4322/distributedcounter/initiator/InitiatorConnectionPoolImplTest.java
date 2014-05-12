@@ -25,7 +25,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static com.google.inject.name.Names.named;
-import static java.net.InetAddress.getByName;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.testng.Assert.*;
@@ -75,6 +74,7 @@ public class InitiatorConnectionPoolImplTest {
 			clientSocket.close();
 		}
 		executor.shutdown();
+		socketServerExecutor.shutdown();
 	}
 
 	private static class TestTask implements Runnable {
@@ -128,7 +128,7 @@ public class InitiatorConnectionPoolImplTest {
 				public void run() {
 					try {
 						serverSocket = ServerSocketFactory.getDefault().createServerSocket();
-						serverSocket.bind(new InetSocketAddress(getByName("127.0.0.1"), remoteServerPort));
+						serverSocket.bind(new InetSocketAddress("127.0.0.1", remoteServerPort));
 						while (true) {
 							clientSockets.add(serverSocket.accept());
 						}
