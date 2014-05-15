@@ -25,6 +25,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static com.google.inject.name.Names.named;
+import static java.lang.Thread.sleep;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.testng.Assert.*;
@@ -61,6 +62,9 @@ public class InitiatorConnectionPoolImplTest {
 		executor.execute(task1);
 		executor.execute(task2);
 
+		//TODO beautify
+		sleep(2000);
+
 		assertEquals(pool.size(), 0);
 		assertNotNull(task1.getSocket());
 		assertNull(task2.getSocket());
@@ -88,9 +92,9 @@ public class InitiatorConnectionPoolImplTest {
 
 		@Override
 		public void run() {
-			socket = pool.get();
+			while ((socket = pool.get()) == null);
 			try {
-				Thread.sleep(5000);
+				sleep(5000);
 			} catch (InterruptedException e) {
 				log.error("test task running error", e);
 			} finally {
