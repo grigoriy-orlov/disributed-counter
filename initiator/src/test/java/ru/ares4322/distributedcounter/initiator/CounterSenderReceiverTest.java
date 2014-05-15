@@ -10,6 +10,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 import ru.ares4322.distributedcounter.common.ConnectionPool;
+import ru.ares4322.distributedcounter.common.Controllable;
 import ru.ares4322.distributedcounter.common.CounterReceiverService;
 import ru.ares4322.distributedcounter.common.CounterSenderService;
 
@@ -32,6 +33,7 @@ import static ru.ares4322.distributedcounter.initiator.InitiatorConfigParserImpl
 //TODO move to integration test
 @Guice(
 	modules = {
+		CliModule.class,
 		ConnectionPoolModule.class,
 		CounterReceiverModule.class,
 		CounterSenderModule.class
@@ -44,8 +46,12 @@ public class CounterSenderReceiverTest {
 
 	@Inject
 	private CounterReceiverService receiverService;
+
 	@Inject
 	private CounterSenderService senderService;
+
+	@Inject
+	private Controllable controllable;
 
 	@Inject
 	private InitiatorConfig config;
@@ -57,15 +63,17 @@ public class CounterSenderReceiverTest {
 
 	@Test
 	public void test() throws Exception {
+		controllable.init();
+
 		senderService.setMaxCounter(100);
 
 		receiverService.startAsync().awaitRunning();
 		pool.init();
-		senderService.startAsync().awaitRunning();
+		controllable.start();
 
 		sleep(100);
 
-		senderService.suspend();
+		controllable.stop();
 
 		senderService.setMaxCounter(200);
 
@@ -75,11 +83,11 @@ public class CounterSenderReceiverTest {
 
 		sleep(2000);
 
-		senderService.resume();
+		controllable.start();
 
 		sleep(100);
 
-		senderService.stopAsync();
+		controllable.stop();
 		receiverService.stopAsync();
 
 		assertFileData(config.getReceiverFilePath(), config.getSenderFilePath());
@@ -87,6 +95,7 @@ public class CounterSenderReceiverTest {
 
 	@AfterMethod
 	public void tearDown() throws Exception {
+		controllable.exit();
 		pool.close();
 	}
 

@@ -1,6 +1,5 @@
 package ru.ares4322.distributedcounter.initiator;
 
-import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import org.slf4j.Logger;
 import ru.ares4322.distributedcounter.common.CounterSenderExecutor;
 import ru.ares4322.distributedcounter.common.CounterSenderService;
@@ -22,7 +21,7 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Singleton
-public class CounterSenderServiceImpl extends AbstractExecutionThreadService implements CounterSenderService {
+public class CounterSenderServiceImpl implements CounterSenderService {
 
 	private static final Logger log = getLogger(CounterSenderServiceImpl.class);
 
@@ -39,16 +38,24 @@ public class CounterSenderServiceImpl extends AbstractExecutionThreadService imp
 	private AtomicInteger counter = new AtomicInteger();
 	private BufferedWriter writer;
 
-	private boolean inProgress;
 	private Integer maxCounter;
 
-	ReentrantLock lock = new ReentrantLock(false);
+	//maybe two locks
+	ReentrantLock lock = new ReentrantLock(true);
+
+	@Override
+	public void init(){
+		log.debug("init");
+		if (!lock.isLocked()) {
+			//FIXME not atomicity
+			lock.lock();
+		}
+	}
 
 	@PostConstruct
 	@Override
 	public void startUp() {
 		log.debug("startUp");
-		inProgress = true;
 		if (lock.isLocked()) {
 			//FIXME not atomicity
 			lock.unlock();
@@ -72,7 +79,6 @@ public class CounterSenderServiceImpl extends AbstractExecutionThreadService imp
 			lock.unlock();
 		}
 
-		inProgress = false;
 		if (null != executor) {
 			executor.shutdown();
 		}
@@ -82,10 +88,11 @@ public class CounterSenderServiceImpl extends AbstractExecutionThreadService imp
 	//TODO beautify
 	@Override
 	public void run() {
+		log.debug("run");
 		final int tasks = 3;
 		int t = tasks;
 		ExecutorCompletionService<Integer> completionService = new ExecutorCompletionService<>(executor, new ArrayBlockingQueue<Future<Integer>>(tasks));
-		while (inProgress) {
+		while (true) {
 			lock.lock();
 			try {
 				int next = counter.getAndIncrement();
@@ -102,7 +109,7 @@ public class CounterSenderServiceImpl extends AbstractExecutionThreadService imp
 					try {
 						completionService.take().get();
 						t++;
-					} catch (InterruptedException | ExecutionException e) {
+					} catch (Exception e) {
 						log.error("task taking error", e);
 						//TODO right?
 					}
@@ -122,20 +129,8 @@ public class CounterSenderServiceImpl extends AbstractExecutionThreadService imp
 	@Override
 	public void suspend() {
 		log.debug("start suspend");
-		if (!lock.isLocked()) {
-			//FIXME not atomicity
-			lock.lock();
-		}
+		//FIXME not atomicity
+		while(lock.tryLock() != true);
 		log.debug("finish suspend");
-	}
-
-	@Override
-	public void resume() {
-		log.debug("start resume");
-		if (lock.isLocked()) {
-			//FIXME not atomicity
-			lock.unlock();
-		}
-		log.debug("finish resume");
 	}
 }

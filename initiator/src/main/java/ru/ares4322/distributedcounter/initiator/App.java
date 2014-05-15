@@ -39,11 +39,12 @@ public class App {
 		CounterReceiverService receiverService = injector.getInstance(CounterReceiverService.class);
 		CounterSenderService senderService = injector.getInstance(CounterSenderService.class);
 		CliCommandReaderService commandReaderService = injector.getInstance(CliCommandReaderService.class);
+		Controllable controllable = injector.getInstance(Controllable.class);
 
 		receiverService.startAsync().awaitRunning();
-		commandReaderService.run();
 		pool.init();
-		senderService.startAsync().awaitRunning();
-
+		senderService.init();
+		controllable.init();
+		commandReaderService.run();
 	}
 }

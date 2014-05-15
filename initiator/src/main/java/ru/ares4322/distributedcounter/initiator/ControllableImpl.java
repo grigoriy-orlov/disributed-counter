@@ -5,6 +5,8 @@ import ru.ares4322.distributedcounter.common.Controllable;
 import ru.ares4322.distributedcounter.common.CounterSenderService;
 
 import javax.inject.Inject;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -16,22 +18,20 @@ public class ControllableImpl implements Controllable {
 	@Inject
 	private CounterSenderService senderService;
 
+	//TODO move to module
+	private ExecutorService executor = Executors.newSingleThreadExecutor();
+
+	@Override
+	public void init() {
+		log.info("init counter sender");
+		senderService.init();
+		executor.execute(senderService);
+	}
+
 	@Override
 	public void start() {
-		log.info("start counter sender");
-
-		//TODO refactor
-		switch (senderService.state()) {
-			case NEW:
-				senderService.startAsync().awaitRunning();
-				break;
-			case RUNNING:
-				senderService.resume();
-				break;
-			default:
-				log.error("sender service can't run, it's state is: {}", senderService.state());
-		}
-
+		log.info("startUp counter sender");
+		senderService.startUp();
 	}
 
 	@Override
@@ -43,6 +43,7 @@ public class ControllableImpl implements Controllable {
 	@Override
 	public void exit() {
 		log.info("exit counter sender");
-		senderService.stopAsync().awaitTerminated();
+		senderService.shutDown();
+		executor.shutdown();
 	}
 }

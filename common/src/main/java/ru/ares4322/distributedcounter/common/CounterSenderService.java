@@ -1,12 +1,14 @@
 package ru.ares4322.distributedcounter.common;
 
-import com.google.common.util.concurrent.Service;
-
-public interface CounterSenderService extends Service {
+public interface CounterSenderService extends Runnable {
 
 	void setMaxCounter(Integer maxCounter);
 
-	void suspend();
+	void init();
 
-	void resume();
+	void startUp();
+
+	void shutDown();
+
+	void suspend();
 }
