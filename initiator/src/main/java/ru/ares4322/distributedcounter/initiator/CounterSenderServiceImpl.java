@@ -17,6 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static java.nio.charset.Charset.forName;
 import static java.nio.file.Files.newBufferedWriter;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -44,7 +45,7 @@ public class CounterSenderServiceImpl implements CounterSenderService {
 	ReentrantLock lock = new ReentrantLock(true);
 
 	@Override
-	public void init(){
+	public void init() {
 		log.debug("init");
 		if (!lock.isLocked()) {
 			//FIXME not atomicity
@@ -74,15 +75,18 @@ public class CounterSenderServiceImpl implements CounterSenderService {
 	@Override
 	public void shutDown() {
 		log.debug("shutDown");
-		if (lock.isLocked()) {
-			//FIXME not atomicity
-			lock.unlock();
-		}
+		lock.lock();
 
 		if (null != executor) {
 			executor.shutdown();
+			try {
+				executor.awaitTermination(1, SECONDS);
+			} catch (InterruptedException e) {
+				log.error("termination waiting error", e);
+			}
 		}
 		closeQuietly(writer);
+		log.debug("shutDown complete");
 	}
 
 	//TODO beautify
@@ -130,7 +134,7 @@ public class CounterSenderServiceImpl implements CounterSenderService {
 	public void suspend() {
 		log.debug("start suspend");
 		//FIXME not atomicity
-		while(lock.tryLock() != true);
+		while (lock.tryLock() != true) ;
 		log.debug("finish suspend");
 	}
 }

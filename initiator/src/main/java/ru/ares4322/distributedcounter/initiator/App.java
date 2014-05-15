@@ -46,5 +46,6 @@ public class App {
 		senderService.init();
 		controllable.init();
 		commandReaderService.run();
+		exit(0);
 	}
 }

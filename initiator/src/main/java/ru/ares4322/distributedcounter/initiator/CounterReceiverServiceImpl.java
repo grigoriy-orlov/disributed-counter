@@ -29,6 +29,7 @@ import static java.nio.file.Files.newBufferedWriter;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.slf4j.LoggerFactory.getLogger;
 
+//TODO move from Service
 @Singleton
 public class CounterReceiverServiceImpl extends AbstractExecutionThreadService implements CounterReceiverService {
 
