@@ -1,5 +1,6 @@
 package ru.ares4322.distributedcounter.common;
 
+import org.apache.commons.io.input.CloseShieldInputStream;
 import org.slf4j.Logger;
 
 import javax.inject.Inject;
@@ -24,7 +25,7 @@ public class CliCommandReaderImpl implements CliCommandReader {
 	@Override
 	public void readCommand() {
 		//TODO move to init/destroy
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+		try(BufferedReader reader = new BufferedReader(new InputStreamReader(new CloseShieldInputStream(in)))) {
 			String line = reader.readLine();
 			switch (line) {
 				case "start":
