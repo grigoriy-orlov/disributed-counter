@@ -41,7 +41,7 @@ public class App {
 		CliCommandReaderService commandReaderService = injector.getInstance(CliCommandReaderService.class);
 
 		receiverService.startAsync().awaitRunning();
-		commandReaderService.startAsync().awaitRunning();
+		commandReaderService.run();
 		pool.init();
 		senderService.startAsync().awaitRunning();
 

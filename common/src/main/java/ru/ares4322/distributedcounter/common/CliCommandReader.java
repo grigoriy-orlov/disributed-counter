@@ -4,5 +4,8 @@ import com.google.inject.ImplementedBy;
 
 @ImplementedBy(CliCommandReaderImpl.class)
 public interface CliCommandReader {
-	void read();
+
+	void readCommand();
+
+	boolean isExit();
 }

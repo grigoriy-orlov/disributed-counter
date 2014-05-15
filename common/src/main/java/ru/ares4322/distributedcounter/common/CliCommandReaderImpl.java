@@ -4,9 +4,11 @@ import org.slf4j.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
-import static org.apache.commons.io.IOUtils.readLines;
+import static java.lang.System.in;
 import static org.slf4j.LoggerFactory.getLogger;
 
 //TODO maybe create specific implementations and move them to specific modules
@@ -17,27 +19,34 @@ public class CliCommandReaderImpl implements CliCommandReader {
 
 	@Inject
 	private Controllable controllable;
+	private boolean isExit;
 
 	@Override
-	public void read() {
-		try {
-			for (String line : readLines(System.in)) {
-				switch (line) {
-					case "start":
-						controllable.start();
-						break;
-					case "stop":
-						controllable.stop();
-						break;
-					case "exit":
-						controllable.exit();
-						break;
-					default:
-						log.error("unknown command: {}", line);
-				}
+	public void readCommand() {
+		//TODO move to init/destroy
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+			String line = reader.readLine();
+			switch (line) {
+				case "start":
+					controllable.start();
+					break;
+				case "stop":
+					controllable.stop();
+					break;
+				case "exit":
+					isExit = true;
+					controllable.exit();
+					return;
+				default:
+					log.error("unknown command: {}", line);
 			}
 		} catch (IOException e) {
 			log.error("cli reading error", e);
 		}
+	}
+
+	@Override
+	public boolean isExit() {
+		return isExit;
 	}
 }

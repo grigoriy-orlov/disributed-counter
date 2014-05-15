@@ -10,6 +10,8 @@ import java.io.InputStream;
 
 import static java.lang.System.setIn;
 import static java.nio.charset.Charset.defaultCharset;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @Guice(modules = {
 	CliCommandReaderImplTest.EchoTestModule.class
@@ -38,12 +40,12 @@ public class CliCommandReaderImplTest {
 
 	@Test(dataProvider = "commands")
 	public void testRead(String command) throws Exception {
-		try (CharSequenceInputStream stream = new CharSequenceInputStream(command, defaultCharset())) {
+		try (CharSequenceInputStream stream = new CharSequenceInputStream(command + "\n", defaultCharset())) {
 			setIn(stream);
 		}
 
-		reader.read();
-		Mockito.verify(controllable).getClass().getMethod(command).invoke(controllable);
+		reader.readCommand();
+		verify(controllable).getClass().getMethod(command).invoke(controllable);
 	}
 
 	//TODO add more test cases
@@ -62,7 +64,7 @@ public class CliCommandReaderImplTest {
 
 		@Override
 		protected void configure() {
-			binder().bind(Controllable.class).toInstance(Mockito.mock(Controllable.class));
+			binder().bind(Controllable.class).toInstance(mock(Controllable.class));
 		}
 	}
 }
