@@ -1,4 +1,4 @@
-package ru.ares4322.distributedcounter.echo;
+package ru.ares4322.distributedcounter.initiator.cfg;
 
 import ru.ares4322.distributedcounter.common.cfg.Config;
 
@@ -8,26 +8,29 @@ import javax.inject.Singleton;
 import java.nio.file.Path;
 
 @Singleton
-public class EchoConfig extends Config {
+public class InitiatorConfig extends Config {
 
 	private final Integer remoteServerPort;
 	private final String remoteServerAddress;
-	private final Path filePath;
+	private final Path senderFilePath;
+	private final Path receiverFilePath;
 
 	@Inject
-	public EchoConfig(
+	public InitiatorConfig(
 		@Named("senderThreads") Integer senderThreads,
 		@Named("receiverThreads") Integer receiverThreads,
 		@Named("localServerPort") Integer localServerPort,
 		@Named("localServerAddress") String localServerAddress,
 		@Named("remoteServerPort") Integer remoteServerPort,
 		@Named("remoteServerAddress") String remoteServerAddress,
-		@Named("filePath") Path filePath
+		@Named("senderFilePath") Path senderFilePath,
+		@Named("receiverFilePath") Path receiverFilePath
 	) {
 		super(senderThreads, receiverThreads, localServerPort, localServerAddress);
 		this.remoteServerPort = remoteServerPort;
 		this.remoteServerAddress = remoteServerAddress;
-		this.filePath = filePath;
+		this.senderFilePath = senderFilePath;
+		this.receiverFilePath = receiverFilePath;
 	}
 
 	public Integer getRemoteServerPort() {
@@ -38,22 +41,29 @@ public class EchoConfig extends Config {
 		return remoteServerAddress;
 	}
 
-	public Path getFilePath() {
-		return filePath;
+	public Path getSenderFilePath() {
+		return senderFilePath;
+	}
+
+	public Path getReceiverFilePath() {
+		return receiverFilePath;
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (!(o instanceof EchoConfig)) return false;
+		if (!(o instanceof InitiatorConfig)) return false;
 		if (!super.equals(o)) return false;
 
-		EchoConfig that = (EchoConfig) o;
+		InitiatorConfig that = (InitiatorConfig) o;
 
-		if (filePath != null ? !filePath.equals(that.filePath) : that.filePath != null) return false;
+		if (receiverFilePath != null ? !receiverFilePath.equals(that.receiverFilePath) : that.receiverFilePath != null)
+			return false;
 		if (remoteServerAddress != null ? !remoteServerAddress.equals(that.remoteServerAddress) : that.remoteServerAddress != null)
 			return false;
 		if (remoteServerPort != null ? !remoteServerPort.equals(that.remoteServerPort) : that.remoteServerPort != null)
+			return false;
+		if (senderFilePath != null ? !senderFilePath.equals(that.senderFilePath) : that.senderFilePath != null)
 			return false;
 
 		return true;
@@ -64,17 +74,19 @@ public class EchoConfig extends Config {
 		int result = super.hashCode();
 		result = 31 * result + (remoteServerPort != null ? remoteServerPort.hashCode() : 0);
 		result = 31 * result + (remoteServerAddress != null ? remoteServerAddress.hashCode() : 0);
-		result = 31 * result + (filePath != null ? filePath.hashCode() : 0);
+		result = 31 * result + (senderFilePath != null ? senderFilePath.hashCode() : 0);
+		result = 31 * result + (receiverFilePath != null ? receiverFilePath.hashCode() : 0);
 		return result;
 	}
 
 	@Override
 	public String toString() {
-		return "EchoStartParams{" +
+		return "InitiatorConfig{" +
 			super.toString() +
 			", remoteServerPort=" + remoteServerPort +
 			", remoteServerAddress='" + remoteServerAddress + '\'' +
-			", filePath=" + filePath +
+			", senderFilePath=" + senderFilePath +
+			", receiverFilePath=" + receiverFilePath +
 			'}';
 	}
 }

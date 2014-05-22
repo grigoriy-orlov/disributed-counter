@@ -1,6 +1,6 @@
 package ru.ares4322.distributedcounter.proxy;
 
-import ru.ares4322.distributedcounter.common.Config;
+import ru.ares4322.distributedcounter.common.cfg.Config;
 
 import javax.inject.Inject;
 import javax.inject.Named;

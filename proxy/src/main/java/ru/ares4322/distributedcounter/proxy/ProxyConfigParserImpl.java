@@ -3,7 +3,7 @@ package ru.ares4322.distributedcounter.proxy;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import org.slf4j.Logger;
-import ru.ares4322.distributedcounter.common.StartParamsParserException;
+import ru.ares4322.distributedcounter.common.cfg.StartParamsParserException;
 
 import javax.inject.Singleton;
 
