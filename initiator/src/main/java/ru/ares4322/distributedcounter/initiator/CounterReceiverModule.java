@@ -4,14 +4,19 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
-import ru.ares4322.distributedcounter.common.CounterReceiverExecutor;
-import ru.ares4322.distributedcounter.common.CounterReceiverService;
-import ru.ares4322.distributedcounter.common.CounterReceiverTask;
+import ru.ares4322.distributedcounter.common.*;
 
 import javax.inject.Singleton;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 
+import static com.google.common.base.Throwables.propagate;
+import static com.google.common.collect.Queues.newConcurrentLinkedQueue;
 import static com.google.common.util.concurrent.MoreExecutors.sameThreadExecutor;
+import static java.nio.charset.Charset.forName;
+import static java.nio.file.Files.newBufferedWriter;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -46,5 +51,26 @@ public class CounterReceiverModule extends AbstractModule {
 	@Provides
 	public CounterReceiverTask getCounterReceiverTask() {
 		return new CounterReceiverTaskImpl();
+	}
+
+	@Provides
+	@Singleton
+	@CounterReceiverQueue
+	public Queue<Integer> getQueue() {
+		return newConcurrentLinkedQueue();
+	}
+
+	@Provides
+	@Singleton
+	@ReceiverWriter
+	public Writer getWriter(InitiatorConfig config) {
+		//FIXME
+		try {
+			return newBufferedWriter(config.getReceiverFilePath(), forName("UTF-8"));
+		} catch (IOException e) {
+			log.error("receiver writer creation error", e);
+			propagate(e);
+			return null;
+		}
 	}
 }

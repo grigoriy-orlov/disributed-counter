@@ -9,16 +9,13 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.util.concurrent.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static java.nio.charset.Charset.forName;
-import static java.nio.file.Files.newBufferedWriter;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Singleton
@@ -37,7 +34,6 @@ public class CounterSenderServiceImpl implements CounterSenderService {
 	private ExecutorService executor;
 
 	private AtomicInteger counter = new AtomicInteger();
-	private BufferedWriter writer;
 
 	private Integer maxCounter;
 
@@ -61,15 +57,6 @@ public class CounterSenderServiceImpl implements CounterSenderService {
 			//FIXME not atomicity
 			lock.unlock();
 		}
-
-		try {
-			if (null == writer) {
-				writer = newBufferedWriter(config.getSenderFilePath(), forName("UTF-8"));
-			}
-		} catch (IOException e) {
-			log.error("counter receiver init selector error", e);
-			throw new IllegalStateException("counter receiver starting error");
-		}
 	}
 
 	@Override
@@ -79,13 +66,7 @@ public class CounterSenderServiceImpl implements CounterSenderService {
 
 		if (null != executor) {
 			executor.shutdown();
-			try {
-				executor.awaitTermination(1, SECONDS);
-			} catch (InterruptedException e) {
-				log.error("termination waiting error", e);
-			}
 		}
-		closeQuietly(writer);
 		log.debug("shutDown complete");
 	}
 
@@ -106,7 +87,6 @@ public class CounterSenderServiceImpl implements CounterSenderService {
 				log.debug("get counter (value={}) and startUp task", next);
 				CounterSenderTask task = counterSenderTaskProvider.get();
 				task.setCounter(next);
-				task.setWriter(writer);
 				completionService.submit(task, 1);
 				t--;
 				if (t == 0) {

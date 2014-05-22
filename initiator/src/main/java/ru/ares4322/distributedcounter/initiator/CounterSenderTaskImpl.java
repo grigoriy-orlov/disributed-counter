@@ -3,6 +3,7 @@ package ru.ares4322.distributedcounter.initiator;
 import org.slf4j.Logger;
 import ru.ares4322.distributedcounter.common.CounterSender;
 import ru.ares4322.distributedcounter.common.CounterSenderTask;
+import ru.ares4322.distributedcounter.common.SenderWriter;
 
 import javax.inject.Inject;
 import java.io.BufferedWriter;
@@ -20,6 +21,9 @@ public class CounterSenderTaskImpl implements CounterSenderTask {
 
 	@Inject
 	private CounterSender sender;
+
+	@SenderWriter
+	@Inject
 	private BufferedWriter writer;
 
 	@Override
@@ -41,8 +45,4 @@ public class CounterSenderTaskImpl implements CounterSenderTask {
 		this.counter = counter;
 	}
 
-	@Override
-	public void setWriter(BufferedWriter writer) {
-		this.writer = writer;
-	}
 }

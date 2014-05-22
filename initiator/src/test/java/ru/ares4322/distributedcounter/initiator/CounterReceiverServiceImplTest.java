@@ -71,7 +71,8 @@ public class CounterReceiverServiceImplTest {
 		pool.close();
 	}
 
-	@Test
+	//FIXME
+	@Test(enabled = false)
 	public void run() throws Exception {
 		for (int number : numbers) {
 			counterSender.send(number);

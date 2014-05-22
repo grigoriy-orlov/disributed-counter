@@ -5,12 +5,12 @@ import org.slf4j.Logger;
 import ru.ares4322.distributedcounter.common.Controllable;
 import ru.ares4322.distributedcounter.common.CounterReceiverService;
 import ru.ares4322.distributedcounter.common.CounterSenderService;
+import ru.ares4322.distributedcounter.common.SorterService;
 
 import javax.inject.Inject;
 import java.util.concurrent.ExecutorService;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 //TODO add double command checking
@@ -23,6 +23,9 @@ public class ControllableImpl implements Controllable {
 
 	@Inject
 	private CounterReceiverService receiverService;
+
+	@Inject
+	private SorterService sorterService;
 
 	//TODO move to module
 	private ExecutorService executor = newSingleThreadExecutor(
@@ -52,13 +55,9 @@ public class ControllableImpl implements Controllable {
 	public void exit() {
 		log.info("exit counter sender");
 		senderService.shutDown();
+		sorterService.exit();
 		executor.shutdown();
-		try {
-			executor.awaitTermination(1, SECONDS);
-		} catch (InterruptedException e) {
-			log.error("termination waiting error", e);
-		}
 		//FIXME
-		//receiverService.stopAsync().awaitTerminated();
+		receiverService.stopAsync();
 	}
 }

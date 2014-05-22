@@ -8,13 +8,14 @@ import ru.ares4322.distributedcounter.common.*;
 import static com.google.inject.Guice.createInjector;
 import static com.google.inject.Stage.PRODUCTION;
 import static java.lang.System.exit;
+import static java.lang.Thread.sleep;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class App {
 
 	private static final Logger log = getLogger(App.class);
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 
 		Injector injector = null;
 		try {
@@ -23,6 +24,7 @@ public class App {
 				new ConfigModule(args),
 				new CliModule(),
 				new ConnectionPoolModule(),
+				new SorterModule(),
 				new CounterReceiverModule(),
 				new CounterSenderModule()
 			);
@@ -39,13 +41,17 @@ public class App {
 		CounterReceiverService receiverService = injector.getInstance(CounterReceiverService.class);
 		CounterSenderService senderService = injector.getInstance(CounterSenderService.class);
 		CliCommandReaderService commandReaderService = injector.getInstance(CliCommandReaderService.class);
+		SorterService sorterService = injector.getInstance(SorterService.class);
 		Controllable controllable = injector.getInstance(Controllable.class);
 
 		receiverService.startAsync().awaitRunning();
 		pool.init();
 		senderService.init();
 		controllable.init();
+		sorterService.start();
 		commandReaderService.run();
+		//FIXME
+		sleep(2000);
 		exit(0);
 	}
 }
