@@ -18,7 +18,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 import static org.mockito.Mockito.*;
-import static ru.ares4322.distributedcounter.common.Utils.intToNetworkByteArray;
+import static ru.ares4322.distributedcounter.common.util.Utils.intToNetworkByteArray;
 import static ru.ares4322.distributedcounter.initiator.cfg.CliParams.*;
 
 @Guice(

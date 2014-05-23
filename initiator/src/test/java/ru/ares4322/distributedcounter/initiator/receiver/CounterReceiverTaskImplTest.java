@@ -1,13 +1,12 @@
 package ru.ares4322.distributedcounter.initiator.receiver;
 
 import org.testng.annotations.Test;
-import ru.ares4322.distributedcounter.initiator.receiver.CounterReceiverTaskImpl;
 
 import java.io.Writer;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static ru.ares4322.distributedcounter.common.Utils.intToNetworkByteArray;
+import static ru.ares4322.distributedcounter.common.util.Utils.intToNetworkByteArray;
 
 public class CounterReceiverTaskImplTest {
 

@@ -9,7 +9,7 @@ import java.util.Queue;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.slf4j.LoggerFactory.getLogger;
-import static ru.ares4322.distributedcounter.common.Utils.networkByteArrayToInt;
+import static ru.ares4322.distributedcounter.common.util.Utils.networkByteArrayToInt;
 
 class CounterReceiverTaskImpl implements CounterReceiverTask {
 

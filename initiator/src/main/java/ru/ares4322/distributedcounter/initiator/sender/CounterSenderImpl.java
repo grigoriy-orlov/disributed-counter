@@ -10,7 +10,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import static ru.ares4322.distributedcounter.common.Utils.intToNetworkByteArray;
+import static ru.ares4322.distributedcounter.common.util.Utils.intToNetworkByteArray;
 
 //TODO Singleton is right?
 class CounterSenderImpl implements CounterSender {
