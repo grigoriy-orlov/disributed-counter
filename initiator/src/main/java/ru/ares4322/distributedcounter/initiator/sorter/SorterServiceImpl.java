@@ -17,30 +17,30 @@ class SorterServiceImpl implements SorterService {
 	private static final Logger log = getLogger(SorterServiceImpl.class);
 
 	private final Provider<SorterTask> sorterTaskProvider;
-	private final ExecutorService executor;
+	private final ExecutorService taskExecutor;
 
 	@Inject
 	public SorterServiceImpl(
 		Provider<SorterTask> sorterTaskProvider,
-		@SorterExecutor ExecutorService executor
+		@SorterExecutor ExecutorService taskExecutor
 	) {
 		this.sorterTaskProvider = sorterTaskProvider;
-		this.executor = executor;
+		this.taskExecutor = taskExecutor;
 	}
 
 	@Override
-	public void start() {
+	public void startUp() {
 		log.debug("start");
 
 		//TODO move to module
-		executor.execute(sorterTaskProvider.get());
+		taskExecutor.execute(sorterTaskProvider.get());
 	}
 
 	@Override
-	public void exit() {
+	public void shutDown() {
 		log.debug("destroy");
 
 		sorterTaskProvider.get().exit();
-		executor.shutdown();
+		taskExecutor.shutdown();
 	}
 }

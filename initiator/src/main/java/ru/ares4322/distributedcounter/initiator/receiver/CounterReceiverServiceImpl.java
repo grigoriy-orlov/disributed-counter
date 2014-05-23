@@ -1,5 +1,6 @@
 package ru.ares4322.distributedcounter.initiator.receiver;
 
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
 import ru.ares4322.distributedcounter.common.receiver.CounterReceiverExecutor;
 import ru.ares4322.distributedcounter.common.receiver.CounterReceiverService;
@@ -22,18 +23,21 @@ import static java.nio.channels.SelectionKey.OP_ACCEPT;
 import static java.nio.channels.SelectionKey.OP_READ;
 import static java.nio.channels.ServerSocketChannel.open;
 import static java.nio.channels.spi.SelectorProvider.provider;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.slf4j.LoggerFactory.getLogger;
 
-//TODO move from Service
 class CounterReceiverServiceImpl implements CounterReceiverService {
 
 	private static final Logger log = getLogger(CounterReceiverServiceImpl.class);
 
 	private final InitiatorConfig config;
-	private final ExecutorService executor;
-	private final Provider<CounterReceiverTaskImpl> counterReceiverTaskProvider;
-
+	private final ExecutorService taskExecutor;
+	private final Provider<CounterReceiverTaskImpl> taskProvider;
+	//TODO move to module
+	private final ExecutorService serviceExecutor = newSingleThreadExecutor(
+		new BasicThreadFactory.Builder().namingPattern("CounterReceiverService-%s").build()
+	);
 	private ServerSocketChannel serverChannel;
 	private Selector selector;
 	private ByteBuffer readBuffer = allocate(8192);    //TODO set appropriate size
@@ -42,18 +46,17 @@ class CounterReceiverServiceImpl implements CounterReceiverService {
 	@Inject
 	public CounterReceiverServiceImpl(
 		InitiatorConfig config,
-		@CounterReceiverExecutor ExecutorService executor,
-		Provider<CounterReceiverTaskImpl> counterReceiverTaskProvider
+		@CounterReceiverExecutor ExecutorService taskExecutor,
+		Provider<CounterReceiverTaskImpl> taskProvider
 	) {
 		this.config = config;
-		this.executor = executor;
-		this.counterReceiverTaskProvider = counterReceiverTaskProvider;
+		this.taskExecutor = taskExecutor;
+		this.taskProvider = taskProvider;
 	}
 
 	@PostConstruct
-	public void startUp() throws IllegalStateException {
-		log.debug("startUp");
-		inProgress = true;
+	public void init() throws IllegalStateException {
+		log.debug("init");
 
 		try {
 			this.selector = this.initSelector();
@@ -63,14 +66,25 @@ class CounterReceiverServiceImpl implements CounterReceiverService {
 		}
 	}
 
+	@Override
+	public void startUp() {
+		log.debug("startUp");
+		inProgress = true;
+		serviceExecutor.execute(this);
+	}
+
 	public void shutDown() {
 		log.debug("shutDown");
 		inProgress = false;
 
-		if (executor != null) {
-			executor.shutdown();
+		if (taskExecutor != null) {
+			taskExecutor.shutdown();
+		}
+		if (serviceExecutor != null) {
+			serviceExecutor.shutdown();
 		}
 		closeQuietly(selector);
+		closeQuietly(serverChannel);
 	}
 
 	//TODO make more concise way of exception handling
@@ -162,9 +176,9 @@ class CounterReceiverServiceImpl implements CounterReceiverService {
 		while (numRead >= 4) {
 			byte[] data = new byte[4];
 			arraycopy(readBuffer.array(), i, data, 0, 4);
-			CounterReceiverTask task = counterReceiverTaskProvider.get();
+			CounterReceiverTask task = taskProvider.get();
 			task.setData(data);
-			executor.execute(task);
+			taskExecutor.execute(task);
 			i += 4;
 			numRead -= 4;
 		}

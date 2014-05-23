@@ -80,7 +80,7 @@ public class CounterSenderReceiverTest {
 		senderService.setMaxCounter(100);
 
 		pool.init();
-		sorterService.start();
+		sorterService.startUp();
 		controllable.start();
 
 		sleep(100);
@@ -108,7 +108,7 @@ public class CounterSenderReceiverTest {
 	public void tearDown() throws Exception {
 		controllable.exit();
 		pool.close();
-		sorterService.exit();
+		sorterService.shutDown();
 	}
 
 	private void assertFileData(Path receiverFilePath, Path senderFilePath) throws IOException {

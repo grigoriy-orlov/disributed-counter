@@ -1,10 +1,10 @@
 package ru.ares4322.distributedcounter.initiator.sender;
 
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
 import ru.ares4322.distributedcounter.common.sender.CounterSenderExecutor;
 import ru.ares4322.distributedcounter.common.sender.CounterSenderService;
 import ru.ares4322.distributedcounter.common.sender.CounterSenderTask;
-import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -16,15 +16,19 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static org.slf4j.LoggerFactory.getLogger;
 
 class CounterSenderServiceImpl implements CounterSenderService {
 
 	private static final Logger log = getLogger(CounterSenderServiceImpl.class);
 
-	private final InitiatorConfig config;
 	private final Provider<CounterSenderTaskImpl> counterSenderTaskProvider;
-	private final ExecutorService executor;
+	private final ExecutorService taskExecutor;
+	//TODO move to module
+	private final ExecutorService serviceExecutor = newSingleThreadExecutor(
+		new BasicThreadFactory.Builder().namingPattern("CounterSenderService-%s").build()
+	);
 
 	private AtomicInteger counter = new AtomicInteger();
 	private Integer maxCounter;
@@ -33,13 +37,11 @@ class CounterSenderServiceImpl implements CounterSenderService {
 
 	@Inject
 	public CounterSenderServiceImpl(
-		InitiatorConfig config,
 		Provider<CounterSenderTaskImpl> counterSenderTaskProvider,
-		@CounterSenderExecutor ExecutorService executor
+		@CounterSenderExecutor ExecutorService taskExecutor
 	) {
-		this.config = config;
 		this.counterSenderTaskProvider = counterSenderTaskProvider;
-		this.executor = executor;
+		this.taskExecutor = taskExecutor;
 	}
 
 	@Override
@@ -59,6 +61,7 @@ class CounterSenderServiceImpl implements CounterSenderService {
 			//FIXME not atomicity
 			lock.unlock();
 		}
+		serviceExecutor.execute(this);
 	}
 
 	@Override
@@ -66,8 +69,11 @@ class CounterSenderServiceImpl implements CounterSenderService {
 		log.debug("shutDown");
 		lock.lock();
 
-		if (null != executor) {
-			executor.shutdown();
+		if (null != taskExecutor) {
+			taskExecutor.shutdown();
+		}
+		if (null != serviceExecutor) {
+			serviceExecutor.shutdown();
 		}
 		log.debug("shutDown complete");
 	}
@@ -78,7 +84,7 @@ class CounterSenderServiceImpl implements CounterSenderService {
 		log.debug("run");
 		final int tasks = 3;
 		int t = tasks;
-		ExecutorCompletionService<Integer> completionService = new ExecutorCompletionService<>(executor, new ArrayBlockingQueue<Future<Integer>>(tasks));
+		ExecutorCompletionService<Integer> completionService = new ExecutorCompletionService<>(taskExecutor, new ArrayBlockingQueue<Future<Integer>>(tasks));
 		while (true) {
 			lock.lock();
 			try {
@@ -86,7 +92,7 @@ class CounterSenderServiceImpl implements CounterSenderService {
 				if (maxCounter != null && next > maxCounter) {
 					break;
 				}
-				log.debug("get counter (value={}) and startUp task", next);
+				log.debug("get counter (value={}) and init task", next);
 				CounterSenderTask task = counterSenderTaskProvider.get();
 				task.setCounter(next);
 				completionService.submit(task, 1);

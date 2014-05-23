@@ -69,7 +69,7 @@ public class CounterReceiverServiceImplTest {
 
 	@BeforeClass
 	public void setUp() throws Exception {
-		receiverService.startUp();
+		receiverService.init();
 		pool.init();
 		executor.execute(receiverService);
 	}
