@@ -1,0 +1,8 @@
+ must
+ - move @Singleton from classes to Modules
+ - move Executors to module
+ - move Executor from ControllableImpl
+ - move guava Service
+ may be
+ - config: from class to properties
+ - impl SEDA with queues
