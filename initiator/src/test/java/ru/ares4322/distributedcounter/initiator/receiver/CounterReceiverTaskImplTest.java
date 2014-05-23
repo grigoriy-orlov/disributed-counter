@@ -14,7 +14,7 @@ public class CounterReceiverTaskImplTest {
 	public void run() throws Exception {
 		byte[] data = intToNetworkByteArray(10000);
 		Writer mock = mock(Writer.class);
-		CounterReceiverTaskImpl task = new CounterReceiverTaskImpl();
+		CounterReceiverTaskImpl task = new CounterReceiverTaskImpl(null);
 		task.setData(data);
 		task.run();
 

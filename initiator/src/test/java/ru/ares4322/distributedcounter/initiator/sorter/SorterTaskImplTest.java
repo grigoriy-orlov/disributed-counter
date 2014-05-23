@@ -1,7 +1,6 @@
 package ru.ares4322.distributedcounter.initiator.sorter;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Injector;
 import com.google.inject.Provides;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Guice;
@@ -12,6 +11,7 @@ import ru.ares4322.distributedcounter.common.sorter.WriterExecutor;
 import ru.ares4322.distributedcounter.common.sorter.WriterTask;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.util.ArrayDeque;
 import java.util.LinkedList;
@@ -86,9 +86,12 @@ public class SorterTaskImplTest {
 		}
 
 		@Provides
-		public SorterTask getSorterTask(Injector injector) {
-			SorterTaskImpl sorterTask = new SorterTaskImpl();
-			injector.injectMembers(sorterTask);
+		public SorterTask getSorterTask(
+			@CounterReceiverQueue Queue<Integer> queue,
+			@WriterExecutor ExecutorService executor,
+			Provider<WriterTask> writerTaskProvider
+		) {
+			SorterTaskImpl sorterTask = new SorterTaskImpl(queue, executor, writerTaskProvider);
 			return sorterTask;
 		}
 

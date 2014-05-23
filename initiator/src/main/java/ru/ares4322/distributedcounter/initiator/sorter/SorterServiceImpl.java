@@ -16,12 +16,17 @@ class SorterServiceImpl implements SorterService {
 
 	private static final Logger log = getLogger(SorterServiceImpl.class);
 
-	@Inject
-	private Provider<SorterTask> sorterTaskProvider;
+	private final Provider<SorterTask> sorterTaskProvider;
+	private final ExecutorService executor;
 
 	@Inject
-	@SorterExecutor
-	private ExecutorService executor;
+	public SorterServiceImpl(
+		Provider<SorterTask> sorterTaskProvider,
+		@SorterExecutor ExecutorService executor
+	) {
+		this.sorterTaskProvider = sorterTaskProvider;
+		this.executor = executor;
+	}
 
 	@Override
 	public void start() {

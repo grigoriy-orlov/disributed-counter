@@ -30,20 +30,25 @@ class CounterReceiverServiceImpl implements CounterReceiverService {
 
 	private static final Logger log = getLogger(CounterReceiverServiceImpl.class);
 
-	@Inject
-	private InitiatorConfig config;
-
-	@Inject
-	@CounterReceiverExecutor
-	private ExecutorService executor;
-
-	@Inject
-	private Provider<CounterReceiverTaskImpl> counterReceiverTaskProvider;
+	private final InitiatorConfig config;
+	private final ExecutorService executor;
+	private final Provider<CounterReceiverTaskImpl> counterReceiverTaskProvider;
 
 	private ServerSocketChannel serverChannel;
 	private Selector selector;
 	private ByteBuffer readBuffer = allocate(8192);    //TODO set appropriate size
 	private boolean inProgress;
+
+	@Inject
+	public CounterReceiverServiceImpl(
+		InitiatorConfig config,
+		@CounterReceiverExecutor ExecutorService executor,
+		Provider<CounterReceiverTaskImpl> counterReceiverTaskProvider
+	) {
+		this.config = config;
+		this.executor = executor;
+		this.counterReceiverTaskProvider = counterReceiverTaskProvider;
+	}
 
 	@PostConstruct
 	public void startUp() throws IllegalStateException {

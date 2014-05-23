@@ -17,14 +17,19 @@ class CounterSenderTaskImpl implements CounterSenderTask {
 
 	private static final Logger log = getLogger(CounterSenderTaskImpl.class);
 
+	private final CounterSender sender;
+	private final BufferedWriter writer;
+
 	private int counter;
 
 	@Inject
-	private CounterSender sender;
-
-	@SenderWriter
-	@Inject
-	private BufferedWriter writer;
+	public CounterSenderTaskImpl(
+		CounterSender sender,
+		@SenderWriter BufferedWriter writer
+	) {
+		this.sender = sender;
+		this.writer = writer;
+	}
 
 	@Override
 	public void run() {

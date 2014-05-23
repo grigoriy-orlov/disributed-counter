@@ -18,24 +18,28 @@ class ControllableImpl implements Controllable {
 
 	private static final Logger log = getLogger(ControllableImpl.class);
 
-	@Inject
-	private CounterSenderService senderService;
-
-	@Inject
-	private CounterReceiverService receiverService;
-
-	@Inject
-	private SorterService sorterService;
-
+	private final CounterSenderService senderService;
+	private final CounterReceiverService receiverService;
+	private final SorterService sorterService;
 	//TODO move to module
-	private ExecutorService senderServiceExecutor = newSingleThreadExecutor(
+	private final ExecutorService senderServiceExecutor = newSingleThreadExecutor(
 		new BasicThreadFactory.Builder().namingPattern("CounterSenderService-%s").build()
 	);
-
 	//TODO move to module
-	private ExecutorService receiverServiceExecutor = newSingleThreadExecutor(
+	private final ExecutorService receiverServiceExecutor = newSingleThreadExecutor(
 		new BasicThreadFactory.Builder().namingPattern("CounterReceiverService-%s").build()
 	);
+
+	@Inject
+	public ControllableImpl(
+		CounterSenderService senderService,
+		CounterReceiverService receiverService,
+		SorterService sorterService
+	) {
+		this.senderService = senderService;
+		this.receiverService = receiverService;
+		this.sorterService = sorterService;
+	}
 
 	@Override
 	public void init() {

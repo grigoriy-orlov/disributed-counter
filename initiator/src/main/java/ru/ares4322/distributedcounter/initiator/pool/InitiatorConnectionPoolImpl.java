@@ -6,7 +6,6 @@ import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.net.SocketFactory;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -22,10 +21,14 @@ class InitiatorConnectionPoolImpl implements ConnectionPool {
 
 	private static final Logger log = getLogger(InitiatorConnectionPoolImpl.class);
 
+	private final InitiatorConfig config;
+
 	private BlockingQueue<Socket> queue;
 
 	@Inject
-	InitiatorConfig config;
+	public InitiatorConnectionPoolImpl(InitiatorConfig config) {
+		this.config = config;
+	}
 
 	@PostConstruct
 	public void init() {

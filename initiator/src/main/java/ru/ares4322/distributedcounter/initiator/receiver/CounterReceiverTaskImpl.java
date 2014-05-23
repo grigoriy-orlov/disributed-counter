@@ -15,11 +15,16 @@ class CounterReceiverTaskImpl implements CounterReceiverTask {
 
 	private static final Logger log = getLogger(CounterReceiverServiceImpl.class);
 
-	@Inject
-	@CounterReceiverQueue
-	private Queue<Integer> queue;
+	private final Queue<Integer> queue;
 
 	private byte[] data;
+
+	@Inject
+	public CounterReceiverTaskImpl(
+		@CounterReceiverQueue Queue<Integer> queue
+	) {
+		this.queue = queue;
+	}
 
 
 	@Override

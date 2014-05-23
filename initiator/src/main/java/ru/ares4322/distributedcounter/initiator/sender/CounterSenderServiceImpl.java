@@ -22,22 +22,25 @@ class CounterSenderServiceImpl implements CounterSenderService {
 
 	private static final Logger log = getLogger(CounterSenderServiceImpl.class);
 
-	@Inject
-	private InitiatorConfig config;
-
-	@Inject
-	private Provider<CounterSenderTaskImpl> counterSenderTaskProvider;
-
-	@Inject
-	@CounterSenderExecutor
-	private ExecutorService executor;
+	private final InitiatorConfig config;
+	private final Provider<CounterSenderTaskImpl> counterSenderTaskProvider;
+	private final ExecutorService executor;
 
 	private AtomicInteger counter = new AtomicInteger();
-
 	private Integer maxCounter;
-
 	//maybe two locks
-	ReentrantLock lock = new ReentrantLock(true);
+	private ReentrantLock lock = new ReentrantLock(true);
+
+	@Inject
+	public CounterSenderServiceImpl(
+		InitiatorConfig config,
+		Provider<CounterSenderTaskImpl> counterSenderTaskProvider,
+		@CounterSenderExecutor ExecutorService executor
+	) {
+		this.config = config;
+		this.counterSenderTaskProvider = counterSenderTaskProvider;
+		this.executor = executor;
+	}
 
 	@Override
 	public void init() {

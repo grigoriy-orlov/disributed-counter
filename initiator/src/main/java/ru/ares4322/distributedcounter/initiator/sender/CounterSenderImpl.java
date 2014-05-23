@@ -17,8 +17,12 @@ class CounterSenderImpl implements CounterSender {
 
 	private static final Logger log = getLogger(CounterSenderImpl.class);
 
+	private final ConnectionPool pool;
+
 	@Inject
-	private ConnectionPool pool;
+	public CounterSenderImpl(ConnectionPool pool) {
+		this.pool = pool;
+	}
 
 	@Override
 	public void send(int counter) {

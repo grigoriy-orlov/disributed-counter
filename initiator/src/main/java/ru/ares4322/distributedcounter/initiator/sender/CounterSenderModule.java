@@ -1,7 +1,6 @@
 package ru.ares4322.distributedcounter.initiator.sender;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Injector;
 import com.google.inject.Provides;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
@@ -56,9 +55,11 @@ public class CounterSenderModule extends AbstractModule {
 	}
 
 	@Provides
-	public CounterSenderTask getCounterSenderTask(Injector injector) {
-		CounterSenderTaskImpl counterSenderTask = new CounterSenderTaskImpl();
-		injector.injectMembers(counterSenderTask);
+	public CounterSenderTask getCounterSenderTask(
+		CounterSender sender,
+		@SenderWriter BufferedWriter writer
+	) {
+		CounterSenderTaskImpl counterSenderTask = new CounterSenderTaskImpl(sender, writer);
 		return counterSenderTask;
 	}
 

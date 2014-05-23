@@ -4,7 +4,6 @@ import org.apache.commons.io.input.CloseShieldInputStream;
 import org.slf4j.Logger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,14 +12,18 @@ import static java.lang.System.in;
 import static org.slf4j.LoggerFactory.getLogger;
 
 //TODO maybe create specific implementations and move them to specific modules
-@Singleton
 public class CliCommandReaderImpl implements CliCommandReader {
 
 	private static final Logger log = getLogger(CliCommandReaderImpl.class);
 
-	@Inject
-	private Controllable controllable;
+	private final Controllable controllable;
+
 	private boolean isExit;
+
+	@Inject
+	public CliCommandReaderImpl(Controllable controllable) {
+		this.controllable = controllable;
+	}
 
 	@Override
 	public void readCommand() {

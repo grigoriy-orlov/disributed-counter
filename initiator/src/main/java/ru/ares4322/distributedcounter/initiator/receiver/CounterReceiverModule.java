@@ -58,8 +58,10 @@ public class CounterReceiverModule extends AbstractModule {
 	}
 
 	@Provides
-	public CounterReceiverTask getCounterReceiverTask() {
-		return new CounterReceiverTaskImpl();
+	public CounterReceiverTask getCounterReceiverTask(
+		@CounterReceiverQueue Queue<Integer> queue
+	) {
+		return new CounterReceiverTaskImpl(queue);
 	}
 
 	@Provides

@@ -12,8 +12,12 @@ public class CliCommandReaderService {
 
 	private static final Logger log = getLogger(CliCommandReaderService.class);
 
+	private final CliCommandReader reader;
+
 	@Inject
-	private CliCommandReader reader;
+	public CliCommandReaderService(CliCommandReader reader) {
+		this.reader = reader;
+	}
 
 	public void run() {
 		log.debug("startUp cli command reading");

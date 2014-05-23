@@ -18,27 +18,28 @@ class SorterTaskImpl implements SorterTask {
 
 	private static final Logger log = getLogger(SorterTaskImpl.class);
 
-	@Inject
-	@CounterReceiverQueue
-	private Queue<Integer> queue;
-
-	@Inject
-	@WriterExecutor
-	private ExecutorService executor;
-
-	@Inject
-	private Provider<WriterTask> writerTaskProvider;
+	private final Queue<Integer> queue;
+	private final ExecutorService executor;
+	private final Provider<WriterTask> writerTaskProvider;
 
 	//TODO move to config
 	static int intervalLength = 10000;
-
 	private int curIntervalCounter;
 	private int nextIntervalCounter;
-
 	private int curIntervalStartNum;
 	private int nextIntervalStartNum = intervalLength;
-
 	private volatile boolean inWork = true;
+
+	@Inject
+	public SorterTaskImpl(
+		@CounterReceiverQueue Queue<Integer> queue,
+		@WriterExecutor ExecutorService executor,
+		Provider<WriterTask> writerTaskProvider
+	) {
+		this.queue = queue;
+		this.executor = executor;
+		this.writerTaskProvider = writerTaskProvider;
+	}
 
 
 	@Override

@@ -15,12 +15,17 @@ class WriterTaskImpl implements WriterTask {
 
 	private static final Logger log = getLogger(WriterTaskImpl.class);
 
-	@Inject
-	@ReceiverWriter
-	private Writer writer;
+	private final Writer writer;
 
 	private int from;
 	private int length;
+
+	@Inject
+	public WriterTaskImpl(
+		@ReceiverWriter Writer writer
+	) {
+		this.writer = writer;
+	}
 
 	@Override
 	public void run() {

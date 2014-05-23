@@ -1,13 +1,16 @@
 package ru.ares4322.distributedcounter.initiator.sorter;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Injector;
 import com.google.inject.Provides;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
+import ru.ares4322.distributedcounter.common.receiver.CounterReceiverQueue;
 import ru.ares4322.distributedcounter.common.sorter.*;
 
+import javax.inject.Provider;
 import javax.inject.Singleton;
+import java.io.Writer;
+import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 
 import static com.google.inject.Scopes.SINGLETON;
@@ -25,24 +28,28 @@ public class SorterModule extends AbstractModule {
 		binder()
 			.bind(SorterService.class)
 			.to(SorterServiceImpl.class)
-			.in(SINGLETON);;
+			.in(SINGLETON);
 
 		log.debug("finish configure");
 	}
 
 	@Provides
 	@Singleton
-	public SorterTask getSorterTask(Injector injector) {
-		SorterTaskImpl sorterTask = new SorterTaskImpl();
-		injector.injectMembers(sorterTask);
+	public SorterTask getSorterTask(
+		@CounterReceiverQueue Queue<Integer> queue,
+		@WriterExecutor ExecutorService executor,
+		Provider<WriterTask> writerTaskProvider
+	) {
+		SorterTaskImpl sorterTask = new SorterTaskImpl(queue, executor, writerTaskProvider);
 		return sorterTask;
 	}
 
 	@Provides
 	@Singleton
-	public WriterTask getWriterTask(Injector injector) {
-		WriterTaskImpl writerTask = new WriterTaskImpl();
-		injector.injectMembers(writerTask);
+	public WriterTask getWriterTask(
+		@ReceiverWriter Writer writer
+	) {
+		WriterTaskImpl writerTask = new WriterTaskImpl(writer);
 		return writerTask;
 	}
 
