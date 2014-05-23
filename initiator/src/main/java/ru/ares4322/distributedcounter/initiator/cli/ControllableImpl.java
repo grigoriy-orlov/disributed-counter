@@ -28,15 +28,22 @@ class ControllableImpl implements Controllable {
 	private SorterService sorterService;
 
 	//TODO move to module
-	private ExecutorService executor = newSingleThreadExecutor(
+	private ExecutorService senderServiceExecutor = newSingleThreadExecutor(
 		new BasicThreadFactory.Builder().namingPattern("CounterSenderService-%s").build()
+	);
+
+	//TODO move to module
+	private ExecutorService receiverServiceExecutor = newSingleThreadExecutor(
+		new BasicThreadFactory.Builder().namingPattern("CounterReceiverService-%s").build()
 	);
 
 	@Override
 	public void init() {
 		log.info("init counter sender");
 		senderService.init();
-		executor.execute(senderService);
+		receiverService.startUp();
+		senderServiceExecutor.execute(senderService);
+		receiverServiceExecutor.execute(receiverService);
 	}
 
 	@Override
@@ -55,9 +62,9 @@ class ControllableImpl implements Controllable {
 	public void exit() {
 		log.info("exit counter sender");
 		senderService.shutDown();
+		receiverService.shutDown();
 		sorterService.exit();
-		executor.shutdown();
-		//FIXME
-		receiverService.stopAsync();
+		senderServiceExecutor.shutdown();
+		receiverServiceExecutor.shutdown();
 	}
 }

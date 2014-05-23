@@ -79,7 +79,6 @@ public class CounterSenderReceiverTest {
 
 		senderService.setMaxCounter(100);
 
-		receiverService.startAsync().awaitRunning();
 		pool.init();
 		sorterService.start();
 		controllable.start();
@@ -101,7 +100,6 @@ public class CounterSenderReceiverTest {
 		sleep(100);
 
 		controllable.stop();
-		receiverService.stopAsync();
 
 		assertFileData(config.getReceiverFilePath(), config.getSenderFilePath());
 	}

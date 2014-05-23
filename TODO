@@ -2,7 +2,13 @@
  - move @Singleton from classes to Modules
  - move Executors to module
  - move Executor from ControllableImpl
- - move guava Service
+ - pool like service
+ - services must be undependent on startup
+ - add state checking in Cli
+ - common service interface
  may be
  - config: from class to properties
  - impl SEDA with queues
+ - config per service
+ - add service init-on-startup (@PostConstruct)
+ - move service executor to service

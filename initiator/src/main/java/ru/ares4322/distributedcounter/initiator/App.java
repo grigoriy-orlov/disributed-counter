@@ -7,8 +7,6 @@ import ru.ares4322.distributedcounter.common.cfg.StartParamsParserException;
 import ru.ares4322.distributedcounter.common.cli.CliCommandReaderService;
 import ru.ares4322.distributedcounter.common.cli.Controllable;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
-import ru.ares4322.distributedcounter.common.receiver.CounterReceiverService;
-import ru.ares4322.distributedcounter.common.sender.CounterSenderService;
 import ru.ares4322.distributedcounter.common.sorter.SorterService;
 import ru.ares4322.distributedcounter.initiator.cfg.ConfigModule;
 import ru.ares4322.distributedcounter.initiator.cli.CliModule;
@@ -30,6 +28,7 @@ public class App {
 	public static void main(String[] args) throws InterruptedException {
 
 		Injector injector = null;
+
 		try {
 			injector = createInjector(
 				PRODUCTION,
@@ -50,16 +49,12 @@ public class App {
 			exit(1);
 		}
 		ConnectionPool pool = injector.getInstance(ConnectionPool.class);
-		CounterReceiverService receiverService = injector.getInstance(CounterReceiverService.class);
-		CounterSenderService senderService = injector.getInstance(CounterSenderService.class);
 		CliCommandReaderService commandReaderService = injector.getInstance(CliCommandReaderService.class);
 		SorterService sorterService = injector.getInstance(SorterService.class);
 		Controllable controllable = injector.getInstance(Controllable.class);
 
-		receiverService.startAsync().awaitRunning();
-		pool.init();
-		senderService.init();
 		controllable.init();
+		pool.init();
 		sorterService.start();
 		commandReaderService.run();
 		//FIXME

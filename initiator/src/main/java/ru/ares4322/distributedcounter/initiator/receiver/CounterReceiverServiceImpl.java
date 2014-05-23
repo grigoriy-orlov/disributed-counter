@@ -1,6 +1,5 @@
 package ru.ares4322.distributedcounter.initiator.receiver;
 
-import com.google.common.util.concurrent.AbstractExecutionThreadService;
 import org.slf4j.Logger;
 import ru.ares4322.distributedcounter.common.receiver.CounterReceiverExecutor;
 import ru.ares4322.distributedcounter.common.receiver.CounterReceiverService;
@@ -27,7 +26,7 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.slf4j.LoggerFactory.getLogger;
 
 //TODO move from Service
-class CounterReceiverServiceImpl extends AbstractExecutionThreadService implements CounterReceiverService {
+class CounterReceiverServiceImpl implements CounterReceiverService {
 
 	private static final Logger log = getLogger(CounterReceiverServiceImpl.class);
 
@@ -40,7 +39,6 @@ class CounterReceiverServiceImpl extends AbstractExecutionThreadService implemen
 
 	@Inject
 	private Provider<CounterReceiverTaskImpl> counterReceiverTaskProvider;
-	;
 
 	private ServerSocketChannel serverChannel;
 	private Selector selector;
@@ -48,7 +46,6 @@ class CounterReceiverServiceImpl extends AbstractExecutionThreadService implemen
 	private boolean inProgress;
 
 	@PostConstruct
-	@Override
 	public void startUp() throws IllegalStateException {
 		log.debug("startUp");
 		inProgress = true;
@@ -61,7 +58,6 @@ class CounterReceiverServiceImpl extends AbstractExecutionThreadService implemen
 		}
 	}
 
-	@Override
 	public void shutDown() {
 		log.debug("shutDown");
 		inProgress = false;

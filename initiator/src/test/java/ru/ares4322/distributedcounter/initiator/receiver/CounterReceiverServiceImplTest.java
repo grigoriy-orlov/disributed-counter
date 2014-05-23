@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
 
 import static com.beust.jcommander.internal.Lists.newArrayList;
 import static com.google.common.collect.FluentIterable.from;
@@ -31,6 +32,7 @@ import static java.nio.charset.Charset.forName;
 import static java.nio.file.Files.readAllLines;
 import static java.util.Arrays.asList;
 import static java.util.Collections.sort;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.testng.Assert.*;
 import static ru.ares4322.distributedcounter.initiator.cfg.CliParams.*;
@@ -63,16 +65,20 @@ public class CounterReceiverServiceImplTest {
 
 	private Integer[] numbers = new Integer[]{1, 2, 3, 4, 5};
 
+	private ExecutorService executor = newSingleThreadExecutor();
+
 	@BeforeClass
 	public void setUp() throws Exception {
-		receiverService.startAsync().awaitRunning();
-
+		receiverService.startUp();
 		pool.init();
+		executor.execute(receiverService);
 	}
 
 	@AfterClass
 	public void tearDown() throws Exception {
 		pool.close();
+		receiverService.shutDown();
+		executor.shutdown();
 	}
 
 	//FIXME
@@ -86,7 +92,6 @@ public class CounterReceiverServiceImplTest {
 
 		assertFileData(config.getReceiverFilePath());
 
-		receiverService.stopAsync();    //TODO need awaitTerminated?
 	}
 
 	//TODO beautify
