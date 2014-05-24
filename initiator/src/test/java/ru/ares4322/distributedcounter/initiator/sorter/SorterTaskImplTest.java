@@ -9,6 +9,7 @@ import ru.ares4322.distributedcounter.common.receiver.ReceiverQueue;
 import ru.ares4322.distributedcounter.common.sorter.SorterTask;
 import ru.ares4322.distributedcounter.common.sorter.WriterExecutor;
 import ru.ares4322.distributedcounter.common.sorter.WriterTask;
+import ru.ares4322.distributedcounter.common.sorter.common.SorterTaskImpl;
 
 import javax.inject.Inject;
 import javax.inject.Provider;

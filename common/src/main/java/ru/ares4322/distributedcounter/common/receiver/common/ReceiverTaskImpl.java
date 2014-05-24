@@ -1,4 +1,4 @@
-package ru.ares4322.distributedcounter.initiator.receiver;
+package ru.ares4322.distributedcounter.common.receiver.common;
 
 import org.slf4j.Logger;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverTask;
@@ -10,7 +10,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static ru.ares4322.distributedcounter.common.util.Utils.networkByteArrayToInt;
 
-class ReceiverTaskImpl implements ReceiverTask {
+public class ReceiverTaskImpl implements ReceiverTask {
 
 	private static final Logger log = getLogger(ReceiverServiceImpl.class);
 

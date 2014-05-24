@@ -1,4 +1,4 @@
-package ru.ares4322.distributedcounter.initiator.sender;
+package ru.ares4322.distributedcounter.common.sender.common;
 
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
@@ -13,7 +13,7 @@ import java.util.concurrent.*;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static org.slf4j.LoggerFactory.getLogger;
 
-class SenderServiceImpl implements SenderService {
+public class SenderServiceImpl implements SenderService {
 
 	private static final Logger log = getLogger(SenderServiceImpl.class);
 

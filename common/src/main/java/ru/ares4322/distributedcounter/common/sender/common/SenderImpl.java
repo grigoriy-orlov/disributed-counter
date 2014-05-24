@@ -1,4 +1,4 @@
-package ru.ares4322.distributedcounter.initiator.sender;
+package ru.ares4322.distributedcounter.common.sender.common;
 
 import org.slf4j.Logger;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
@@ -12,8 +12,7 @@ import java.net.Socket;
 import static org.slf4j.LoggerFactory.getLogger;
 import static ru.ares4322.distributedcounter.common.util.Utils.intToNetworkByteArray;
 
-//TODO Singleton is right?
-class SenderImpl implements Sender {
+public class SenderImpl implements Sender {
 
 	private static final Logger log = getLogger(SenderImpl.class);
 
@@ -27,6 +26,7 @@ class SenderImpl implements Sender {
 	@Override
 	public void send(int counter) {
 		Socket socket;
+		//FIXME poll->take
 		while ((socket = pool.get()) == null) {
 		}
 

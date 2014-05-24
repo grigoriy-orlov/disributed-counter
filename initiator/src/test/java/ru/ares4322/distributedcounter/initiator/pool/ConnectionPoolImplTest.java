@@ -10,6 +10,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
+import ru.ares4322.distributedcounter.common.pool.common.ConnectionPoolImpl;
 import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
 
 import javax.inject.Inject;
@@ -35,11 +36,11 @@ import static org.testng.Assert.*;
 @Guice(modules = {
 	Jsr250Module.class,
 	CloseableModule.class,
-	InitiatorConnectionPoolImplTest.TestModule.class
+	ConnectionPoolImplTest.TestModule.class
 })
-public class InitiatorConnectionPoolImplTest {
+public class ConnectionPoolImplTest {
 
-	private static final Logger log = getLogger(InitiatorConnectionPoolImplTest.class);
+	private static final Logger log = getLogger(ConnectionPoolImplTest.class);
 
 	@Inject
 	private ConnectionPool pool;
@@ -124,7 +125,7 @@ public class InitiatorConnectionPoolImplTest {
 			binder().bind(Path.class).annotatedWith(named("senderFilePath")).toInstance(Paths.get(""));
 			binder().bind(Path.class).annotatedWith(named("receiverFilePath")).toInstance(Paths.get(""));
 
-			binder().bind(ConnectionPool.class).to(InitiatorConnectionPoolImpl.class);
+			binder().bind(ConnectionPool.class).to(ConnectionPoolImpl.class);
 
 			//TODO find more right way for this
 			socketServerExecutor = newSingleThreadExecutor();

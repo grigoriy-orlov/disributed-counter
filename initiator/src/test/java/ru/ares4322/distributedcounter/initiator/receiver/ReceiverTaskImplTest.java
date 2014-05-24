@@ -1,6 +1,7 @@
 package ru.ares4322.distributedcounter.initiator.receiver;
 
 import org.testng.annotations.Test;
+import ru.ares4322.distributedcounter.common.receiver.common.ReceiverTaskImpl;
 
 import java.io.Writer;
 

@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverExecutor;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverService;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverTask;
+import ru.ares4322.distributedcounter.common.receiver.common.ReceiverServiceImpl;
+import ru.ares4322.distributedcounter.common.receiver.common.ReceiverTaskImpl;
 import ru.ares4322.distributedcounter.initiator.ReceiverToSorterQueue;
 import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
 

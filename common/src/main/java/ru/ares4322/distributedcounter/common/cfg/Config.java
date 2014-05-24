@@ -5,12 +5,23 @@ public abstract class Config {
 	private final Integer receiverThreads;
 	private final Integer localServerPort;
 	private final String localServerAddress;
+	private final Integer remoteServerPort;
+	private final String remoteServerAddress;
 
-	protected Config(Integer senderThreads, Integer receiverThreads, Integer localServerPort, String localServerAddress) {
+	protected Config(
+		Integer senderThreads,
+		Integer receiverThreads,
+		Integer localServerPort,
+		String localServerAddress,
+		Integer remoteServerPort,
+		String remoteServerAddress
+	) {
 		this.senderThreads = senderThreads;
 		this.receiverThreads = receiverThreads;
 		this.localServerPort = localServerPort;
 		this.localServerAddress = localServerAddress;
+		this.remoteServerPort = remoteServerPort;
+		this.remoteServerAddress = remoteServerAddress;
 	}
 
 	public Integer getSenderThreads() {
@@ -29,6 +40,14 @@ public abstract class Config {
 		return localServerAddress;
 	}
 
+	public Integer getRemoteServerPort() {
+		return remoteServerPort;
+	}
+
+	public String getRemoteServerAddress() {
+		return remoteServerAddress;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -44,6 +63,10 @@ public abstract class Config {
 			return false;
 		if (senderThreads != null ? !senderThreads.equals(config.senderThreads) : config.senderThreads != null)
 			return false;
+		if (remoteServerAddress != null ? !remoteServerAddress.equals(config.remoteServerAddress) : config.remoteServerAddress != null)
+			return false;
+		if (remoteServerPort != null ? !remoteServerPort.equals(config.remoteServerPort) : config.remoteServerPort != null)
+			return false;
 
 		return true;
 	}
@@ -54,6 +77,8 @@ public abstract class Config {
 		result = 31 * result + (receiverThreads != null ? receiverThreads.hashCode() : 0);
 		result = 31 * result + (localServerPort != null ? localServerPort.hashCode() : 0);
 		result = 31 * result + (localServerAddress != null ? localServerAddress.hashCode() : 0);
+		result = 31 * result + (remoteServerPort != null ? remoteServerPort.hashCode() : 0);
+		result = 31 * result + (remoteServerAddress != null ? remoteServerAddress.hashCode() : 0);
 		return result;
 	}
 
@@ -62,6 +87,8 @@ public abstract class Config {
 		return "Config{" +
 			"senderThreads=" + senderThreads +
 			", receiverThreads=" + receiverThreads +
+			", remoteServerPort=" + remoteServerPort +
+			", remoteServerAddress='" + remoteServerAddress +
 			", localServerPort=" + localServerPort +
 			", localServerAddress='" + localServerAddress + '\'' +
 			'}';

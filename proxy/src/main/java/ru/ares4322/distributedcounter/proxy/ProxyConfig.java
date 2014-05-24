@@ -9,10 +9,8 @@ import javax.inject.Singleton;
 @Singleton
 public class ProxyConfig extends Config {
 
-	private final Integer initiatorServerPort;
-	private final String initiatorServerAddress;
-	private final Integer echoServerPort;
-	private final String echoServerAddress;
+	private final Integer otherServerPort;
+	private final String otherServerAddress;
 	private final Integer otherLocalServerPort;    //TODO add set of address-port pair
 	private final String otherLocalServerAddress;
 
@@ -22,36 +20,33 @@ public class ProxyConfig extends Config {
 		@Named("receiverThreads") Integer receiverThreads,
 		@Named("localServerPort") Integer localServerPort,
 		@Named("localServerAddress") String localServerAddress,
-		@Named("initiatorServerPort") Integer initiatorServerPort,
-		@Named("initiatorServerAddress") String initiatorServerAddress,
-		@Named("echoServerPort") Integer echoServerPort,
-		@Named("echoServerAddress") String echoServerAddress,
+		@Named("initiatorServerPort") Integer remoteServerPort,
+		@Named("initiatorServerAddress") String remoteServerAddress,
+		@Named("echoServerPort") Integer otherServerPort,
+		@Named("echoServerAddress") String otherServerAddress,
 		@Named("otherLocalServerPort") Integer otherLocalServerPort,
 		@Named("otherLocalServerAddress") String otherLocalServerAddress
 	) {
-		super(senderThreads, receiverThreads, localServerPort, localServerAddress);
-		this.initiatorServerPort = initiatorServerPort;
-		this.initiatorServerAddress = initiatorServerAddress;
-		this.echoServerPort = echoServerPort;
-		this.echoServerAddress = echoServerAddress;
+		super(
+			senderThreads,
+			receiverThreads,
+			localServerPort,
+			localServerAddress,
+			remoteServerPort,
+			remoteServerAddress
+		);
+		this.otherServerPort = otherServerPort;
+		this.otherServerAddress = otherServerAddress;
 		this.otherLocalServerPort = otherLocalServerPort;
 		this.otherLocalServerAddress = otherLocalServerAddress;
 	}
 
-	public Integer getInitiatorServerPort() {
-		return initiatorServerPort;
+	public Integer getOtherServerPort() {
+		return otherServerPort;
 	}
 
-	public String getInitiatorServerAddress() {
-		return initiatorServerAddress;
-	}
-
-	public Integer getEchoServerPort() {
-		return echoServerPort;
-	}
-
-	public String getEchoServerAddress() {
-		return echoServerAddress;
+	public String getOtherServerAddress() {
+		return otherServerAddress;
 	}
 
 	public Integer getOtherLocalServerPort() {
@@ -70,13 +65,9 @@ public class ProxyConfig extends Config {
 
 		ProxyConfig that = (ProxyConfig) o;
 
-		if (echoServerAddress != null ? !echoServerAddress.equals(that.echoServerAddress) : that.echoServerAddress != null)
+		if (otherServerAddress != null ? !otherServerAddress.equals(that.otherServerAddress) : that.otherServerAddress != null)
 			return false;
-		if (echoServerPort != null ? !echoServerPort.equals(that.echoServerPort) : that.echoServerPort != null)
-			return false;
-		if (initiatorServerAddress != null ? !initiatorServerAddress.equals(that.initiatorServerAddress) : that.initiatorServerAddress != null)
-			return false;
-		if (initiatorServerPort != null ? !initiatorServerPort.equals(that.initiatorServerPort) : that.initiatorServerPort != null)
+		if (otherServerPort != null ? !otherServerPort.equals(that.otherServerPort) : that.otherServerPort != null)
 			return false;
 		if (otherLocalServerAddress != null ? !otherLocalServerAddress.equals(that.otherLocalServerAddress) : that.otherLocalServerAddress != null)
 			return false;
@@ -89,10 +80,8 @@ public class ProxyConfig extends Config {
 	@Override
 	public int hashCode() {
 		int result = super.hashCode();
-		result = 31 * result + (initiatorServerPort != null ? initiatorServerPort.hashCode() : 0);
-		result = 31 * result + (initiatorServerAddress != null ? initiatorServerAddress.hashCode() : 0);
-		result = 31 * result + (echoServerPort != null ? echoServerPort.hashCode() : 0);
-		result = 31 * result + (echoServerAddress != null ? echoServerAddress.hashCode() : 0);
+		result = 31 * result + (otherServerPort != null ? otherServerPort.hashCode() : 0);
+		result = 31 * result + (otherServerAddress != null ? otherServerAddress.hashCode() : 0);
 		result = 31 * result + (otherLocalServerPort != null ? otherLocalServerPort.hashCode() : 0);
 		result = 31 * result + (otherLocalServerAddress != null ? otherLocalServerAddress.hashCode() : 0);
 		return result;
@@ -102,10 +91,8 @@ public class ProxyConfig extends Config {
 	public String toString() {
 		return "ProxyStartParams{" +
 			super.toString() +
-			", initiatorServerPort=" + initiatorServerPort +
-			", initiatorServerAddress='" + initiatorServerAddress + '\'' +
-			", echoServerPort=" + echoServerPort +
-			", echoServerAddress='" + echoServerAddress + '\'' +
+			", echoServerPort=" + otherServerPort +
+			", echoServerAddress='" + otherServerAddress + '\'' +
 			", otherLocalServerPort=" + otherLocalServerPort +
 			", otherLocalServerAddress='" + otherLocalServerAddress + '\'' +
 			'}';

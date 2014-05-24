@@ -1,10 +1,14 @@
 package ru.ares4322.distributedcounter.initiator.pool;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import org.slf4j.Logger;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
+import ru.ares4322.distributedcounter.common.pool.common.ConnectionPoolImpl;
+import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
 
-import static com.google.inject.Scopes.SINGLETON;
+import javax.inject.Singleton;
+
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class ConnectionPoolModule extends AbstractModule {
@@ -13,13 +17,11 @@ public class ConnectionPoolModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		log.debug("start configure ConnectionPoolModule");
+	}
 
-		binder()
-			.bind(ConnectionPool.class)
-			.to(InitiatorConnectionPoolImpl.class)
-			.in(SINGLETON);
-
-		log.debug("finish configure ConnectionPoolModule");
+	@Provides
+	@Singleton
+	public ConnectionPool getConnectionPool(InitiatorConfig config) {
+		return new ConnectionPoolImpl(config);
 	}
 }

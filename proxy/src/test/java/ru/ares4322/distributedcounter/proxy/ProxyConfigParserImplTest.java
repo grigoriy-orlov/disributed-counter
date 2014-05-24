@@ -17,10 +17,10 @@ public class ProxyConfigParserImplTest {
 		);
 
 		String[] params = new String[]{
-			"-" + ECHO_SERVER_PORT, expected.getEchoServerPort() + "",
-			"-" + ECHO_SERVER_ADDRESS, expected.getEchoServerAddress(),
-			"-" + INITIATOR_SERVER_PORT, expected.getInitiatorServerPort() + "",
-			"-" + INITIATOR_SERVER_ADDRESS, expected.getInitiatorServerAddress(),
+			"-" + ECHO_SERVER_PORT, expected.getOtherServerPort() + "",
+			"-" + ECHO_SERVER_ADDRESS, expected.getOtherServerAddress(),
+			"-" + INITIATOR_SERVER_PORT, expected.getOtherServerPort() + "",
+			"-" + INITIATOR_SERVER_ADDRESS, expected.getOtherServerAddress(),
 			"-" + LOCAL_SERVER_PORT, expected.getLocalServerPort() + "",
 			"-" + LOCAL_SERVER_ADDRESS, expected.getLocalServerAddress(),
 			"-" + OTHER_LOCAL_SERVER_PORT, expected.getOtherLocalServerPort() + "",

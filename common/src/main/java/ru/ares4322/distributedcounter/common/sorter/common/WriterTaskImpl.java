@@ -1,4 +1,4 @@
-package ru.ares4322.distributedcounter.initiator.sorter;
+package ru.ares4322.distributedcounter.common.sorter.common;
 
 import org.slf4j.Logger;
 import ru.ares4322.distributedcounter.common.sorter.WriterTask;
@@ -9,7 +9,7 @@ import java.io.Writer;
 import static java.lang.String.format;
 import static org.slf4j.LoggerFactory.getLogger;
 
-class WriterTaskImpl implements WriterTask {
+public class WriterTaskImpl implements WriterTask {
 
 	private static final Logger log = getLogger(WriterTaskImpl.class);
 

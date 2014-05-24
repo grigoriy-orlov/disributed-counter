@@ -1,10 +1,10 @@
-package ru.ares4322.distributedcounter.initiator.receiver;
+package ru.ares4322.distributedcounter.common.receiver.common;
 
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
+import ru.ares4322.distributedcounter.common.cfg.Config;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverService;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverTask;
-import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -26,11 +26,11 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.slf4j.LoggerFactory.getLogger;
 
-class ReceiverServiceImpl implements ReceiverService {
+public class ReceiverServiceImpl implements ReceiverService {
 
 	private static final Logger log = getLogger(ReceiverServiceImpl.class);
 
-	private final InitiatorConfig config;
+	private final Config config;
 	private final ExecutorService taskExecutor;
 	private final Provider<ReceiverTask> taskProvider;
 	//TODO move to module
@@ -44,7 +44,7 @@ class ReceiverServiceImpl implements ReceiverService {
 
 	@Inject
 	public ReceiverServiceImpl(
-		InitiatorConfig config,
+		Config config,
 		ExecutorService taskExecutor,
 		Provider<ReceiverTask> taskProvider
 	) {

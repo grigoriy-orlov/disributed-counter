@@ -1,8 +1,8 @@
-package ru.ares4322.distributedcounter.initiator.pool;
+package ru.ares4322.distributedcounter.common.pool.common;
 
 import org.slf4j.Logger;
+import ru.ares4322.distributedcounter.common.cfg.Config;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
-import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -17,16 +17,16 @@ import static java.net.InetAddress.getByName;
 import static org.slf4j.LoggerFactory.getLogger;
 
 
-class InitiatorConnectionPoolImpl implements ConnectionPool {
+public class ConnectionPoolImpl implements ConnectionPool {
 
-	private static final Logger log = getLogger(InitiatorConnectionPoolImpl.class);
+	private static final Logger log = getLogger(ConnectionPoolImpl.class);
 
-	private final InitiatorConfig config;
+	private final Config config;
 
 	private BlockingQueue<Socket> queue;
 
 	@Inject
-	public InitiatorConnectionPoolImpl(InitiatorConfig config) {
+	public ConnectionPoolImpl(Config config) {
 		this.config = config;
 	}
 

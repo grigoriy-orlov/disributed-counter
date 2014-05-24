@@ -1,4 +1,4 @@
-package ru.ares4322.distributedcounter.initiator.sorter;
+package ru.ares4322.distributedcounter.common.sorter.common;
 
 import org.slf4j.Logger;
 import ru.ares4322.distributedcounter.common.sorter.SorterTask;
@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutorService;
 import static org.slf4j.LoggerFactory.getLogger;
 
 //TODO add dynamic arrays creation
-class SorterTaskImpl implements SorterTask {
+public class SorterTaskImpl implements SorterTask {
 
 	private static final Logger log = getLogger(SorterTaskImpl.class);
 

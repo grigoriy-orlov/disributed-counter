@@ -1,4 +1,4 @@
-package ru.ares4322.distributedcounter.initiator.sender;
+package ru.ares4322.distributedcounter.common.sender.common;
 
 import org.slf4j.Logger;
 import ru.ares4322.distributedcounter.common.sender.Sender;
@@ -8,7 +8,7 @@ import javax.inject.Inject;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-class SenderTaskImpl implements SenderTask {
+public class SenderTaskImpl implements SenderTask {
 
 	private static final Logger log = getLogger(SenderTaskImpl.class);
 
