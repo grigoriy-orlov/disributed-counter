@@ -1,7 +1,7 @@
 package ru.ares4322.distributedcounter.initiator.receiver;
 
 import org.slf4j.Logger;
-import ru.ares4322.distributedcounter.common.receiver.CounterReceiverTask;
+import ru.ares4322.distributedcounter.common.receiver.ReceiverTask;
 
 import javax.inject.Inject;
 import java.util.concurrent.BlockingQueue;
@@ -10,16 +10,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static org.slf4j.LoggerFactory.getLogger;
 import static ru.ares4322.distributedcounter.common.util.Utils.networkByteArrayToInt;
 
-class CounterReceiverTaskImpl implements CounterReceiverTask {
+class ReceiverTaskImpl implements ReceiverTask {
 
-	private static final Logger log = getLogger(CounterReceiverServiceImpl.class);
+	private static final Logger log = getLogger(ReceiverServiceImpl.class);
 
 	private final BlockingQueue<Integer> outputQueue;
 
 	private byte[] data;
 
 	@Inject
-	public CounterReceiverTaskImpl(
+	public ReceiverTaskImpl(
 		BlockingQueue<Integer> outputQueue
 	) {
 		this.outputQueue = outputQueue;

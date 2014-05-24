@@ -1,6 +1,6 @@
 package ru.ares4322.distributedcounter.common.sender;
 
-public interface CounterSender {
+public interface Sender {
 
 	void send(int counter);
 }

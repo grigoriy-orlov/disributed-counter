@@ -4,9 +4,9 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
-import ru.ares4322.distributedcounter.common.receiver.CounterReceiverExecutor;
-import ru.ares4322.distributedcounter.common.receiver.CounterReceiverService;
-import ru.ares4322.distributedcounter.common.receiver.CounterReceiverTask;
+import ru.ares4322.distributedcounter.common.receiver.ReceiverExecutor;
+import ru.ares4322.distributedcounter.common.receiver.ReceiverService;
+import ru.ares4322.distributedcounter.common.receiver.ReceiverTask;
 import ru.ares4322.distributedcounter.initiator.ReceiverToSorterQueue;
 import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
 
@@ -19,9 +19,9 @@ import static com.google.common.util.concurrent.MoreExecutors.sameThreadExecutor
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class CounterReceiverModule extends AbstractModule {
+public class ReceiverModule extends AbstractModule {
 
-	private static final Logger log = getLogger(CounterReceiverModule.class);
+	private static final Logger log = getLogger(ReceiverModule.class);
 
 	@Override
 	protected void configure() {
@@ -29,7 +29,7 @@ public class CounterReceiverModule extends AbstractModule {
 
 	@Provides
 	@Singleton
-	@CounterReceiverExecutor
+	@ReceiverExecutor
 	public ExecutorService getCounterReceiverExecutor(InitiatorConfig config) {
 		if (config.getReceiverThreads() > 1) {
 			return newFixedThreadPool(
@@ -42,19 +42,19 @@ public class CounterReceiverModule extends AbstractModule {
 	}
 
 	@Provides
-	public CounterReceiverTask getCounterReceiverTask(
+	public ReceiverTask getCounterReceiverTask(
 		@ReceiverToSorterQueue BlockingQueue<Integer> outputQueue
 	) {
-		return new CounterReceiverTaskImpl(outputQueue);
+		return new ReceiverTaskImpl(outputQueue);
 	}
 
 	@Provides
 	@Singleton
-	public CounterReceiverService getCounterReceiverService(
+	public ReceiverService getCounterReceiverService(
 		InitiatorConfig config,
-		@CounterReceiverExecutor ExecutorService taskExecutor,
-		Provider<CounterReceiverTask> taskProvider
+		@ReceiverExecutor ExecutorService taskExecutor,
+		Provider<ReceiverTask> taskProvider
 	) {
-		return new CounterReceiverServiceImpl(config, taskExecutor, taskProvider);
+		return new ReceiverServiceImpl(config, taskExecutor, taskProvider);
 	}
 }

@@ -1,6 +1,6 @@
 package ru.ares4322.distributedcounter.common.receiver;
 
-public interface CounterReceiverService extends Runnable {
+public interface ReceiverService extends Runnable {
 
 	void init();
 

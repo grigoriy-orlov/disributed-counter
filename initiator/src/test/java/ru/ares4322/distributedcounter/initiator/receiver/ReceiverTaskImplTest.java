@@ -8,13 +8,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static ru.ares4322.distributedcounter.common.util.Utils.intToNetworkByteArray;
 
-public class CounterReceiverTaskImplTest {
+public class ReceiverTaskImplTest {
 
 	@Test(enabled = false)
 	public void run() throws Exception {
 		byte[] data = intToNetworkByteArray(10000);
 		Writer mock = mock(Writer.class);
-		CounterReceiverTaskImpl task = new CounterReceiverTaskImpl(null);
+		ReceiverTaskImpl task = new ReceiverTaskImpl(null);
 		task.setData(data);
 		task.run();
 

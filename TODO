@@ -1,16 +1,13 @@
  must
- - move @Singleton from classes to Modules
  - move Executors to module
  - move Executor from ControllableImpl
  - pool like service
  - services must be undependent on startup
  - add state checking in Cli
  - common service interface
- - remove Counter from names
  - fix app stopping
  may be
  - config: from class to properties
- - impl SEDA with queues
  - config per service
  - add service init-on-startup (@PostConstruct)
 

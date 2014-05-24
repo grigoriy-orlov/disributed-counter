@@ -10,8 +10,8 @@ import ru.ares4322.distributedcounter.initiator.cfg.ConfigModule;
 import ru.ares4322.distributedcounter.initiator.cli.CliModule;
 import ru.ares4322.distributedcounter.initiator.initiator.InitiatorModule;
 import ru.ares4322.distributedcounter.initiator.pool.ConnectionPoolModule;
-import ru.ares4322.distributedcounter.initiator.receiver.CounterReceiverModule;
-import ru.ares4322.distributedcounter.initiator.sender.CounterSenderModule;
+import ru.ares4322.distributedcounter.initiator.receiver.ReceiverModule;
+import ru.ares4322.distributedcounter.initiator.sender.SenderModule;
 import ru.ares4322.distributedcounter.initiator.sorter.ReceiverSorterModule;
 import ru.ares4322.distributedcounter.initiator.sorter.SenderSorterModule;
 
@@ -39,8 +39,8 @@ public class App {
 				new ConnectionPoolModule(),
 				new ReceiverSorterModule(),
 				new SenderSorterModule(),
-				new CounterReceiverModule(),
-				new CounterSenderModule()
+				new ReceiverModule(),
+				new SenderModule()
 			);
 
 		} catch (CreationException e) {

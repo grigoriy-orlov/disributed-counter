@@ -2,8 +2,8 @@ package ru.ares4322.distributedcounter.initiator.sender;
 
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
-import ru.ares4322.distributedcounter.common.sender.CounterSenderService;
-import ru.ares4322.distributedcounter.common.sender.CounterSenderTask;
+import ru.ares4322.distributedcounter.common.sender.SenderService;
+import ru.ares4322.distributedcounter.common.sender.SenderTask;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -13,11 +13,11 @@ import java.util.concurrent.*;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static org.slf4j.LoggerFactory.getLogger;
 
-class CounterSenderServiceImpl implements CounterSenderService {
+class SenderServiceImpl implements SenderService {
 
-	private static final Logger log = getLogger(CounterSenderServiceImpl.class);
+	private static final Logger log = getLogger(SenderServiceImpl.class);
 
-	private final Provider<CounterSenderTask> counterSenderTaskProvider;
+	private final Provider<SenderTask> counterSenderTaskProvider;
 	private final ExecutorService taskExecutor;
 	private final BlockingQueue<Integer> inputQueue;
 	private final BlockingQueue<Integer> outputQueue;
@@ -29,8 +29,8 @@ class CounterSenderServiceImpl implements CounterSenderService {
 	private boolean inWork;
 
 	@Inject
-	public CounterSenderServiceImpl(
-		Provider<CounterSenderTask> counterSenderTaskProvider,
+	public SenderServiceImpl(
+		Provider<SenderTask> counterSenderTaskProvider,
 		ExecutorService taskExecutor,
 		BlockingQueue<Integer> inputQueue,
 		BlockingQueue<Integer> outputQueue
@@ -89,7 +89,7 @@ class CounterSenderServiceImpl implements CounterSenderService {
 				continue;
 			}
 			log.debug("get counter (value={}) and init task", next);
-			CounterSenderTask task = counterSenderTaskProvider.get();
+			SenderTask task = counterSenderTaskProvider.get();
 			task.setCounter(next);
 			completionService.submit(task, 1);
 			try {

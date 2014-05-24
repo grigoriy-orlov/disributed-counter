@@ -3,8 +3,8 @@ package ru.ares4322.distributedcounter.initiator.cli;
 import org.slf4j.Logger;
 import ru.ares4322.distributedcounter.common.cli.Controllable;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
-import ru.ares4322.distributedcounter.common.receiver.CounterReceiverService;
-import ru.ares4322.distributedcounter.common.sender.CounterSenderService;
+import ru.ares4322.distributedcounter.common.receiver.ReceiverService;
+import ru.ares4322.distributedcounter.common.sender.SenderService;
 import ru.ares4322.distributedcounter.common.sorter.SorterService;
 import ru.ares4322.distributedcounter.initiator.ReceiverSorter;
 import ru.ares4322.distributedcounter.initiator.SenderSorter;
@@ -20,8 +20,8 @@ class ControllableImpl implements Controllable {
 	private static final Logger log = getLogger(ControllableImpl.class);
 
 	private InitiatorService initiatorService;
-	private final CounterSenderService senderService;
-	private final CounterReceiverService receiverService;
+	private final SenderService senderService;
+	private final ReceiverService receiverService;
 	private SorterService senderSorterService;
 	private final SorterService receiverSorterService;
 	private final ConnectionPool connectionPool;
@@ -29,8 +29,8 @@ class ControllableImpl implements Controllable {
 	@Inject
 	public ControllableImpl(
 		InitiatorService initiatorService,
-		CounterSenderService senderService,
-		CounterReceiverService receiverService,
+		SenderService senderService,
+		ReceiverService receiverService,
 		@SenderSorter SorterService senderSorterService,
 		@ReceiverSorter SorterService receiverSorterService,
 		ConnectionPool connectionPool

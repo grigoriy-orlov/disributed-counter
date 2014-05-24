@@ -1,4 +1,4 @@
-package ru.ares4322.distributedcounter.common.sender;
+package ru.ares4322.distributedcounter.common.receiver;
 
 import javax.inject.Qualifier;
 import java.lang.annotation.Documented;
@@ -12,5 +12,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Qualifier
 @Retention(RUNTIME)
 @Target({FIELD, METHOD, PARAMETER})
-public @interface CounterSenderExecutor {
+public @interface ReceiverQueue {
 }

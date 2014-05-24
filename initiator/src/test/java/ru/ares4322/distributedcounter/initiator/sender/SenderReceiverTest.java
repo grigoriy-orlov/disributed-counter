@@ -11,14 +11,14 @@ import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 import ru.ares4322.distributedcounter.common.cli.Controllable;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
-import ru.ares4322.distributedcounter.common.receiver.CounterReceiverService;
-import ru.ares4322.distributedcounter.common.sender.CounterSenderService;
+import ru.ares4322.distributedcounter.common.receiver.ReceiverService;
+import ru.ares4322.distributedcounter.common.sender.SenderService;
 import ru.ares4322.distributedcounter.common.sorter.SorterService;
 import ru.ares4322.distributedcounter.initiator.cfg.ConfigModule;
 import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
 import ru.ares4322.distributedcounter.initiator.cli.CliModule;
 import ru.ares4322.distributedcounter.initiator.pool.ConnectionPoolModule;
-import ru.ares4322.distributedcounter.initiator.receiver.CounterReceiverModule;
+import ru.ares4322.distributedcounter.initiator.receiver.ReceiverModule;
 import ru.ares4322.distributedcounter.initiator.sorter.ReceiverSorterModule;
 
 import javax.inject.Inject;
@@ -42,21 +42,21 @@ import static ru.ares4322.distributedcounter.initiator.cfg.CliParams.*;
 	modules = {
 		CliModule.class,
 		ConnectionPoolModule.class,
-		CounterReceiverModule.class,
+		ReceiverModule.class,
 		ReceiverSorterModule.class,
-		CounterSenderModule.class
+		SenderModule.class
 	},
-	moduleFactory = CounterSenderReceiverTest.ConfigModuleFactory.class
+	moduleFactory = SenderReceiverTest.ConfigModuleFactory.class
 )
-public class CounterSenderReceiverTest {
+public class SenderReceiverTest {
 
-	private static final Logger log = getLogger(CounterSenderReceiverTest.class);
-
-	@Inject
-	private CounterReceiverService receiverService;
+	private static final Logger log = getLogger(SenderReceiverTest.class);
 
 	@Inject
-	private CounterSenderService senderService;
+	private ReceiverService receiverService;
+
+	@Inject
+	private SenderService senderService;
 
 	@Inject
 	private SorterService sorterService;

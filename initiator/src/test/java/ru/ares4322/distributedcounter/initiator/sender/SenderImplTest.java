@@ -10,7 +10,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
-import ru.ares4322.distributedcounter.common.sender.CounterSender;
+import ru.ares4322.distributedcounter.common.sender.Sender;
 import ru.ares4322.distributedcounter.initiator.cfg.ConfigModule;
 
 import javax.inject.Inject;
@@ -23,18 +23,18 @@ import static ru.ares4322.distributedcounter.initiator.cfg.CliParams.*;
 
 @Guice(
 	modules = {
-		CounterSenderModule.class,
-		CounterSenderImplTest.TestModule.class
+		SenderModule.class,
+		SenderImplTest.TestModule.class
 	},
-	moduleFactory = CounterSenderImplTest.ConfigModuleFactory.class
+	moduleFactory = SenderImplTest.ConfigModuleFactory.class
 )
-public class CounterSenderImplTest {
+public class SenderImplTest {
 
 	@Inject
 	private ConnectionPool pool;
 
 	@Inject
-	private CounterSender sender;
+	private Sender sender;
 
 	@BeforeMethod
 	public void setUp() throws Exception {

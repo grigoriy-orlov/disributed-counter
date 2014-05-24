@@ -5,7 +5,7 @@ import com.google.inject.Provides;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
-import ru.ares4322.distributedcounter.common.receiver.CounterReceiverQueue;
+import ru.ares4322.distributedcounter.common.receiver.ReceiverQueue;
 import ru.ares4322.distributedcounter.common.sorter.SorterTask;
 import ru.ares4322.distributedcounter.common.sorter.WriterExecutor;
 import ru.ares4322.distributedcounter.common.sorter.WriterTask;
@@ -36,7 +36,7 @@ public class SorterTaskImplTest {
 	@Inject
 	private SorterTask sorterTask;
 
-	@CounterReceiverQueue
+	@ReceiverQueue
 	@Inject
 	private Queue<Integer> queue;
 
@@ -88,7 +88,7 @@ public class SorterTaskImplTest {
 
 		@Provides
 		public SorterTask getSorterTask(
-			@CounterReceiverQueue BlockingQueue<Integer> queue,
+			@ReceiverQueue BlockingQueue<Integer> queue,
 			@WriterExecutor ExecutorService executor,
 			Provider<WriterTask> writerTaskProvider
 		) {
@@ -102,7 +102,7 @@ public class SorterTaskImplTest {
 		}
 
 		@Provides
-		@CounterReceiverQueue
+		@ReceiverQueue
 		@Singleton
 		public Queue<Integer> getQueue() {
 			return new ArrayDeque<>(QUEUE_LENGTH);

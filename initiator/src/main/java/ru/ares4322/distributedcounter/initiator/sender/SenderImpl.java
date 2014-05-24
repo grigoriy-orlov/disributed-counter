@@ -2,7 +2,7 @@ package ru.ares4322.distributedcounter.initiator.sender;
 
 import org.slf4j.Logger;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
-import ru.ares4322.distributedcounter.common.sender.CounterSender;
+import ru.ares4322.distributedcounter.common.sender.Sender;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -13,14 +13,14 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static ru.ares4322.distributedcounter.common.util.Utils.intToNetworkByteArray;
 
 //TODO Singleton is right?
-class CounterSenderImpl implements CounterSender {
+class SenderImpl implements Sender {
 
-	private static final Logger log = getLogger(CounterSenderImpl.class);
+	private static final Logger log = getLogger(SenderImpl.class);
 
 	private final ConnectionPool pool;
 
 	@Inject
-	public CounterSenderImpl(ConnectionPool pool) {
+	public SenderImpl(ConnectionPool pool) {
 		this.pool = pool;
 	}
 

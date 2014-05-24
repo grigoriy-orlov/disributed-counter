@@ -2,8 +2,8 @@ package ru.ares4322.distributedcounter.initiator.receiver;
 
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
-import ru.ares4322.distributedcounter.common.receiver.CounterReceiverService;
-import ru.ares4322.distributedcounter.common.receiver.CounterReceiverTask;
+import ru.ares4322.distributedcounter.common.receiver.ReceiverService;
+import ru.ares4322.distributedcounter.common.receiver.ReceiverTask;
 import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
 
 import javax.annotation.PostConstruct;
@@ -26,13 +26,13 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.slf4j.LoggerFactory.getLogger;
 
-class CounterReceiverServiceImpl implements CounterReceiverService {
+class ReceiverServiceImpl implements ReceiverService {
 
-	private static final Logger log = getLogger(CounterReceiverServiceImpl.class);
+	private static final Logger log = getLogger(ReceiverServiceImpl.class);
 
 	private final InitiatorConfig config;
 	private final ExecutorService taskExecutor;
-	private final Provider<CounterReceiverTask> taskProvider;
+	private final Provider<ReceiverTask> taskProvider;
 	//TODO move to module
 	private final ExecutorService serviceExecutor = newSingleThreadExecutor(
 		new BasicThreadFactory.Builder().namingPattern("CounterReceiverService-%s").build()
@@ -43,10 +43,10 @@ class CounterReceiverServiceImpl implements CounterReceiverService {
 	private boolean inProgress;
 
 	@Inject
-	public CounterReceiverServiceImpl(
+	public ReceiverServiceImpl(
 		InitiatorConfig config,
 		ExecutorService taskExecutor,
-		Provider<CounterReceiverTask> taskProvider
+		Provider<ReceiverTask> taskProvider
 	) {
 		this.config = config;
 		this.taskExecutor = taskExecutor;
@@ -175,7 +175,7 @@ class CounterReceiverServiceImpl implements CounterReceiverService {
 		while (numRead >= 4) {
 			byte[] data = new byte[4];
 			arraycopy(readBuffer.array(), i, data, 0, 4);
-			CounterReceiverTask task = taskProvider.get();
+			ReceiverTask task = taskProvider.get();
 			task.setData(data);
 			taskExecutor.execute(task);
 			i += 4;

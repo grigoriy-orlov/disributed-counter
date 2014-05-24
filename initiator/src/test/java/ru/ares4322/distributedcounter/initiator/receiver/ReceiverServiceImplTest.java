@@ -11,12 +11,12 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
-import ru.ares4322.distributedcounter.common.receiver.CounterReceiverService;
-import ru.ares4322.distributedcounter.common.sender.CounterSender;
+import ru.ares4322.distributedcounter.common.receiver.ReceiverService;
+import ru.ares4322.distributedcounter.common.sender.Sender;
 import ru.ares4322.distributedcounter.initiator.cfg.ConfigModule;
 import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
 import ru.ares4322.distributedcounter.initiator.pool.ConnectionPoolModule;
-import ru.ares4322.distributedcounter.initiator.sender.CounterSenderModule;
+import ru.ares4322.distributedcounter.initiator.sender.SenderModule;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -40,20 +40,20 @@ import static ru.ares4322.distributedcounter.initiator.cfg.CliParams.*;
 @Guice(
 	modules = {
 		ConnectionPoolModule.class,
-		CounterReceiverModule.class,
-		CounterSenderModule.class
+		ReceiverModule.class,
+		SenderModule.class
 	},
-	moduleFactory = CounterReceiverServiceImplTest.ConfigModuleFactory.class
+	moduleFactory = ReceiverServiceImplTest.ConfigModuleFactory.class
 )
-public class CounterReceiverServiceImplTest {
+public class ReceiverServiceImplTest {
 
-	private static final Logger log = getLogger(CounterReceiverServiceImplTest.class);
-
-	@Inject
-	private CounterReceiverService receiverService;
+	private static final Logger log = getLogger(ReceiverServiceImplTest.class);
 
 	@Inject
-	private CounterSender counterSender;
+	private ReceiverService receiverService;
+
+	@Inject
+	private Sender sender;
 
 	@Inject
 	private InitiatorConfig config;
@@ -85,7 +85,7 @@ public class CounterReceiverServiceImplTest {
 	@Test(enabled = false)
 	public void run() throws Exception {
 		for (int number : numbers) {
-			counterSender.send(number);
+			sender.send(number);
 		}
 
 		sleep(3000);    //TODO find better way

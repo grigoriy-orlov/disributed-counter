@@ -1,6 +1,6 @@
 package ru.ares4322.distributedcounter.common.sender;
 
-public interface CounterSenderService extends Runnable {
+public interface SenderService extends Runnable {
 
 	void init();
 

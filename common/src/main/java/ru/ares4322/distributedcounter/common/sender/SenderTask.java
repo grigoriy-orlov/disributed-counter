@@ -1,6 +1,6 @@
 package ru.ares4322.distributedcounter.common.sender;
 
-public interface CounterSenderTask extends Runnable {
+public interface SenderTask extends Runnable {
 
 	void setCounter(int counter);
 
