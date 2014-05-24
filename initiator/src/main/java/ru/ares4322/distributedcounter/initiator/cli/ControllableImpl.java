@@ -6,39 +6,47 @@ import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
 import ru.ares4322.distributedcounter.common.receiver.CounterReceiverService;
 import ru.ares4322.distributedcounter.common.sender.CounterSenderService;
 import ru.ares4322.distributedcounter.common.sorter.SorterService;
+import ru.ares4322.distributedcounter.initiator.ReceiverSorter;
+import ru.ares4322.distributedcounter.initiator.SenderSorter;
+import ru.ares4322.distributedcounter.initiator.initiator.InitiatorService;
 
 import javax.inject.Inject;
-
 import java.io.IOException;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
-//TODO add double command checking
 class ControllableImpl implements Controllable {
 
 	private static final Logger log = getLogger(ControllableImpl.class);
 
+	private InitiatorService initiatorService;
 	private final CounterSenderService senderService;
 	private final CounterReceiverService receiverService;
-	private final SorterService sorterService;
+	private SorterService senderSorterService;
+	private final SorterService receiverSorterService;
 	private final ConnectionPool connectionPool;
 
 	@Inject
 	public ControllableImpl(
+		InitiatorService initiatorService,
 		CounterSenderService senderService,
 		CounterReceiverService receiverService,
-		SorterService sorterService,
+		@SenderSorter SorterService senderSorterService,
+		@ReceiverSorter SorterService receiverSorterService,
 		ConnectionPool connectionPool
 	) {
+		this.initiatorService = initiatorService;
 		this.senderService = senderService;
 		this.receiverService = receiverService;
-		this.sorterService = sorterService;
+		this.senderSorterService = senderSorterService;
+		this.receiverSorterService = receiverSorterService;
 		this.connectionPool = connectionPool;
 	}
 
 	@Override
 	public void init() {
 		log.info("init counter sender");
+		initiatorService.init();
 		senderService.init();
 		receiverService.init();
 		connectionPool.init();
@@ -49,21 +57,25 @@ class ControllableImpl implements Controllable {
 		log.info("startUp counter sender");
 		senderService.startUp();
 		receiverService.startUp();
-		sorterService.startUp();
+		senderSorterService.startUp();
+		receiverSorterService.startUp();
+		initiatorService.startUp();
 	}
 
 	@Override
 	public void stop() {
 		log.info("stop counter sender");
-		senderService.suspend();
+		initiatorService.stop();
 	}
 
 	@Override
 	public void exit() {
 		log.info("exit counter sender");
+		initiatorService.shutDown();
 		senderService.shutDown();
 		receiverService.shutDown();
-		sorterService.shutDown();
+		receiverSorterService.shutDown();
+		senderSorterService.shutDown();
 		try {
 			connectionPool.close();
 		} catch (IOException e) {

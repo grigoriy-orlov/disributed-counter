@@ -5,24 +5,17 @@ import com.google.inject.Provides;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
 import ru.ares4322.distributedcounter.common.receiver.CounterReceiverExecutor;
-import ru.ares4322.distributedcounter.common.receiver.CounterReceiverQueue;
 import ru.ares4322.distributedcounter.common.receiver.CounterReceiverService;
 import ru.ares4322.distributedcounter.common.receiver.CounterReceiverTask;
-import ru.ares4322.distributedcounter.common.sorter.ReceiverWriter;
+import ru.ares4322.distributedcounter.initiator.ReceiverToSorterQueue;
 import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
 
+import javax.inject.Provider;
 import javax.inject.Singleton;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 
-import static com.google.common.base.Throwables.propagate;
-import static com.google.common.collect.Queues.newConcurrentLinkedQueue;
 import static com.google.common.util.concurrent.MoreExecutors.sameThreadExecutor;
-import static com.google.inject.Scopes.SINGLETON;
-import static java.nio.charset.Charset.forName;
-import static java.nio.file.Files.newBufferedWriter;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -32,16 +25,7 @@ public class CounterReceiverModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		log.debug("start configure CounterReceiverModule");
-
-		binder()
-			.bind(CounterReceiverService.class)
-			.to(CounterReceiverServiceImpl.class)
-			.in(SINGLETON);
-
-		log.debug("finish configure CounterReceiverModule");
 	}
-
 
 	@Provides
 	@Singleton
@@ -59,29 +43,18 @@ public class CounterReceiverModule extends AbstractModule {
 
 	@Provides
 	public CounterReceiverTask getCounterReceiverTask(
-		@CounterReceiverQueue Queue<Integer> queue
+		@ReceiverToSorterQueue BlockingQueue<Integer> outputQueue
 	) {
-		return new CounterReceiverTaskImpl(queue);
+		return new CounterReceiverTaskImpl(outputQueue);
 	}
 
 	@Provides
 	@Singleton
-	@CounterReceiverQueue
-	public Queue<Integer> getQueue() {
-		return newConcurrentLinkedQueue();
-	}
-
-	@Provides
-	@Singleton
-	@ReceiverWriter
-	public Writer getWriter(InitiatorConfig config) {
-		//FIXME
-		try {
-			return newBufferedWriter(config.getReceiverFilePath(), forName("UTF-8"));
-		} catch (IOException e) {
-			log.error("receiver writer creation error", e);
-			propagate(e);
-			return null;
-		}
+	public CounterReceiverService getCounterReceiverService(
+		InitiatorConfig config,
+		@CounterReceiverExecutor ExecutorService taskExecutor,
+		Provider<CounterReceiverTask> taskProvider
+	) {
+		return new CounterReceiverServiceImpl(config, taskExecutor, taskProvider);
 	}
 }

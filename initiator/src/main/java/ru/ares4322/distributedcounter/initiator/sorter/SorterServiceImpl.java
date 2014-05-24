@@ -1,11 +1,9 @@
 package ru.ares4322.distributedcounter.initiator.sorter;
 
 import org.slf4j.Logger;
-import ru.ares4322.distributedcounter.common.sorter.SorterExecutor;
 import ru.ares4322.distributedcounter.common.sorter.SorterService;
 import ru.ares4322.distributedcounter.common.sorter.SorterTask;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 import java.util.concurrent.ExecutorService;
 
@@ -19,10 +17,9 @@ class SorterServiceImpl implements SorterService {
 	private final Provider<SorterTask> sorterTaskProvider;
 	private final ExecutorService taskExecutor;
 
-	@Inject
 	public SorterServiceImpl(
 		Provider<SorterTask> sorterTaskProvider,
-		@SorterExecutor ExecutorService taskExecutor
+		ExecutorService taskExecutor
 	) {
 		this.sorterTaskProvider = sorterTaskProvider;
 		this.taskExecutor = taskExecutor;

@@ -1,11 +1,10 @@
 package ru.ares4322.distributedcounter.initiator.receiver;
 
 import org.slf4j.Logger;
-import ru.ares4322.distributedcounter.common.receiver.CounterReceiverQueue;
 import ru.ares4322.distributedcounter.common.receiver.CounterReceiverTask;
 
 import javax.inject.Inject;
-import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -15,15 +14,15 @@ class CounterReceiverTaskImpl implements CounterReceiverTask {
 
 	private static final Logger log = getLogger(CounterReceiverServiceImpl.class);
 
-	private final Queue<Integer> queue;
+	private final BlockingQueue<Integer> outputQueue;
 
 	private byte[] data;
 
 	@Inject
 	public CounterReceiverTaskImpl(
-		@CounterReceiverQueue Queue<Integer> queue
+		BlockingQueue<Integer> outputQueue
 	) {
-		this.queue = queue;
+		this.outputQueue = outputQueue;
 	}
 
 
@@ -34,7 +33,12 @@ class CounterReceiverTaskImpl implements CounterReceiverTask {
 		log.debug("run");
 		int num = networkByteArrayToInt(data);
 		log.debug("write num to file (value = {})", num);
-		queue.add(num);
+		try {
+			outputQueue.put(num);
+		//FIXME now number will be lost
+		} catch (InterruptedException e) {
+			log.error("output queue putting error", e);
+		}
 	}
 
 	@Override

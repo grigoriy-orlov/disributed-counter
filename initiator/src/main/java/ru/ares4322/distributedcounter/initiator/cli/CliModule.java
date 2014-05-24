@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import org.slf4j.Logger;
 import ru.ares4322.distributedcounter.common.cli.Controllable;
 
+import static com.google.inject.Scopes.SINGLETON;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class CliModule extends AbstractModule {
@@ -14,7 +15,10 @@ public class CliModule extends AbstractModule {
 	protected void configure() {
 		log.debug("start configure CliModule");
 
-		binder().bind(Controllable.class).to(ControllableImpl.class);
+		binder()
+			.bind(Controllable.class)
+			.to(ControllableImpl.class)
+			.in(SINGLETON);
 
 		log.debug("finish configure CliModule");
 	}

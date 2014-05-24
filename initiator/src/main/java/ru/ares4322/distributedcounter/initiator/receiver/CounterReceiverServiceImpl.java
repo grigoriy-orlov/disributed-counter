@@ -2,7 +2,6 @@ package ru.ares4322.distributedcounter.initiator.receiver;
 
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
-import ru.ares4322.distributedcounter.common.receiver.CounterReceiverExecutor;
 import ru.ares4322.distributedcounter.common.receiver.CounterReceiverService;
 import ru.ares4322.distributedcounter.common.receiver.CounterReceiverTask;
 import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
@@ -33,7 +32,7 @@ class CounterReceiverServiceImpl implements CounterReceiverService {
 
 	private final InitiatorConfig config;
 	private final ExecutorService taskExecutor;
-	private final Provider<CounterReceiverTaskImpl> taskProvider;
+	private final Provider<CounterReceiverTask> taskProvider;
 	//TODO move to module
 	private final ExecutorService serviceExecutor = newSingleThreadExecutor(
 		new BasicThreadFactory.Builder().namingPattern("CounterReceiverService-%s").build()
@@ -46,8 +45,8 @@ class CounterReceiverServiceImpl implements CounterReceiverService {
 	@Inject
 	public CounterReceiverServiceImpl(
 		InitiatorConfig config,
-		@CounterReceiverExecutor ExecutorService taskExecutor,
-		Provider<CounterReceiverTaskImpl> taskProvider
+		ExecutorService taskExecutor,
+		Provider<CounterReceiverTask> taskProvider
 	) {
 		this.config = config;
 		this.taskExecutor = taskExecutor;

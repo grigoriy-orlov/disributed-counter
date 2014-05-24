@@ -15,7 +15,7 @@ import static org.mockito.Mockito.*;
 
 @Guice(
 	modules = {
-		SorterModule.class,
+		ReceiverSorterModule.class,
 		WriterTaskImplTest.TestModule.class
 	}
 )

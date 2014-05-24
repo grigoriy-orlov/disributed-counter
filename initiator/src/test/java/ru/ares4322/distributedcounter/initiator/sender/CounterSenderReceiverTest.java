@@ -19,7 +19,7 @@ import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
 import ru.ares4322.distributedcounter.initiator.cli.CliModule;
 import ru.ares4322.distributedcounter.initiator.pool.ConnectionPoolModule;
 import ru.ares4322.distributedcounter.initiator.receiver.CounterReceiverModule;
-import ru.ares4322.distributedcounter.initiator.sorter.SorterModule;
+import ru.ares4322.distributedcounter.initiator.sorter.ReceiverSorterModule;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -43,7 +43,7 @@ import static ru.ares4322.distributedcounter.initiator.cfg.CliParams.*;
 		CliModule.class,
 		ConnectionPoolModule.class,
 		CounterReceiverModule.class,
-		SorterModule.class,
+		ReceiverSorterModule.class,
 		CounterSenderModule.class
 	},
 	moduleFactory = CounterSenderReceiverTest.ConfigModuleFactory.class
@@ -77,7 +77,7 @@ public class CounterSenderReceiverTest {
 	public void test() throws Exception {
 		controllable.init();
 
-		senderService.setMaxCounter(100);
+		//senderService.setMaxCounter(100);
 
 		pool.init();
 		sorterService.startUp();
@@ -87,7 +87,7 @@ public class CounterSenderReceiverTest {
 
 		controllable.stop();
 
-		senderService.setMaxCounter(200);
+		//senderService.setMaxCounter(200);
 
 		sleep(2000);
 

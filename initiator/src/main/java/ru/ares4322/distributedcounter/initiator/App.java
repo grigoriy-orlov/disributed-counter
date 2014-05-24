@@ -8,10 +8,12 @@ import ru.ares4322.distributedcounter.common.cli.CliCommandReaderService;
 import ru.ares4322.distributedcounter.common.cli.Controllable;
 import ru.ares4322.distributedcounter.initiator.cfg.ConfigModule;
 import ru.ares4322.distributedcounter.initiator.cli.CliModule;
+import ru.ares4322.distributedcounter.initiator.initiator.InitiatorModule;
 import ru.ares4322.distributedcounter.initiator.pool.ConnectionPoolModule;
 import ru.ares4322.distributedcounter.initiator.receiver.CounterReceiverModule;
 import ru.ares4322.distributedcounter.initiator.sender.CounterSenderModule;
-import ru.ares4322.distributedcounter.initiator.sorter.SorterModule;
+import ru.ares4322.distributedcounter.initiator.sorter.ReceiverSorterModule;
+import ru.ares4322.distributedcounter.initiator.sorter.SenderSorterModule;
 
 import static com.google.inject.Guice.createInjector;
 import static com.google.inject.Stage.PRODUCTION;
@@ -31,9 +33,12 @@ public class App {
 			injector = createInjector(
 				PRODUCTION,
 				new ConfigModule(args),
+				new QueueModule(),
+				new InitiatorModule(),
 				new CliModule(),
 				new ConnectionPoolModule(),
-				new SorterModule(),
+				new ReceiverSorterModule(),
+				new SenderSorterModule(),
 				new CounterReceiverModule(),
 				new CounterSenderModule()
 			);

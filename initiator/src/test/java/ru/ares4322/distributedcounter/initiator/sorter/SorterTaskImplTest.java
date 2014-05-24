@@ -16,6 +16,7 @@ import javax.inject.Singleton;
 import java.util.ArrayDeque;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 
@@ -87,7 +88,7 @@ public class SorterTaskImplTest {
 
 		@Provides
 		public SorterTask getSorterTask(
-			@CounterReceiverQueue Queue<Integer> queue,
+			@CounterReceiverQueue BlockingQueue<Integer> queue,
 			@WriterExecutor ExecutorService executor,
 			Provider<WriterTask> writerTaskProvider
 		) {

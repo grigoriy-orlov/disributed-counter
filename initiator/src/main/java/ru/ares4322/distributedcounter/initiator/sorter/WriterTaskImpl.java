@@ -1,10 +1,8 @@
 package ru.ares4322.distributedcounter.initiator.sorter;
 
 import org.slf4j.Logger;
-import ru.ares4322.distributedcounter.common.sorter.ReceiverWriter;
 import ru.ares4322.distributedcounter.common.sorter.WriterTask;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.io.Writer;
 
@@ -20,9 +18,8 @@ class WriterTaskImpl implements WriterTask {
 	private int from;
 	private int length;
 
-	@Inject
 	public WriterTaskImpl(
-		@ReceiverWriter Writer writer
+		Writer writer
 	) {
 		this.writer = writer;
 	}
