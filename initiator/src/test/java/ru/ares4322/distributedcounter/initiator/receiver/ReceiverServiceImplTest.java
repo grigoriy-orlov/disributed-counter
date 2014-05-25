@@ -13,8 +13,9 @@ import org.testng.annotations.Test;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverService;
 import ru.ares4322.distributedcounter.common.sender.Sender;
+import ru.ares4322.distributedcounter.common.sorter.ReceiverWriter;
+import ru.ares4322.distributedcounter.common.sorter.WriterConfig;
 import ru.ares4322.distributedcounter.initiator.cfg.ConfigModule;
-import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
 import ru.ares4322.distributedcounter.initiator.pool.ConnectionPoolModule;
 import ru.ares4322.distributedcounter.initiator.sender.SenderModule;
 
@@ -56,7 +57,8 @@ public class ReceiverServiceImplTest {
 	private Sender sender;
 
 	@Inject
-	private InitiatorConfig config;
+	@ReceiverWriter
+	private WriterConfig config;
 
 	@Inject
 	private ConnectionPool pool;
@@ -90,7 +92,7 @@ public class ReceiverServiceImplTest {
 
 		sleep(3000);    //TODO find better way
 
-		assertFileData(config.getReceiverFilePath());
+		assertFileData(config.getFilePath());
 
 	}
 

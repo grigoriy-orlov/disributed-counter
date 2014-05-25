@@ -11,7 +11,6 @@ import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
 import ru.ares4322.distributedcounter.common.pool.common.ConnectionPoolImpl;
-import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
 
 import javax.inject.Inject;
 import javax.net.ServerSocketFactory;
@@ -45,8 +44,6 @@ public class ConnectionPoolImplTest {
 	@Inject
 	private ConnectionPool pool;
 
-	@Inject
-	private InitiatorConfig config;
 	private ExecutorService executor;
 	private static ServerSocket serverSocket;
 	private static Set<Socket> clientSockets = new HashSet<>();

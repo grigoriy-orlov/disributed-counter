@@ -1,9 +1,13 @@
-package ru.ares4322.distributedcounter.initiator.cfg;
+package ru.ares4322.distributedcounter.echo.cfg;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import org.slf4j.Logger;
 import ru.ares4322.distributedcounter.common.cfg.StartParamsParserException;
+import ru.ares4322.distributedcounter.common.pool.ConnectionPoolConfig;
+import ru.ares4322.distributedcounter.common.receiver.ReceiverConfig;
+import ru.ares4322.distributedcounter.common.sender.SenderConfig;
+import ru.ares4322.distributedcounter.common.sorter.WriterConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,32 +20,30 @@ import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static org.slf4j.LoggerFactory.getLogger;
-import static ru.ares4322.distributedcounter.initiator.cfg.CliParams.*;
+import static ru.ares4322.distributedcounter.echo.cfg.CliParams.*;
 
 //TODO refactor help printing
 //TODO refactor params naming
 //TODO add default logic for local server address and port
 //TODO move common code from parsers
-class InitiatorConfigParserImpl implements InitiatorConfigParser {
+public class EchoConfigParser {
 
-	private static final Logger log = getLogger(InitiatorConfigParserImpl.class);
+	private static final Logger log = getLogger(EchoConfigParser.class);
 
-	@Override
-	public InitiatorConfig parse(String[] params) throws StartParamsParserException {
+	public Configs parse(String[] params) throws StartParamsParserException {
 		int senderThreads = 0;
 		int receiverThreads = 0;
 		int localServerPort = 0;
 		String localServerAddress = null;
 		int remoteServerPort = 0;
 		String remoteServerAddress = null;
-		Path senderFilePath = null;
-		Path receiverFilePath = null;
+		Path filePath;
 
 		OptionParser parser = new OptionParser(
 			format(
-				"%s::%s::%s::%s::%s:%s:%s:%s:",
-				LOCAL_SERVER_PORT, LOCAL_SERVER_ADDRESS, REMOTE_SERVER_PORT, REMOTE_SERVER_ADDRESS, SENDER_FILE,
-				RECEIVER_FILE, SENDER_THREADS, RECEIVER_THREADS
+				"%s::%s::%s::%s::%s:%s:%s:",
+				LOCAL_SERVER_PORT, LOCAL_SERVER_ADDRESS, REMOTE_SERVER_PORT,
+				REMOTE_SERVER_ADDRESS, FILE, SENDER_THREADS, RECEIVER_THREADS
 			)
 		);
 		parser.accepts(HELP);
@@ -94,47 +96,29 @@ class InitiatorConfigParserImpl implements InitiatorConfigParser {
 
 		try {
 			Path path;
-			if (optionSet.has(RECEIVER_FILE) && optionSet.hasArgument(RECEIVER_FILE)) {
-				path = Paths.get(valueOf(optionSet.valueOf(RECEIVER_FILE)));
+			if (optionSet.has(FILE) && optionSet.hasArgument(FILE)) {
+				path = Paths.get(valueOf(optionSet.valueOf(FILE)));
 				File file = path.toFile();
-				//TODO need recreate file
+				//TODO need recreate file?
 				if (!file.exists()) {
 					path = Files.createFile(path);
 				}
 			} else {
-				path = Files.createTempFile(RECEIVE_LOGFILE_NAME, LOGFILE_NAME_SUFFIX);
-				log.info("create temp receiver file: {}", path.toAbsolutePath());
+				path = Files.createTempFile(LOGFILE_NAME, LOGFILE_NAME_SUFFIX);
+				log.info("create temp file: {}", path.toAbsolutePath());
 			}
-			receiverFilePath = path;
+			filePath = path;
 		} catch (IOException | InvalidPathException | SecurityException e) {
-			throw new StartParamsParserException("temp receiver file creation error", e);
-		}
-
-		try {
-			Path path;
-			if (optionSet.has(SENDER_FILE) && optionSet.hasArgument(SENDER_FILE)) {
-				path = Paths.get(valueOf(optionSet.valueOf(SENDER_FILE)));
-				File file = path.toFile();
-				//TODO need recreate file
-				if (!file.exists()) {
-					path = Files.createFile(path);
-				}
-			} else {
-				path = Files.createTempFile(SEND_LOGFILE_NAME, LOGFILE_NAME_SUFFIX);
-				log.info("create temp sender file: {}", path.toAbsolutePath());
-			}
-			senderFilePath = path;
-		} catch (IOException | InvalidPathException | SecurityException e) {
-			throw new StartParamsParserException("temp sender file creation error", e);
+			throw new StartParamsParserException("temp file creation error:" + e);
 		}
 
 		if (optionSet.has(SENDER_THREADS) && optionSet.hasArgument(SENDER_THREADS)) {
-			int sp = toInt(valueOf(optionSet.valueOf(SENDER_THREADS)), -1);
-			if (sp == -1 || sp < 1 || sp > 3) {
+			int st = toInt(valueOf(optionSet.valueOf(SENDER_THREADS)), -1);
+			if (st == -1 || st < 1 || st > 3) {
 				errorBuilder.append("server threads must be number (1 - 3); \n");
 				hasError = true;
 			} else {
-				senderThreads = sp;
+				senderThreads = st;
 			}
 		} else {
 			senderThreads = DEFAULT_SENDER_THREADS;
@@ -158,15 +142,92 @@ class InitiatorConfigParserImpl implements InitiatorConfigParser {
 			throw new StartParamsParserException(errorBuilder.toString());
 		}
 
-		return new InitiatorConfig(senderThreads, receiverThreads, localServerPort, localServerAddress, remoteServerPort, remoteServerAddress, senderFilePath, receiverFilePath);
+		return new Configs(
+			new WriterConfig(filePath),
+			new ConnectionPoolConfig(remoteServerAddress, remoteServerPort, senderThreads),
+			new ReceiverConfig(localServerAddress, localServerPort, receiverThreads),
+			new SenderConfig(senderThreads)
+		);
 	}
 
-	private static final String SEND_LOGFILE_NAME = "initiator_send";
-	private static final String RECEIVE_LOGFILE_NAME = "initiator_receive";
+	private static final String LOGFILE_NAME = "echo";
 	private static final String LOGFILE_NAME_SUFFIX = ".txt";
 	private static final int DEFAULT_SENDER_THREADS = 3;
 	private static final int DEFAULT_RECEIVER_THREADS = 3;
 
 	//TODO add help string
 	private static final String help = "";
+
+	public static class Configs {
+		private final WriterConfig writerConfig;
+		private final ConnectionPoolConfig connectionPoolConfig;
+		private final ReceiverConfig receiverConfig;
+		private final SenderConfig senderConfig;
+
+		public Configs(
+			WriterConfig writerConfig,
+			ConnectionPoolConfig connectionPoolConfig,
+			ReceiverConfig receiverConfig,
+			SenderConfig senderConfig
+		) {
+			this.writerConfig = writerConfig;
+			this.connectionPoolConfig = connectionPoolConfig;
+			this.receiverConfig = receiverConfig;
+			this.senderConfig = senderConfig;
+		}
+
+		public WriterConfig getWriterConfig() {
+			return writerConfig;
+		}
+
+		public ConnectionPoolConfig getConnectionPoolConfig() {
+			return connectionPoolConfig;
+		}
+
+		public ReceiverConfig getReceiverConfig() {
+			return receiverConfig;
+		}
+
+		public SenderConfig getSenderConfig() {
+			return senderConfig;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (!(o instanceof Configs)) return false;
+
+			Configs configs = (Configs) o;
+
+			if (connectionPoolConfig != null ? !connectionPoolConfig.equals(configs.connectionPoolConfig) : configs.connectionPoolConfig != null)
+				return false;
+			if (receiverConfig != null ? !receiverConfig.equals(configs.receiverConfig) : configs.receiverConfig != null)
+				return false;
+			if (senderConfig != null ? !senderConfig.equals(configs.senderConfig) : configs.senderConfig != null)
+				return false;
+			if (writerConfig != null ? !writerConfig.equals(configs.writerConfig) : configs.writerConfig != null)
+				return false;
+
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = writerConfig != null ? writerConfig.hashCode() : 0;
+			result = 31 * result + (connectionPoolConfig != null ? connectionPoolConfig.hashCode() : 0);
+			result = 31 * result + (receiverConfig != null ? receiverConfig.hashCode() : 0);
+			result = 31 * result + (senderConfig != null ? senderConfig.hashCode() : 0);
+			return result;
+		}
+
+		@Override
+		public String toString() {
+			return "Configs{" +
+				"writerConfig=" + writerConfig +
+				", connectionPoolConfig=" + connectionPoolConfig +
+				", receiverConfig=" + receiverConfig +
+				", senderConfig=" + senderConfig +
+				'}';
+		}
+	}
 }

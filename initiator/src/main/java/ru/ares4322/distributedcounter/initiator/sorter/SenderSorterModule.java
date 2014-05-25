@@ -4,10 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
-import ru.ares4322.distributedcounter.common.sorter.SenderWriter;
-import ru.ares4322.distributedcounter.common.sorter.SorterService;
-import ru.ares4322.distributedcounter.common.sorter.SorterTask;
-import ru.ares4322.distributedcounter.common.sorter.WriterTask;
+import ru.ares4322.distributedcounter.common.sorter.*;
 import ru.ares4322.distributedcounter.common.sorter.common.SorterServiceImpl;
 import ru.ares4322.distributedcounter.common.sorter.common.SorterTaskImpl;
 import ru.ares4322.distributedcounter.common.sorter.common.WriterTaskImpl;
@@ -15,7 +12,6 @@ import ru.ares4322.distributedcounter.initiator.SenderSorter;
 import ru.ares4322.distributedcounter.initiator.SenderSorterExecutor;
 import ru.ares4322.distributedcounter.initiator.SenderToSorterQueue;
 import ru.ares4322.distributedcounter.initiator.SenderWriterExecutor;
-import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
 
 import javax.inject.Provider;
 import javax.inject.Singleton;
@@ -41,9 +37,11 @@ public class SenderSorterModule extends AbstractModule {
 	@Provides
 	@Singleton
 	@SenderWriter
-	public Writer getWriter(InitiatorConfig config) {
+	public Writer getWriter(
+		@SenderWriter WriterConfig config
+	) {
 		try {
-			return newBufferedWriter(config.getSenderFilePath(), forName("UTF-8"));
+			return newBufferedWriter(config.getFilePath(), forName("UTF-8"));
 		} catch (IOException e) {
 			log.error("receiver writer creation error", e);
 			propagate(e);

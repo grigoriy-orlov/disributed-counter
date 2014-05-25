@@ -2,7 +2,7 @@ package ru.ares4322.distributedcounter.common.receiver.common;
 
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
-import ru.ares4322.distributedcounter.common.cfg.Config;
+import ru.ares4322.distributedcounter.common.receiver.ReceiverConfig;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverService;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverTask;
 
@@ -30,7 +30,7 @@ public class ReceiverServiceImpl implements ReceiverService {
 
 	private static final Logger log = getLogger(ReceiverServiceImpl.class);
 
-	private final Config config;
+	private final ReceiverConfig config;
 	private final ExecutorService taskExecutor;
 	private final Provider<ReceiverTask> taskProvider;
 	//TODO move to module
@@ -44,7 +44,7 @@ public class ReceiverServiceImpl implements ReceiverService {
 
 	@Inject
 	public ReceiverServiceImpl(
-		Config config,
+		ReceiverConfig config,
 		ExecutorService taskExecutor,
 		Provider<ReceiverTask> taskProvider
 	) {
@@ -128,7 +128,7 @@ public class ReceiverServiceImpl implements ReceiverService {
 		serverChannel = open();
 		serverChannel.configureBlocking(false);
 
-		InetSocketAddress isa = new InetSocketAddress(config.getLocalServerAddress(), config.getLocalServerPort());
+		InetSocketAddress isa = new InetSocketAddress(config.getServerAddress(), config.getPort());
 		serverChannel.socket().bind(isa);
 
 		serverChannel.register(socketSelector, OP_ACCEPT);

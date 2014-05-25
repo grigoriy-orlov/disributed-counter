@@ -4,8 +4,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import org.slf4j.Logger;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
+import ru.ares4322.distributedcounter.common.pool.ConnectionPoolConfig;
 import ru.ares4322.distributedcounter.common.pool.common.ConnectionPoolImpl;
-import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
 
 import javax.inject.Singleton;
 
@@ -21,7 +21,7 @@ public class ConnectionPoolModule extends AbstractModule {
 
 	@Provides
 	@Singleton
-	public ConnectionPool getConnectionPool(InitiatorConfig config) {
+	public ConnectionPool getConnectionPool(ConnectionPoolConfig config) {
 		return new ConnectionPoolImpl(config);
 	}
 }

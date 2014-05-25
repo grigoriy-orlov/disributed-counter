@@ -6,6 +6,8 @@
  - add state checking in Cli
  - common service interface
  - fix app stopping
+ - make the same start params for apps
+ - make per-config-parser
  may be
  - config: from class to properties
  - config per service

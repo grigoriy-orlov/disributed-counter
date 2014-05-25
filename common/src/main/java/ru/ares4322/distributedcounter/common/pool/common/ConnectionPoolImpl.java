@@ -1,8 +1,8 @@
 package ru.ares4322.distributedcounter.common.pool.common;
 
 import org.slf4j.Logger;
-import ru.ares4322.distributedcounter.common.cfg.Config;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
+import ru.ares4322.distributedcounter.common.pool.ConnectionPoolConfig;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -21,22 +21,22 @@ public class ConnectionPoolImpl implements ConnectionPool {
 
 	private static final Logger log = getLogger(ConnectionPoolImpl.class);
 
-	private final Config config;
+	private final ConnectionPoolConfig config;
 
 	private BlockingQueue<Socket> queue;
 
 	@Inject
-	public ConnectionPoolImpl(Config config) {
+	public ConnectionPoolImpl(ConnectionPoolConfig config) {
 		this.config = config;
 	}
 
 	@PostConstruct
 	public void init() {
-		queue = new ArrayBlockingQueue<>(config.getSenderThreads());
-		for (int i = 0, l = config.getSenderThreads(); i < l; i++) {
+		queue = new ArrayBlockingQueue<>(config.getSize());
+		for (int i = 0, l = config.getSize(); i < l; i++) {
 			try {
 				Socket socket = SocketFactory.getDefault().createSocket();
-				socket.connect(new InetSocketAddress(getByName(config.getRemoteServerAddress()), config.getRemoteServerPort()));
+				socket.connect(new InetSocketAddress(getByName(config.getServerAddress()), config.getPort()));
 				queue.put(socket);
 			} catch (IOException e) {
 				log.error("socket creating error", e);

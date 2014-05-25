@@ -4,16 +4,12 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
-import ru.ares4322.distributedcounter.common.sender.Sender;
-import ru.ares4322.distributedcounter.common.sender.SenderExecutor;
-import ru.ares4322.distributedcounter.common.sender.SenderService;
-import ru.ares4322.distributedcounter.common.sender.SenderTask;
+import ru.ares4322.distributedcounter.common.sender.*;
 import ru.ares4322.distributedcounter.common.sender.common.SenderImpl;
 import ru.ares4322.distributedcounter.common.sender.common.SenderServiceImpl;
 import ru.ares4322.distributedcounter.common.sender.common.SenderTaskImpl;
 import ru.ares4322.distributedcounter.initiator.InitiatorToSenderQueue;
 import ru.ares4322.distributedcounter.initiator.SenderToSorterQueue;
-import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
 
 import javax.inject.Provider;
 import javax.inject.Singleton;
@@ -43,9 +39,9 @@ public class SenderModule extends AbstractModule {
 	@Provides
 	@Singleton
 	@SenderExecutor
-	public ExecutorService getCounterSenderExecutor(InitiatorConfig config) {
+	public ExecutorService getCounterSenderExecutor(SenderConfig config) {
 		return newFixedThreadPool(
-			config.getSenderThreads(),
+			config.getThreads(),
 			new BasicThreadFactory.Builder().namingPattern("CounterSenderTask-%s").build()
 		);
 	}

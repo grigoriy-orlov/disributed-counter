@@ -13,9 +13,11 @@ import ru.ares4322.distributedcounter.common.cli.Controllable;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverService;
 import ru.ares4322.distributedcounter.common.sender.SenderService;
+import ru.ares4322.distributedcounter.common.sorter.ReceiverWriter;
+import ru.ares4322.distributedcounter.common.sorter.SenderWriter;
 import ru.ares4322.distributedcounter.common.sorter.SorterService;
+import ru.ares4322.distributedcounter.common.sorter.WriterConfig;
 import ru.ares4322.distributedcounter.initiator.cfg.ConfigModule;
-import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
 import ru.ares4322.distributedcounter.initiator.cli.CliModule;
 import ru.ares4322.distributedcounter.initiator.pool.ConnectionPoolModule;
 import ru.ares4322.distributedcounter.initiator.receiver.ReceiverModule;
@@ -65,7 +67,12 @@ public class SenderReceiverTest {
 	private Controllable controllable;
 
 	@Inject
-	private InitiatorConfig config;
+	@ReceiverWriter
+	private WriterConfig receiverWriterConfig;
+
+	@Inject
+	@SenderWriter
+	private WriterConfig senderWriterConfig;
 
 	@Inject
 	private ConnectionPool pool;
@@ -91,7 +98,7 @@ public class SenderReceiverTest {
 
 		sleep(2000);
 
-		assertFileData(config.getReceiverFilePath(), config.getSenderFilePath());
+		assertFileData(receiverWriterConfig.getFilePath(), senderWriterConfig.getFilePath());
 
 		sleep(2000);
 
@@ -101,7 +108,7 @@ public class SenderReceiverTest {
 
 		controllable.stop();
 
-		assertFileData(config.getReceiverFilePath(), config.getSenderFilePath());
+		assertFileData(receiverWriterConfig.getFilePath(), senderWriterConfig.getFilePath());
 	}
 
 	@AfterMethod

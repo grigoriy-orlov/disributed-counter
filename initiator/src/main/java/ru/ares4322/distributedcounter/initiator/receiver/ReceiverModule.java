@@ -4,13 +4,13 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
+import ru.ares4322.distributedcounter.common.receiver.ReceiverConfig;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverExecutor;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverService;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverTask;
 import ru.ares4322.distributedcounter.common.receiver.common.ReceiverServiceImpl;
 import ru.ares4322.distributedcounter.common.receiver.common.ReceiverTaskImpl;
 import ru.ares4322.distributedcounter.initiator.ReceiverToSorterQueue;
-import ru.ares4322.distributedcounter.initiator.cfg.InitiatorConfig;
 
 import javax.inject.Provider;
 import javax.inject.Singleton;
@@ -32,10 +32,10 @@ public class ReceiverModule extends AbstractModule {
 	@Provides
 	@Singleton
 	@ReceiverExecutor
-	public ExecutorService getCounterReceiverExecutor(InitiatorConfig config) {
-		if (config.getReceiverThreads() > 1) {
+	public ExecutorService getCounterReceiverExecutor(ReceiverConfig config) {
+		if (config.getThreads() > 1) {
 			return newFixedThreadPool(
-				config.getReceiverThreads() - 1,
+				config.getThreads() - 1,
 				new BasicThreadFactory.Builder().namingPattern("CounterReceiverTask-%s").build()
 			);
 		} else {
@@ -53,7 +53,7 @@ public class ReceiverModule extends AbstractModule {
 	@Provides
 	@Singleton
 	public ReceiverService getCounterReceiverService(
-		InitiatorConfig config,
+		ReceiverConfig config,
 		@ReceiverExecutor ExecutorService taskExecutor,
 		Provider<ReceiverTask> taskProvider
 	) {
