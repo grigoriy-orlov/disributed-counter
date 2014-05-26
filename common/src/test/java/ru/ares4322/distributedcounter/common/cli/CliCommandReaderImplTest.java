@@ -2,21 +2,21 @@ package ru.ares4322.distributedcounter.common.cli;
 
 import com.google.inject.AbstractModule;
 import org.apache.commons.io.input.CharSequenceInputStream;
-import org.mockito.Mockito;
 import org.testng.annotations.*;
 
 import javax.inject.Inject;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 
 import static java.lang.System.setIn;
 import static java.nio.charset.Charset.defaultCharset;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
+import static org.testng.Assert.assertEquals;
 
 @Guice(modules = {
 	CliCommandReaderImplTest.EchoTestModule.class
 })
-public class CliCommandReaderImplTest {
+public class CliCommandReaderImplTest{
 
 	@Inject
 	private Controllable controllable;
@@ -26,10 +26,9 @@ public class CliCommandReaderImplTest {
 
 	private InputStream in;
 
-
 	@BeforeMethod
 	public void setUp() throws Exception {
-		Mockito.reset(controllable);
+		reset(controllable);
 		in = System.in;
 	}
 
@@ -38,14 +37,25 @@ public class CliCommandReaderImplTest {
 		setIn(in);
 	}
 
+	//FIXME reflection is evil
 	@Test(dataProvider = "commands")
-	public void testRead(String command) throws Exception {
-		try (CharSequenceInputStream stream = new CharSequenceInputStream(command + "\n", defaultCharset())) {
+	public void testRead(String lastCommand, String newCommand, boolean isInvoke, boolean isExit) throws Exception {
+		Field field = CliCommandReaderImpl.class.getDeclaredField("lastCommand");
+		field.setAccessible(true);
+		field.set(reader, lastCommand);
+		field.setAccessible(false);
+
+		try (CharSequenceInputStream stream = new CharSequenceInputStream(newCommand + "\n", defaultCharset())) {
 			setIn(stream);
 		}
-
 		reader.readCommand();
-		verify(controllable).getClass().getMethod(command).invoke(controllable);
+
+		if (isInvoke) {
+			verify(controllable).getClass().getMethod(newCommand).invoke(controllable);
+		} else {
+			verify(controllable, never()).getClass().getMethod(newCommand).invoke(controllable);
+		}
+		assertEquals(reader.isExit(), isExit);
 	}
 
 	//TODO add more test cases
@@ -53,9 +63,18 @@ public class CliCommandReaderImplTest {
 	@DataProvider
 	public Object[][] commands() {
 		return new Object[][]{
-			{"start"},
-			{"stop"},
-			{"exit"}
+			{"new", "start", true, false},
+			{"new", "stop", false, false},
+			{"new", "exit", true, true},
+			{"start", "start", false, false},
+			{"start", "stop", true, false},
+			{"start", "exit", true, true},
+			{"stop", "start", true, false},
+			{"stop", "stop", false, false},
+			{"stop", "exit", true, true},
+			{"exit", "start", false, true},
+			{"exit", "stop", false, true},
+			{"exit", "exit", false, true},
 		};
 	}
 

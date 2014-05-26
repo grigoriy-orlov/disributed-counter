@@ -19,6 +19,7 @@ public class CliCommandReaderImpl implements CliCommandReader {
 	private final Controllable controllable;
 
 	private boolean isExit;
+	private String lastCommand = "new";
 
 	@Inject
 	public CliCommandReaderImpl(Controllable controllable) {
@@ -28,21 +29,70 @@ public class CliCommandReaderImpl implements CliCommandReader {
 	@Override
 	public void readCommand() {
 		//TODO move to init/destroy
-		try(BufferedReader reader = new BufferedReader(new InputStreamReader(new CloseShieldInputStream(in)))) {
-			String line = reader.readLine();
-			switch (line) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new CloseShieldInputStream(in)))) {
+			String command = reader.readLine();
+			switch (lastCommand) {
+				case "new":
+					switch (command) {
+						case "start":
+							controllable.start();
+							lastCommand = command;
+							isExit = false;
+							break;
+						case "stop":
+							isExit = false;
+							break;
+						case "exit":
+							controllable.exit();
+							lastCommand = command;
+							isExit = true;
+							return;
+						default:
+							log.error("unknown command: {}", command);
+					}
+					break;
 				case "start":
-					controllable.start();
+					switch (command) {
+						case "start":
+							isExit = false;
+							break;
+						case "stop":
+							controllable.stop();
+							lastCommand = command;
+							isExit = false;
+							break;
+						case "exit":
+							controllable.exit();
+							lastCommand = command;
+							isExit = true;
+							return;
+						default:
+							log.error("unknown command: {}", command);
+					}
 					break;
 				case "stop":
-					controllable.stop();
+					switch (command) {
+						case "start":
+							controllable.start();
+							lastCommand = command;
+							isExit = false;
+							break;
+						case "stop":
+							isExit = false;
+							break;
+						case "exit":
+							controllable.exit();
+							lastCommand = command;
+							isExit = true;
+							return;
+						default:
+							log.error("unknown command: {}", command);
+					}
 					break;
 				case "exit":
+					lastCommand = command;
 					isExit = true;
-					controllable.exit();
 					return;
-				default:
-					log.error("unknown command: {}", line);
 			}
 		} catch (IOException e) {
 			log.error("cli reading error", e);

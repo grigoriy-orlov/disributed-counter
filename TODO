@@ -2,7 +2,7 @@
  - move Executors to module
  - move Executor from ControllableImpl
  - pool like service
- - services must be undependent on startup
+ - services must be ndependent on startup
  - add state checking in Cli
  - common service interface
  - fix app stopping
@@ -14,4 +14,5 @@
  - config: from class to properties
  - config per service
  - add service init-on-startup (@PostConstruct)
+ - add instant queue size to JMX
 
