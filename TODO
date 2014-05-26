@@ -9,6 +9,7 @@
  - make the same start params for apps
  - make per-config-parser
  - move queue size to config
+ - @BlackHoleQueue -> normal name
  may be
  - config: from class to properties
  - config per service
