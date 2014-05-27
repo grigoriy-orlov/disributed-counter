@@ -1,6 +1,7 @@
 package ru.ares4322.distributedcounter.common.sender.common;
 
 import org.slf4j.Logger;
+import ru.ares4322.distributedcounter.common.domain.Packet;
 import ru.ares4322.distributedcounter.common.sender.Sender;
 import ru.ares4322.distributedcounter.common.sender.SenderTask;
 
@@ -14,7 +15,7 @@ public class SenderTaskImpl implements SenderTask {
 
 	private final Sender sender;
 
-	private int counter;
+	private Packet packet;
 
 	@Inject
 	public SenderTaskImpl(
@@ -26,12 +27,12 @@ public class SenderTaskImpl implements SenderTask {
 	@Override
 	public void run() {
 		log.debug("send data and write to file");
-		sender.send(counter);
+		sender.send(packet);
 	}
 
 	@Override
-	public void setCounter(int counter) {
-		this.counter = counter;
+	public void setPacket(Packet packet) {
+		this.packet = packet;
 	}
 
 }

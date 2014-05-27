@@ -2,6 +2,7 @@ package ru.ares4322.distributedcounter.common.sender.common;
 
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
+import ru.ares4322.distributedcounter.common.domain.Packet;
 import ru.ares4322.distributedcounter.common.sender.SenderService;
 import ru.ares4322.distributedcounter.common.sender.SenderTask;
 
@@ -19,8 +20,8 @@ public class SenderServiceImpl implements SenderService {
 
 	private final Provider<SenderTask> counterSenderTaskProvider;
 	private final ExecutorService taskExecutor;
-	private final BlockingQueue<Integer> inputQueue;
-	private final BlockingQueue<Integer> outputQueue;
+	private final BlockingQueue<Packet> inputQueue;
+	private final BlockingQueue<Packet> outputQueue;
 	//TODO move to module
 	private final ExecutorService serviceExecutor = newSingleThreadExecutor(
 		new BasicThreadFactory.Builder().namingPattern("CounterSenderService-%s").build()
@@ -32,8 +33,8 @@ public class SenderServiceImpl implements SenderService {
 	public SenderServiceImpl(
 		Provider<SenderTask> counterSenderTaskProvider,
 		ExecutorService taskExecutor,
-		BlockingQueue<Integer> inputQueue,
-		BlockingQueue<Integer> outputQueue
+		BlockingQueue<Packet> inputQueue,
+		BlockingQueue<Packet> outputQueue
 	) {
 		this.counterSenderTaskProvider = counterSenderTaskProvider;
 		this.taskExecutor = taskExecutor;
@@ -76,7 +77,7 @@ public class SenderServiceImpl implements SenderService {
 		int t = tasks;
 		ExecutorCompletionService<Integer> completionService = new ExecutorCompletionService<>(taskExecutor, new ArrayBlockingQueue<Future<Integer>>(tasks));
 		while (true) {
-			Integer next = null;
+			Packet next = null;
 			try {
 				next = inputQueue.take();
 			} catch (InterruptedException e) {
@@ -90,7 +91,7 @@ public class SenderServiceImpl implements SenderService {
 			}
 			log.debug("get counter (value={}) and init task", next);
 			SenderTask task = counterSenderTaskProvider.get();
-			task.setCounter(next);
+			task.setPacket(next);
 			completionService.submit(task, 1);
 			try {
 				outputQueue.put(next);

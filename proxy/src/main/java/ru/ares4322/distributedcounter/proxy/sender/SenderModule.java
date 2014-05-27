@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
+import ru.ares4322.distributedcounter.common.domain.Packet;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
 import ru.ares4322.distributedcounter.common.sender.Sender;
 import ru.ares4322.distributedcounter.common.sender.SenderConfig;
@@ -65,8 +66,8 @@ public class SenderModule extends AbstractModule {
 	public SenderService getEchoSenderService(
 		@Echo Provider<SenderTask> counterSenderTaskProvider,
 		@EchoSenderExecutor ExecutorService taskExecutor,
-		@InitiatorReceiverToEchoSenderQueue BlockingQueue<Integer> inputQueue,
-		@BlackHoleQueue BlockingQueue<Integer> outputQueue
+		@InitiatorReceiverToEchoSenderQueue BlockingQueue<Packet> inputQueue,
+		@BlackHoleQueue BlockingQueue<Packet> outputQueue
 	) {
 		return new SenderServiceImpl(
 			counterSenderTaskProvider,
@@ -112,8 +113,8 @@ public class SenderModule extends AbstractModule {
 	public SenderService getInitiatorSenderService(
 		@Initiator Provider<SenderTask> counterSenderTaskProvider,
 		@InitiatorSenderExecutor ExecutorService taskExecutor,
-		@EchoReceiverToInitiatorSenderQueue BlockingQueue<Integer> inputQueue,
-		@BlackHoleQueue BlockingQueue<Integer> outputQueue
+		@EchoReceiverToInitiatorSenderQueue BlockingQueue<Packet> inputQueue,
+		@BlackHoleQueue BlockingQueue<Packet> outputQueue
 	) {
 		return new SenderServiceImpl(
 			counterSenderTaskProvider,

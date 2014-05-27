@@ -2,6 +2,7 @@ package ru.ares4322.distributedcounter.initiator.initiator;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import ru.ares4322.distributedcounter.common.domain.Packet;
 import ru.ares4322.distributedcounter.initiator.InitiatorToSenderQueue;
 
 import javax.inject.Singleton;
@@ -16,7 +17,7 @@ public class InitiatorModule extends AbstractModule {
 	@Provides
 	@Singleton
 	public InitiatorService getInitiatorService(
-		@InitiatorToSenderQueue BlockingQueue<Integer> outputQueue
+		@InitiatorToSenderQueue BlockingQueue<Packet> outputQueue
 	) {
 		return new InitiatorServiceImpl(outputQueue);
 	}

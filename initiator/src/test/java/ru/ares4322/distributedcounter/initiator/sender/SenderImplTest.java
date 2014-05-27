@@ -9,6 +9,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
+import ru.ares4322.distributedcounter.common.domain.Packet;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
 import ru.ares4322.distributedcounter.common.sender.Sender;
 import ru.ares4322.distributedcounter.initiator.cfg.ConfigModule;
@@ -18,7 +19,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 import static org.mockito.Mockito.*;
-import static ru.ares4322.distributedcounter.common.util.Utils.intToNetworkByteArray;
+import static ru.ares4322.distributedcounter.common.util.PacketParser.packetToBytes;
 import static ru.ares4322.distributedcounter.initiator.cfg.CliParams.*;
 
 @Guice(
@@ -48,15 +49,15 @@ public class SenderImplTest {
 
 	@Test
 	public void send() throws Exception {
-		int counter = 10000;
+		Packet packet = new Packet(1, 10000);
 		Socket socket = mock(Socket.class);
 		OutputStream stream = mock(OutputStream.class);
 
 		when(socket.getOutputStream()).thenReturn(stream);
 		when(pool.get()).thenReturn(socket);
-		sender.send(counter);
+		sender.send(packet);
 
-		verify(stream).write(intToNetworkByteArray(counter));
+		verify(stream).write(packetToBytes(packet));
 	}
 
 	public static class TestModule extends AbstractModule {

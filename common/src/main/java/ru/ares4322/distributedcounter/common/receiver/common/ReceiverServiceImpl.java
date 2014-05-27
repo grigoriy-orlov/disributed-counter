@@ -2,6 +2,7 @@ package ru.ares4322.distributedcounter.common.receiver.common;
 
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
+import ru.ares4322.distributedcounter.common.domain.Packet;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverConfig;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverService;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverTask;
@@ -172,14 +173,14 @@ public class ReceiverServiceImpl implements ReceiverService {
 
 		int i = 0;
 		//TODO beautify
-		while (numRead >= 4) {
-			byte[] data = new byte[4];
-			arraycopy(readBuffer.array(), i, data, 0, 4);
+		while (numRead >= Packet.size) {
+			byte[] data = new byte[Packet.size];
+			arraycopy(readBuffer.array(), i, data, 0, Packet.size);
 			ReceiverTask task = taskProvider.get();
 			task.setData(data);
 			taskExecutor.execute(task);
-			i += 4;
-			numRead -= 4;
+			i += Packet.size;
+			numRead -= Packet.size;
 		}
 	}
 

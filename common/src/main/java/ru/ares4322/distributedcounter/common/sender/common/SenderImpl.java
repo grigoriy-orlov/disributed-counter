@@ -1,6 +1,7 @@
 package ru.ares4322.distributedcounter.common.sender.common;
 
 import org.slf4j.Logger;
+import ru.ares4322.distributedcounter.common.domain.Packet;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
 import ru.ares4322.distributedcounter.common.sender.Sender;
 
@@ -10,7 +11,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import static ru.ares4322.distributedcounter.common.util.Utils.intToNetworkByteArray;
+import static ru.ares4322.distributedcounter.common.util.PacketParser.packetToBytes;
 
 public class SenderImpl implements Sender {
 
@@ -24,7 +25,7 @@ public class SenderImpl implements Sender {
 	}
 
 	@Override
-	public void send(int counter) {
+	public void send(Packet packet) {
 		Socket socket;
 		//FIXME poll->take
 		while ((socket = pool.get()) == null) {
@@ -34,9 +35,7 @@ public class SenderImpl implements Sender {
 			OutputStream outputStream = socket.getOutputStream();
 			log.debug("send data");
 
-			byte[] bytes;
-			bytes = intToNetworkByteArray(counter);
-			outputStream.write(bytes);
+			outputStream.write(packetToBytes(packet));
 			outputStream.flush();  //TODO remove
 			//TODO need close?
 		} catch (IOException e) {

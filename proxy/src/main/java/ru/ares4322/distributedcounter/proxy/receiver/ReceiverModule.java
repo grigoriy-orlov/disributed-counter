@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
+import ru.ares4322.distributedcounter.common.domain.Packet;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverConfig;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverService;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverTask;
@@ -50,7 +51,7 @@ public class ReceiverModule extends AbstractModule {
 	@Provides
 	@Echo
 	public ReceiverTask getEchoReceiverTask(
-		@EchoReceiverToInitiatorSenderQueue BlockingQueue<Integer> outputQueue
+		@EchoReceiverToInitiatorSenderQueue BlockingQueue<Packet> outputQueue
 	) {
 		return new ReceiverTaskImpl(outputQueue);
 	}
@@ -85,7 +86,7 @@ public class ReceiverModule extends AbstractModule {
 	@Provides
 	@Initiator
 	public ReceiverTask getInitiatorReceiverTask(
-		@InitiatorReceiverToEchoSenderQueue BlockingQueue<Integer> outputQueue
+		@InitiatorReceiverToEchoSenderQueue BlockingQueue<Packet> outputQueue
 	) {
 		return new ReceiverTaskImpl(outputQueue);
 	}

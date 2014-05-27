@@ -10,6 +10,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
+import ru.ares4322.distributedcounter.common.domain.Packet;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverService;
 import ru.ares4322.distributedcounter.common.sender.Sender;
@@ -87,7 +88,7 @@ public class ReceiverServiceImplTest {
 	@Test(enabled = false)
 	public void run() throws Exception {
 		for (int number : numbers) {
-			sender.send(number);
+			sender.send(new Packet(1, number));
 		}
 
 		sleep(3000);    //TODO find better way

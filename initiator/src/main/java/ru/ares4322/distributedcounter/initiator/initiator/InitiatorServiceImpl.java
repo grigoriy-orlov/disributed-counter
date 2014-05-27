@@ -2,6 +2,7 @@ package ru.ares4322.distributedcounter.initiator.initiator;
 
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
+import ru.ares4322.distributedcounter.common.domain.Packet;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -15,7 +16,7 @@ class InitiatorServiceImpl implements InitiatorService {
 
 	private static final Logger log = getLogger(InitiatorServiceImpl.class);
 
-	private final BlockingQueue<Integer> outputQueue;
+	private final BlockingQueue<Packet> outputQueue;
 	//TODO move to module
 	private final ExecutorService serviceExecutor = newSingleThreadExecutor(
 		new BasicThreadFactory.Builder().namingPattern("InitiatorService-%s").build()
@@ -26,7 +27,7 @@ class InitiatorServiceImpl implements InitiatorService {
 	private Integer maxCounter;
 	private ReentrantLock lock = new ReentrantLock(true);
 
-	public InitiatorServiceImpl(BlockingQueue<Integer> outputQueue) {
+	public InitiatorServiceImpl(BlockingQueue<Packet> outputQueue) {
 		this.outputQueue = outputQueue;
 	}
 
@@ -81,7 +82,7 @@ class InitiatorServiceImpl implements InitiatorService {
 				}
 				log.debug("get counter (value={}) and init task", next);
 				try {
-					outputQueue.put(next);
+					outputQueue.put(new Packet(1, next));
 				} catch (InterruptedException e) {
 					//FIXME now number will be lost
 					log.error("output queue putting error", e);
