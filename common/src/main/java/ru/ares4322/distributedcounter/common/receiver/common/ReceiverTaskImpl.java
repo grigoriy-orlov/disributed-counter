@@ -35,6 +35,9 @@ public class ReceiverTaskImpl implements ReceiverTask {
 		Packet packet = bytesToPacket(data);
 		log.debug("write num to file (value = {})", packet.getNumber());
 		try {
+			logState(packet);
+			if (packet.getState() != 2)
+				return;
 			outputQueue.put(packet);
 			//FIXME now number will be lost
 		} catch (InterruptedException e) {
@@ -47,4 +50,24 @@ public class ReceiverTaskImpl implements ReceiverTask {
 		this.data = data;
 	}
 
+	private void logState(Packet packet) {
+		switch (packet.getState()) {
+			case 0:
+				log.info("initiator init");
+				break;
+			case 1:
+				log.info("initiator start");
+				break;
+			case 2:
+				break;
+			case 3:
+				log.info("initiator stop");
+				break;
+			case 4:
+				log.info("initiator exit");
+				break;
+			default:
+				throw new IllegalStateException("unknown state: " + packet.getState());
+		}
+	}
 }

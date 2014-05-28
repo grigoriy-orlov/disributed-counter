@@ -26,6 +26,8 @@ class InitiatorServiceImpl implements InitiatorService {
 	private AtomicInteger counter = new AtomicInteger();
 	private Integer maxCounter;
 	private ReentrantLock lock = new ReentrantLock(true);
+	//TODO imt -> Enum
+	private volatile int state; // 0 - init, 1 - start, 2 - run, 3 - stop, 4 - exit
 
 	public InitiatorServiceImpl(BlockingQueue<Packet> outputQueue) {
 		this.outputQueue = outputQueue;
@@ -34,6 +36,11 @@ class InitiatorServiceImpl implements InitiatorService {
 	@Override
 	public void init() {
 		log.debug("init");
+		try {
+			outputQueue.put(new Packet(state, -1));
+		} catch (InterruptedException e) {
+			log.error("output queue putting error", e);
+		}
 		if (!lock.isLocked()) {
 			//FIXME not atomicity
 			lock.lock();
@@ -43,6 +50,13 @@ class InitiatorServiceImpl implements InitiatorService {
 	@Override
 	public void startUp() {
 		log.debug("startUp");
+		state = 1;
+		try {
+			outputQueue.put(new Packet(state, -1));
+		} catch (InterruptedException e) {
+			log.error("output queue putting error", e);
+		}
+		state = 2;
 		if (lock.isLocked()) {
 			//FIXME not atomicity
 			lock.unlock();
@@ -53,8 +67,13 @@ class InitiatorServiceImpl implements InitiatorService {
 	@Override
 	public void stop() {
 		log.debug("start suspend");
-		//FIXME not atomicity
 		lock.lock();
+		state = 3;
+		try {
+			outputQueue.put(new Packet(state, -1));
+		} catch (InterruptedException e) {
+			log.error("output queue putting error", e);
+		}
 		log.debug("finish suspend");
 	}
 
@@ -62,9 +81,14 @@ class InitiatorServiceImpl implements InitiatorService {
 	public void shutDown() {
 		log.debug("shutDown");
 		lock.lock();
-
+		state = 4;
 		if (null != serviceExecutor) {
-			serviceExecutor.shutdown();
+			serviceExecutor.shutdownNow();
+		}
+		try {
+			outputQueue.put(new Packet(state, -1));
+		} catch (InterruptedException e) {
+			log.error("output queue putting error", e);
 		}
 		log.debug("shutDown complete");
 	}
@@ -82,7 +106,7 @@ class InitiatorServiceImpl implements InitiatorService {
 				}
 				log.debug("get counter (value={}) and init task", next);
 				try {
-					outputQueue.put(new Packet(1, next));
+					outputQueue.put(new Packet(state, next));
 				} catch (InterruptedException e) {
 					//FIXME now number will be lost
 					log.error("output queue putting error", e);

@@ -93,12 +93,14 @@ public class SenderServiceImpl implements SenderService {
 			SenderTask task = counterSenderTaskProvider.get();
 			task.setPacket(next);
 			completionService.submit(task, 1);
-			try {
-				outputQueue.put(next);
-				//FIXME now number will be lost
-			} catch (InterruptedException e) {
-				log.error("output queue putting error", e);
-				break;
+			if (next.getState() == 2) {
+				try {
+					outputQueue.put(next);
+					//FIXME now number will be lost
+				} catch (InterruptedException e) {
+					log.error("output queue putting error", e);
+					break;
+				}
 			}
 			t--;
 			if (t == 0) {

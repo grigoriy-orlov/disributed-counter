@@ -1,9 +1,9 @@
  must
+ - add proper InterruptException handling
  - move Executors to module
  - move Executor from ControllableImpl
  - pool like service
- - services must be ndependent on startup
- - add state checking in Cli
+ - services must be independent on startup
  - common service interface
  - fix app stopping
  - make the same start params for apps
