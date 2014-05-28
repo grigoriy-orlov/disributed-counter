@@ -54,7 +54,7 @@ class InitiatorServiceImpl implements InitiatorService {
 	public void stop() {
 		log.debug("start suspend");
 		//FIXME not atomicity
-		while (lock.tryLock() != true) ;
+		lock.lock();
 		log.debug("finish suspend");
 	}
 
