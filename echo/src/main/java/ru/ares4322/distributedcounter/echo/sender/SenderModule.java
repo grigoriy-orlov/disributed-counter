@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
+import ru.ares4322.distributedcounter.common.domain.Packet;
 import ru.ares4322.distributedcounter.common.sender.*;
 import ru.ares4322.distributedcounter.common.sender.common.SenderImpl;
 import ru.ares4322.distributedcounter.common.sender.common.SenderServiceImpl;
@@ -58,8 +59,8 @@ public class SenderModule extends AbstractModule {
 	public SenderService getSenderService(
 		Provider<SenderTask> senderTaskProvider,
 		@SenderExecutor ExecutorService taskExecutor,
-		@ReceiverToSenderQueue BlockingQueue<Integer> inputQueue,
-		@BlackHoleQueue BlockingQueue<Integer> outputQueue
+		@ReceiverToSenderQueue BlockingQueue<Packet> inputQueue,
+		@BlackHoleQueue BlockingQueue<Packet> outputQueue
 	) {
 		return new SenderServiceImpl(
 			senderTaskProvider,
