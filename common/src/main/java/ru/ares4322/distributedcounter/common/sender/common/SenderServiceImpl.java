@@ -107,7 +107,7 @@ public class SenderServiceImpl implements SenderService {
 					t++;
 				} catch (Exception e) {
 					log.error("task taking error", e);
-					//TODO right?
+					t++;
 				}
 			}
 		}
