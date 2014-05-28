@@ -6,12 +6,15 @@ import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverService;
 import ru.ares4322.distributedcounter.common.sender.SenderService;
 import ru.ares4322.distributedcounter.common.sorter.SorterService;
+import ru.ares4322.distributedcounter.initiator.Exit;
 import ru.ares4322.distributedcounter.initiator.ReceiverSorter;
 import ru.ares4322.distributedcounter.initiator.SenderSorter;
+import ru.ares4322.distributedcounter.initiator.initiator.ExitService;
 import ru.ares4322.distributedcounter.initiator.initiator.InitiatorService;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -24,7 +27,9 @@ class ControllableImpl implements Controllable {
 	private final ReceiverService receiverService;
 	private SorterService senderSorterService;
 	private final SorterService receiverSorterService;
+	private final ExitService exitService;
 	private final ConnectionPool connectionPool;
+	private final CountDownLatch exitLatch;
 
 	@Inject
 	public ControllableImpl(
@@ -33,14 +38,18 @@ class ControllableImpl implements Controllable {
 		ReceiverService receiverService,
 		@SenderSorter SorterService senderSorterService,
 		@ReceiverSorter SorterService receiverSorterService,
-		ConnectionPool connectionPool
+		ExitService exitService,
+		ConnectionPool connectionPool,
+		@Exit CountDownLatch exitLatch
 	) {
 		this.initiatorService = initiatorService;
 		this.senderService = senderService;
 		this.receiverService = receiverService;
 		this.senderSorterService = senderSorterService;
 		this.receiverSorterService = receiverSorterService;
+		this.exitService = exitService;
 		this.connectionPool = connectionPool;
+		this.exitLatch = exitLatch;
 	}
 
 	@Override
@@ -50,6 +59,7 @@ class ControllableImpl implements Controllable {
 		senderService.init();
 		receiverService.init();
 		connectionPool.init();
+		exitService.init();
 	}
 
 	@Override
@@ -60,6 +70,7 @@ class ControllableImpl implements Controllable {
 		senderSorterService.startUp();
 		receiverSorterService.startUp();
 		initiatorService.startUp();
+		exitService.startUp();
 	}
 
 	@Override
@@ -72,6 +83,12 @@ class ControllableImpl implements Controllable {
 	public void exit() {
 		log.info("exit counter sender");
 		initiatorService.shutDown();
+		try {
+			exitLatch.await();
+		} catch (InterruptedException e) {
+			log.error("exit latch awaiting error");
+		}
+		exitService.shutDown();
 		senderService.shutDown();
 		receiverService.shutDown();
 		receiverSorterService.shutDown();
@@ -81,5 +98,6 @@ class ControllableImpl implements Controllable {
 		} catch (IOException e) {
 			log.error("connection pool closing error", e);
 		}
+		log.info("finish counter sender");
 	}
 }
