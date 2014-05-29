@@ -11,5 +11,7 @@ public interface ConnectionPool extends Closeable {
 
 	void init();
 
+	void start();
+
 	int size();
 }

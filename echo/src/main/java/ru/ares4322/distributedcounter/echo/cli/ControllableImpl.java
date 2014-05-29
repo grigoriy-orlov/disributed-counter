@@ -48,6 +48,7 @@ class ControllableImpl implements Controllable {
 		senderService.startUp();
 		receiverService.startUp();
 		sorterService.startUp();
+		connectionPool.start();
 	}
 
 	@Override

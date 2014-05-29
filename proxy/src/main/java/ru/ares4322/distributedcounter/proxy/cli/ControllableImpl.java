@@ -59,6 +59,8 @@ class ControllableImpl implements Controllable {
 		initiatorSenderService.startUp();
 		echoReceiverService.startUp();
 		initiatorReceiverService.startUp();
+		echoConnectionPool.start();
+		initiatorConnectionPool.start();
 	}
 
 	@Override

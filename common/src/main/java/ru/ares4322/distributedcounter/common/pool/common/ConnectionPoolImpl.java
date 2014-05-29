@@ -25,6 +25,8 @@ public class ConnectionPoolImpl implements ConnectionPool {
 
 	private BlockingQueue<Socket> queue;
 
+	private int state; // 1 - inited, 2 - run, 3 - closed
+
 	@Inject
 	public ConnectionPoolImpl(ConnectionPoolConfig config) {
 		this.config = config;
@@ -32,16 +34,24 @@ public class ConnectionPoolImpl implements ConnectionPool {
 
 	@PostConstruct
 	public void init() {
+		state = 1;
 		queue = new ArrayBlockingQueue<>(config.getSize());
-		for (int i = 0, l = config.getSize(); i < l; i++) {
-			try {
-				Socket socket = SocketFactory.getDefault().createSocket();
-				socket.connect(new InetSocketAddress(getByName(config.getServerAddress()), config.getPort()));
-				queue.put(socket);
-			} catch (IOException e) {
-				log.error("socket creating error", e);
-			} catch (InterruptedException e) {
-				log.error("socket pool adding error", e);
+	}
+
+	@Override
+	public void start() {
+		if (state != 2) {
+			state = 2;
+			for (int i = 0, l = config.getSize(); i < l; i++) {
+				try {
+					Socket socket = SocketFactory.getDefault().createSocket();
+					socket.connect(new InetSocketAddress(getByName(config.getServerAddress()), config.getPort()));
+					queue.put(socket);
+				} catch (IOException e) {
+					log.error("socket creating error", e);
+				} catch (InterruptedException e) {
+					log.error("socket pool adding error", e);
+				}
 			}
 		}
 	}
@@ -64,6 +74,7 @@ public class ConnectionPoolImpl implements ConnectionPool {
 
 	@Override
 	public void close() {
+		state = 3;
 		for (Socket socket : queue) {
 			try {
 				socket.close();

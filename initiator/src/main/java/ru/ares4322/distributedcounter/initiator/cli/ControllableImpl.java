@@ -69,6 +69,7 @@ class ControllableImpl implements Controllable {
 		receiverService.startUp();
 		senderSorterService.startUp();
 		receiverSorterService.startUp();
+		connectionPool.start();
 		initiatorService.startUp();
 		exitService.startUp();
 	}
