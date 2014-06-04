@@ -1,5 +1,5 @@
  must
- - add proper InterruptException handling -> add sequential service shutdown (use exitListener.onExit())
+ - make transfer state logging ing proxy
  - move Executors to module
  - move Executor from ControllableImpl
  - pool like service

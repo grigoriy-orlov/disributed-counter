@@ -12,5 +12,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Qualifier
 @Retention(RUNTIME)
 @Target({FIELD, METHOD, PARAMETER})
-public @interface ReceiverToSorterQueue {
+public @interface SenderToSorterQueue {
 }

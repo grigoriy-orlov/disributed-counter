@@ -24,7 +24,7 @@ public class QueueModule extends AbstractModule {
 
 	@Provides
 	@Singleton
-	@ReceiverToSorterQueue
+	@SenderToSorterQueue
 	public BlockingQueue<Packet> getReceiverSorterQueue() {
 		return newArrayBlockingQueue(20000);
 	}

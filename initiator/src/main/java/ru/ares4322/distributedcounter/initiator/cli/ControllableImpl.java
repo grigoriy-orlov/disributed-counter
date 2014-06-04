@@ -87,7 +87,7 @@ class ControllableImpl implements Controllable {
 	public void exit() {
 		log.info("exit counter sender");
 		initiatorService.shutDown();
-		awaitUninterruptibly(exitLatch);
+		awaitUninterruptibly(exitLatch, 3, SECONDS);
 		sleepUninterruptibly(3, SECONDS);
 		exitService.shutDown();
 		senderService.shutDown();

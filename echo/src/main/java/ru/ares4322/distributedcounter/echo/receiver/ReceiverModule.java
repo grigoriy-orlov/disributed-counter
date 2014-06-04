@@ -11,7 +11,7 @@ import ru.ares4322.distributedcounter.common.receiver.ReceiverService;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverTask;
 import ru.ares4322.distributedcounter.common.receiver.common.ReceiverServiceImpl;
 import ru.ares4322.distributedcounter.common.receiver.common.ReceiverTaskImpl;
-import ru.ares4322.distributedcounter.echo.ReceiverToSorterQueue;
+import ru.ares4322.distributedcounter.echo.ReceiverToSenderQueue;
 
 import javax.inject.Provider;
 import javax.inject.Singleton;
@@ -46,7 +46,7 @@ public class ReceiverModule extends AbstractModule {
 
 	@Provides
 	public ReceiverTask getReceiverTask(
-		@ReceiverToSorterQueue BlockingQueue<Packet> outputQueue
+		@ReceiverToSenderQueue BlockingQueue<Packet> outputQueue
 	) {
 		return new ReceiverTaskImpl(outputQueue);
 	}

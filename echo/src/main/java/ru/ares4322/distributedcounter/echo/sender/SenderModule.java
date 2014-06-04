@@ -9,8 +9,8 @@ import ru.ares4322.distributedcounter.common.sender.*;
 import ru.ares4322.distributedcounter.common.sender.common.SenderImpl;
 import ru.ares4322.distributedcounter.common.sender.common.SenderServiceImpl;
 import ru.ares4322.distributedcounter.common.sender.common.SenderTaskImpl;
-import ru.ares4322.distributedcounter.echo.BlackHoleQueue;
 import ru.ares4322.distributedcounter.echo.ReceiverToSenderQueue;
+import ru.ares4322.distributedcounter.echo.SenderToSorterQueue;
 
 import javax.inject.Provider;
 import javax.inject.Singleton;
@@ -60,7 +60,7 @@ public class SenderModule extends AbstractModule {
 		Provider<SenderTask> senderTaskProvider,
 		@SenderExecutor ExecutorService taskExecutor,
 		@ReceiverToSenderQueue BlockingQueue<Packet> inputQueue,
-		@BlackHoleQueue BlockingQueue<Packet> outputQueue
+		@SenderToSorterQueue BlockingQueue<Packet> outputQueue
 	) {
 		return new SenderServiceImpl(
 			senderTaskProvider,

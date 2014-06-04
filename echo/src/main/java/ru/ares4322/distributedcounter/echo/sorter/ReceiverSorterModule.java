@@ -11,7 +11,7 @@ import ru.ares4322.distributedcounter.common.sorter.common.SorterTaskImpl;
 import ru.ares4322.distributedcounter.common.sorter.common.WriterTaskImpl;
 import ru.ares4322.distributedcounter.echo.ReceiverSorter;
 import ru.ares4322.distributedcounter.echo.ReceiverSorterExecutor;
-import ru.ares4322.distributedcounter.echo.ReceiverToSorterQueue;
+import ru.ares4322.distributedcounter.echo.SenderToSorterQueue;
 import ru.ares4322.distributedcounter.echo.ReceiverWriterExecutor;
 
 import javax.inject.Provider;
@@ -71,7 +71,7 @@ public class ReceiverSorterModule extends AbstractModule {
 	@Provides
 	@Singleton
 	public SorterTask getReceiverSorterTask(
-		@ReceiverToSorterQueue BlockingQueue<Packet> inputQueue,
+		@SenderToSorterQueue BlockingQueue<Packet> inputQueue,
 		@ReceiverWriterExecutor ExecutorService executor,
 		@ReceiverSorter Provider<WriterTask> writerTaskProvider
 	) {
