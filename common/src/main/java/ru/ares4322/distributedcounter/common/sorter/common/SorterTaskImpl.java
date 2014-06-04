@@ -68,9 +68,8 @@ public class SorterTaskImpl implements SorterTask {
 						log.error("try to write to free array");
 					}
 				}
-				//FIXME now number will be lost
 			} catch (InterruptedException e) {
-				log.error("input queue taking error", e);
+				log.error("input queue taking error, finish", e);
 				break;
 			}
 		}

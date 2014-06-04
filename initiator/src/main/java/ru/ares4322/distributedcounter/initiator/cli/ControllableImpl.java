@@ -16,6 +16,9 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
+import static com.google.common.util.concurrent.Uninterruptibles.awaitUninterruptibly;
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 class ControllableImpl implements Controllable {
@@ -84,11 +87,8 @@ class ControllableImpl implements Controllable {
 	public void exit() {
 		log.info("exit counter sender");
 		initiatorService.shutDown();
-		try {
-			exitLatch.await();
-		} catch (InterruptedException e) {
-			log.error("exit latch awaiting error");
-		}
+		awaitUninterruptibly(exitLatch);
+		sleepUninterruptibly(3, SECONDS);
 		exitService.shutDown();
 		senderService.shutDown();
 		receiverService.shutDown();

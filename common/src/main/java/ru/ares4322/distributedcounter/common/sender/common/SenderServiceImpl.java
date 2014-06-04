@@ -24,7 +24,7 @@ public class SenderServiceImpl implements SenderService {
 	private final BlockingQueue<Packet> outputQueue;
 	//TODO move to module
 	private final ExecutorService serviceExecutor = newSingleThreadExecutor(
-		new BasicThreadFactory.Builder().namingPattern("CounterSenderService-%s").build()
+		new BasicThreadFactory.Builder().namingPattern("CounterSenderService-%s").daemon(true).build()
 	);
 
 	private boolean inWork;
@@ -77,43 +77,33 @@ public class SenderServiceImpl implements SenderService {
 		int t = tasks;
 		ExecutorCompletionService<Integer> completionService = new ExecutorCompletionService<>(taskExecutor, new ArrayBlockingQueue<Future<Integer>>(tasks));
 		while (true) {
-			Packet next = null;
 			try {
-				next = inputQueue.take();
-			} catch (InterruptedException e) {
-				log.error("queue taking error, once again", e);
-			}
-			if (!inWork) {
-				break;
-			}
-			if (next == null) {
-				continue;
-			}
-			log.debug("get counter (value={}) and init task", next);
-			SenderTask task = counterSenderTaskProvider.get();
-			task.setPacket(next);
-			completionService.submit(task, 1);
-			if (next.getState() == 2) {
-				try {
-					outputQueue.put(next);
-					//FIXME now number will be lost
-				} catch (InterruptedException e) {
-					log.error("output queue putting error", e);
+				Packet next = inputQueue.take();
+				if (!inWork) {
 					break;
 				}
-			}
-			t--;
-			if (t == 0) {
-				try {
-					completionService.take().get();
-					t++;
-				} catch (Exception e) {
-					log.error("task taking error", e);
-					t++;
+				log.debug("get counter (value={}) and init task", next);
+				SenderTask task = counterSenderTaskProvider.get();
+				task.setPacket(next);
+				completionService.submit(task, 1);
+				if (next.getState() == 2) {
+					outputQueue.put(next);
 				}
+				t--;
+				if (t == 0) {
+					try {
+						completionService.take().get();
+						t++;
+					} catch (ExecutionException e) {
+						log.error("task taking from future error", e);
+						t++;
+					}
+				}
+			} catch (InterruptedException e) {
+				log.error("queue taking or putting error, exit", e);
+				break;
 			}
 		}
-		log.debug("finish counter sending");
-	}
 
+	}
 }

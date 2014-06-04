@@ -13,6 +13,7 @@ import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import static com.google.common.util.concurrent.Uninterruptibles.putUninterruptibly;
 import static java.net.InetAddress.getByName;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -46,11 +47,9 @@ public class ConnectionPoolImpl implements ConnectionPool {
 				try {
 					Socket socket = SocketFactory.getDefault().createSocket();
 					socket.connect(new InetSocketAddress(getByName(config.getServerAddress()), config.getPort()));
-					queue.put(socket);
+					putUninterruptibly(queue, socket);
 				} catch (IOException e) {
 					log.error("socket creating error", e);
-				} catch (InterruptedException e) {
-					log.error("socket pool adding error", e);
 				}
 			}
 		}

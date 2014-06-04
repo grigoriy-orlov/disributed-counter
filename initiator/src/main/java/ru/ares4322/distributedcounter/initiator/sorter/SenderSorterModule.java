@@ -64,7 +64,7 @@ public class SenderSorterModule extends AbstractModule {
 	@SenderWriterExecutor
 	public ExecutorService getReceiverWriterExecutor() {
 		return newSingleThreadExecutor(
-			new BasicThreadFactory.Builder().namingPattern("SenderWriterTask-%s").build()
+			new BasicThreadFactory.Builder().namingPattern("SenderWriterTask-%s").daemon(true).build()
 		);
 	}
 
@@ -84,7 +84,7 @@ public class SenderSorterModule extends AbstractModule {
 	@SenderSorterExecutor
 	public ExecutorService getSenderSorterExecutor() {
 		return newSingleThreadExecutor(
-			new BasicThreadFactory.Builder().namingPattern("SenderSorterTask-%s").build()
+			new BasicThreadFactory.Builder().namingPattern("SenderSorterTask-%s").daemon(true).build()
 		);
 	}
 

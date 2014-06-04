@@ -11,6 +11,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.slf4j.LoggerFactory.getLogger;
 
 class ExitServiceImpl implements ExitService {
@@ -24,6 +25,8 @@ class ExitServiceImpl implements ExitService {
 	private final ExecutorService serviceExecutor = newSingleThreadExecutor(
 		new BasicThreadFactory.Builder().namingPattern("ExitService-%s").build()
 	);
+
+	private volatile boolean inWork;
 
 	@Inject
 	public ExitServiceImpl(
@@ -43,19 +46,24 @@ class ExitServiceImpl implements ExitService {
 
 	@Override
 	public void startUp() {
+		inWork = true;
 		serviceExecutor.execute(this);
 	}
 
 	@Override
 	public void shutDown() {
+		inWork = false;
 		serviceExecutor.shutdown();
 	}
 
 	@Override
 	public void run() {
-		while (true) {
+		while (inWork) {
 			try {
-				Packet packet = inputQueue.take();
+				Packet packet = inputQueue.poll(1, SECONDS);
+				if (packet == null) {
+					continue;
+				}
 				if (packet.getState() == 4) {
 					exitLatch.countDown();
 					return;
@@ -63,6 +71,7 @@ class ExitServiceImpl implements ExitService {
 				outputQueue.put(packet);
 			} catch (InterruptedException e) {
 				log.error("input queue taking error", e);
+				break;
 			}
 		}
 	}

@@ -48,7 +48,7 @@ public class SenderModule extends AbstractModule {
 	) {
 		return newFixedThreadPool(
 			config.getThreads(),
-			new BasicThreadFactory.Builder().namingPattern("EchoSenderTask-%s").build()
+			new BasicThreadFactory.Builder().namingPattern("EchoSenderTask-%s").daemon(true).build()
 		);
 	}
 
@@ -95,7 +95,7 @@ public class SenderModule extends AbstractModule {
 	) {
 		return newFixedThreadPool(
 			config.getThreads(),
-			new BasicThreadFactory.Builder().namingPattern("InitiatorSenderTask-%s").build()
+			new BasicThreadFactory.Builder().namingPattern("InitiatorSenderTask-%s").daemon(true).build()
 		);
 	}
 

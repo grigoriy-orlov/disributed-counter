@@ -43,7 +43,7 @@ public class SenderModule extends AbstractModule {
 	public ExecutorService getSenderExecutor(SenderConfig config) {
 		return newFixedThreadPool(
 			config.getThreads(),
-			new BasicThreadFactory.Builder().namingPattern("SenderTask-%s").build()
+			new BasicThreadFactory.Builder().namingPattern("SenderTask-%s").daemon(true).build()
 		);
 	}
 

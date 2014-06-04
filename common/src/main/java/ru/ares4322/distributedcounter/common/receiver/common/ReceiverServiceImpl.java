@@ -36,7 +36,7 @@ public class ReceiverServiceImpl implements ReceiverService {
 	private final Provider<ReceiverTask> taskProvider;
 	//TODO move to module
 	private final ExecutorService serviceExecutor = newSingleThreadExecutor(
-		new BasicThreadFactory.Builder().namingPattern("CounterReceiverService-%s").build()
+		new BasicThreadFactory.Builder().namingPattern("CounterReceiverService-%s").daemon(true).build()
 	);
 	private ServerSocketChannel serverChannel;
 	private Selector selector;

@@ -18,14 +18,13 @@ import ru.ares4322.distributedcounter.initiator.sorter.SenderSorterModule;
 import static com.google.inject.Guice.createInjector;
 import static com.google.inject.Stage.PRODUCTION;
 import static java.lang.System.exit;
-import static java.lang.Thread.sleep;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class App {
 
 	private static final Logger log = getLogger(App.class);
 
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args){
 
 		Injector injector = null;
 
@@ -56,8 +55,5 @@ public class App {
 
 		controllable.init();
 		commandReaderService.run();
-		//FIXME
-		sleep(2000);
-		exit(0);
 	}
 }

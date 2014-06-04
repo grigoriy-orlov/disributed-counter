@@ -43,7 +43,7 @@ public class SenderModule extends AbstractModule {
 	public ExecutorService getCounterSenderExecutor(SenderConfig config) {
 		return newFixedThreadPool(
 			config.getThreads(),
-			new BasicThreadFactory.Builder().namingPattern("CounterSenderTask-%s").build()
+			new BasicThreadFactory.Builder().namingPattern("CounterSenderTask-%s").daemon(true).build()
 		);
 	}
 

@@ -37,7 +37,7 @@ public class ReceiverModule extends AbstractModule {
 		if (config.getThreads() > 1) {
 			return newFixedThreadPool(
 				config.getThreads() - 1,
-				new BasicThreadFactory.Builder().namingPattern("ReceiverTask-%s").build()
+				new BasicThreadFactory.Builder().namingPattern("ReceiverTask-%s").daemon(true).build()
 			);
 		} else {
 			return sameThreadExecutor();

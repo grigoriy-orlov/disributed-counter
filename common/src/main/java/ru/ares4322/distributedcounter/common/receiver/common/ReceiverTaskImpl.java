@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import java.util.concurrent.BlockingQueue;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.util.concurrent.Uninterruptibles.putUninterruptibly;
 import static org.slf4j.LoggerFactory.getLogger;
 import static ru.ares4322.distributedcounter.common.util.PacketParser.bytesToPacket;
 
@@ -34,17 +35,10 @@ public class ReceiverTaskImpl implements ReceiverTask {
 		log.debug("run");
 		Packet packet = bytesToPacket(data);
 		log.debug("write num to file (value = {})", packet.getNumber());
-		try {
-			logState(packet);
-			int state = packet.getState();
-			if (state == 2 || state == 4) {
-				outputQueue.put(packet);
-			} else {
-				return;
-			}
-			//FIXME now number will be lost
-		} catch (InterruptedException e) {
-			log.error("output queue putting error", e);
+		logState(packet);
+		int state = packet.getState();
+		if (state == 2 || state == 4) {
+			putUninterruptibly(outputQueue, packet);
 		}
 	}
 

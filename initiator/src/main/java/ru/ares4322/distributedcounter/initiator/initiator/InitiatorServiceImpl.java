@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static com.google.common.util.concurrent.Uninterruptibles.putUninterruptibly;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -19,7 +20,7 @@ class InitiatorServiceImpl implements InitiatorService {
 	private final BlockingQueue<Packet> outputQueue;
 	//TODO move to module
 	private final ExecutorService serviceExecutor = newSingleThreadExecutor(
-		new BasicThreadFactory.Builder().namingPattern("InitiatorService-%s").build()
+		new BasicThreadFactory.Builder().namingPattern("InitiatorService-%s").daemon(true).build()
 	);
 
 	//TODO do just Integer
@@ -28,6 +29,7 @@ class InitiatorServiceImpl implements InitiatorService {
 	private ReentrantLock lock = new ReentrantLock(true);
 	//TODO imt -> Enum
 	private volatile int state; // 0 - init, 1 - start, 2 - run, 3 - stop, 4 - exit
+	private volatile boolean inWork;
 
 	public InitiatorServiceImpl(BlockingQueue<Packet> outputQueue) {
 		this.outputQueue = outputQueue;
@@ -36,11 +38,7 @@ class InitiatorServiceImpl implements InitiatorService {
 	@Override
 	public void init() {
 		log.debug("init");
-		try {
-			outputQueue.put(new Packet(state, -1));
-		} catch (InterruptedException e) {
-			log.error("output queue putting error", e);
-		}
+		putUninterruptibly(outputQueue, new Packet(state, -1));
 		if (!lock.isLocked()) {
 			//FIXME not atomicity
 			lock.lock();
@@ -50,12 +48,9 @@ class InitiatorServiceImpl implements InitiatorService {
 	@Override
 	public void startUp() {
 		log.debug("startUp");
+		inWork = true;
 		state = 1;
-		try {
-			outputQueue.put(new Packet(state, -1));
-		} catch (InterruptedException e) {
-			log.error("output queue putting error", e);
-		}
+		putUninterruptibly(outputQueue, new Packet(state, -1));
 		state = 2;
 		if (lock.isLocked()) {
 			//FIXME not atomicity
@@ -69,27 +64,21 @@ class InitiatorServiceImpl implements InitiatorService {
 		log.debug("start suspend");
 		lock.lock();
 		state = 3;
-		try {
-			outputQueue.put(new Packet(state, -1));
-		} catch (InterruptedException e) {
-			log.error("output queue putting error", e);
-		}
+		putUninterruptibly(outputQueue, new Packet(state, -1));
 		log.debug("finish suspend");
 	}
 
 	@Override
 	public void shutDown() {
 		log.debug("shutDown");
-		lock.lock();
+		//lock.lock();
 		state = 4;
 		if (null != serviceExecutor) {
 			serviceExecutor.shutdownNow();
 		}
-		try {
-			outputQueue.put(new Packet(state, -1));
-		} catch (InterruptedException e) {
-			log.error("output queue putting error", e);
-		}
+		putUninterruptibly(outputQueue, new Packet(state, -1));
+		inWork = false;
+		lock.unlock();
 		log.debug("shutDown complete");
 	}
 
@@ -97,7 +86,7 @@ class InitiatorServiceImpl implements InitiatorService {
 	@Override
 	public void run() {
 		log.debug("run");
-		while (true) {
+		while (inWork) {
 			lock.lock();
 			try {
 				int next = counter.getAndIncrement();
@@ -108,14 +97,13 @@ class InitiatorServiceImpl implements InitiatorService {
 				try {
 					outputQueue.put(new Packet(state, next));
 				} catch (InterruptedException e) {
-					//FIXME now number will be lost
-					log.error("output queue putting error", e);
+					log.error("output queue putting error, finish", e);
+					return;
 				}
 			} finally {
 				lock.unlock();
 			}
 		}
-		log.debug("finish counter sending");
 	}
 
 	@Override
