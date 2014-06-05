@@ -71,7 +71,7 @@ class InitiatorServiceImpl implements InitiatorService {
 	@Override
 	public void shutDown() {
 		log.debug("shutDown");
-		//lock.lock();
+		lock.lock();
 		state = 4;
 		if (null != serviceExecutor) {
 			serviceExecutor.shutdownNow();
@@ -97,7 +97,7 @@ class InitiatorServiceImpl implements InitiatorService {
 				try {
 					outputQueue.put(new Packet(state, next));
 				} catch (InterruptedException e) {
-					log.error("output queue putting error, finish", e);
+					log.debug("output queue putting error, finish", e);
 					return;
 				}
 			} finally {

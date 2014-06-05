@@ -5,6 +5,8 @@ import ru.ares4322.distributedcounter.common.cli.Controllable;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverService;
 import ru.ares4322.distributedcounter.common.sender.SenderService;
+import ru.ares4322.distributedcounter.common.sorter.ReceiverWriter;
+import ru.ares4322.distributedcounter.common.sorter.SenderWriter;
 import ru.ares4322.distributedcounter.common.sorter.SorterService;
 import ru.ares4322.distributedcounter.initiator.Exit;
 import ru.ares4322.distributedcounter.initiator.ReceiverSorter;
@@ -13,12 +15,13 @@ import ru.ares4322.distributedcounter.initiator.initiator.ExitService;
 import ru.ares4322.distributedcounter.initiator.initiator.InitiatorService;
 
 import javax.inject.Inject;
-import java.io.IOException;
+import java.io.Writer;
 import java.util.concurrent.CountDownLatch;
 
 import static com.google.common.util.concurrent.Uninterruptibles.awaitUninterruptibly;
 import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.slf4j.LoggerFactory.getLogger;
 
 class ControllableImpl implements Controllable {
@@ -32,6 +35,8 @@ class ControllableImpl implements Controllable {
 	private final SorterService receiverSorterService;
 	private final ExitService exitService;
 	private final ConnectionPool connectionPool;
+	private final Writer senderWriter;
+	private final Writer receiverWriter;
 	private final CountDownLatch exitLatch;
 
 	@Inject
@@ -43,6 +48,8 @@ class ControllableImpl implements Controllable {
 		@ReceiverSorter SorterService receiverSorterService,
 		ExitService exitService,
 		ConnectionPool connectionPool,
+		@SenderWriter Writer senderWriter,
+		@ReceiverWriter Writer receiverWriter,
 		@Exit CountDownLatch exitLatch
 	) {
 		this.initiatorService = initiatorService;
@@ -52,6 +59,8 @@ class ControllableImpl implements Controllable {
 		this.receiverSorterService = receiverSorterService;
 		this.exitService = exitService;
 		this.connectionPool = connectionPool;
+		this.senderWriter = senderWriter;
+		this.receiverWriter = receiverWriter;
 		this.exitLatch = exitLatch;
 	}
 
@@ -90,18 +99,16 @@ class ControllableImpl implements Controllable {
 	public void exit() {
 		log.info("exit initiator...");
 		initiatorService.shutDown();
-		awaitUninterruptibly(exitLatch, 3, SECONDS);
+		awaitUninterruptibly(exitLatch);
 		sleepUninterruptibly(3, SECONDS);
 		exitService.shutDown();
 		senderService.shutDown();
 		receiverService.shutDown();
 		receiverSorterService.shutDown();
 		senderSorterService.shutDown();
-		try {
-			connectionPool.close();
-		} catch (IOException e) {
-			log.error("connection pool closing error", e);
-		}
+		closeQuietly(connectionPool);
+		closeQuietly(senderWriter);
+		closeQuietly(receiverWriter);
 		log.info("initiator exited");
 	}
 }

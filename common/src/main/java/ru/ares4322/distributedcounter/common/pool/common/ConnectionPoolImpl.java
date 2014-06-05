@@ -15,6 +15,7 @@ import java.util.concurrent.BlockingQueue;
 
 import static com.google.common.util.concurrent.Uninterruptibles.putUninterruptibly;
 import static java.net.InetAddress.getByName;
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.slf4j.LoggerFactory.getLogger;
 
 
@@ -75,11 +76,7 @@ public class ConnectionPoolImpl implements ConnectionPool {
 	public void close() {
 		state = 3;
 		for (Socket socket : queue) {
-			try {
-				socket.close();
-			} catch (IOException e) {
-				log.error("can't close socket");
-			}
+			closeQuietly(socket);
 		}
 
 	}

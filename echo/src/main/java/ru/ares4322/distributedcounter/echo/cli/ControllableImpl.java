@@ -5,11 +5,13 @@ import ru.ares4322.distributedcounter.common.cli.Controllable;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
 import ru.ares4322.distributedcounter.common.receiver.ReceiverService;
 import ru.ares4322.distributedcounter.common.sender.SenderService;
+import ru.ares4322.distributedcounter.common.sorter.ReceiverWriter;
 import ru.ares4322.distributedcounter.common.sorter.SorterService;
 
 import javax.inject.Inject;
-import java.io.IOException;
+import java.io.Writer;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.slf4j.LoggerFactory.getLogger;
 
 class ControllableImpl implements Controllable {
@@ -20,18 +22,21 @@ class ControllableImpl implements Controllable {
 	private final ReceiverService receiverService;
 	private final SorterService sorterService;
 	private final ConnectionPool connectionPool;
+	private final Writer receiverWriter;
 
 	@Inject
 	public ControllableImpl(
 		SenderService senderService,
 		ReceiverService receiverService,
 		SorterService sorterService,
-		ConnectionPool connectionPool
+		ConnectionPool connectionPool,
+		@ReceiverWriter Writer receiverWriter
 	) {
 		this.senderService = senderService;
 		this.receiverService = receiverService;
 		this.sorterService = sorterService;
 		this.connectionPool = connectionPool;
+		this.receiverWriter = receiverWriter;
 	}
 
 	@Override
@@ -64,11 +69,8 @@ class ControllableImpl implements Controllable {
 		senderService.shutDown();
 		receiverService.shutDown();
 		sorterService.shutDown();
-		try {
-			connectionPool.close();
-		} catch (IOException e) {
-			log.error("connection pool closing error", e);
-		}
+		closeQuietly(connectionPool);
+		closeQuietly(receiverWriter);
 		log.info("echo exited");
 	}
 }

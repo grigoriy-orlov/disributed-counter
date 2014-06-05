@@ -111,7 +111,7 @@ public class ReceiverServiceImpl implements ReceiverService {
 					}
 				}
 			} catch (ClosedSelectorException e) {        //TODO add more cases for norm exit
-				log.error("selector has closed", e);
+				log.debug("selector has closed", e);
 				this.shutDown();
 				return;
 			} catch (IOException e) {

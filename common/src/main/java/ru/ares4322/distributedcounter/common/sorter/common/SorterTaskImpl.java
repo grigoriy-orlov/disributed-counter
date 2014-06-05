@@ -69,7 +69,7 @@ public class SorterTaskImpl implements SorterTask {
 					}
 				}
 			} catch (InterruptedException e) {
-				log.error("input queue taking error, finish", e);
+				log.debug("input queue taking error, finish", e);
 				break;
 			}
 		}

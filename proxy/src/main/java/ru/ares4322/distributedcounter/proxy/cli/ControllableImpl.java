@@ -9,8 +9,8 @@ import ru.ares4322.distributedcounter.proxy.Echo;
 import ru.ares4322.distributedcounter.proxy.Initiator;
 
 import javax.inject.Inject;
-import java.io.IOException;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.slf4j.LoggerFactory.getLogger;
 
 class ControllableImpl implements Controllable {
@@ -77,16 +77,8 @@ class ControllableImpl implements Controllable {
 		initiatorSenderService.shutDown();
 		echoReceiverService.shutDown();
 		initiatorReceiverService.shutDown();
-		try {
-			echoConnectionPool.close();
-		} catch (IOException e) {
-			log.error("echo connection pool closing error", e);
-		}
-		try {
-			initiatorConnectionPool.close();
-		} catch (IOException e) {
-			log.error("initiator connection pool closing error", e);
-		}
+		closeQuietly(echoConnectionPool);
+		closeQuietly(initiatorConnectionPool);
 		log.info("proxy exited");
 	}
 }
