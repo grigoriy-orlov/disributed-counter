@@ -39,14 +39,15 @@ public class EchoConfigParser {
 		String remoteServerAddress = null;
 		Path filePath;
 
-		OptionParser parser = new OptionParser(
-			format(
-				"%s::%s::%s::%s::%s:%s:%s:",
-				LOCAL_SERVER_PORT, LOCAL_SERVER_ADDRESS, REMOTE_SERVER_PORT,
-				REMOTE_SERVER_ADDRESS, FILE, SENDER_THREADS, RECEIVER_THREADS
-			)
-		);
-		parser.accepts(HELP);
+		OptionParser parser = new OptionParser();
+		parser.accepts(LOCAL_SERVER_ADDRESS).withRequiredArg().required();
+		parser.accepts(LOCAL_SERVER_PORT).withRequiredArg().required();
+		parser.accepts(REMOTE_SERVER_ADDRESS).withRequiredArg().required();
+		parser.accepts(REMOTE_SERVER_PORT).withRequiredArg().required();
+		parser.accepts(FILE).withRequiredArg();
+		parser.accepts(SENDER_THREADS).withRequiredArg();
+		parser.accepts(RECEIVER_THREADS).withRequiredArg();
+		parser.accepts(HELP).forHelp();
 		OptionSet optionSet = parser.parse(params);
 
 		if (optionSet.has(HELP)) {

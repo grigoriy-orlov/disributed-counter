@@ -33,14 +33,14 @@ public class InitiatorConfigParserTest {
 		);
 
 		String[] params = new String[]{
-			"-" + LOCAL_SERVER_PORT, expected.getReceiverConfig().getPort() + "",
-			"-" + LOCAL_SERVER_ADDRESS, expected.getReceiverConfig().getServerAddress(),
-			"-" + REMOTE_SERVER_PORT, expected.getConnectionPoolConfig().getPort() + "",
-			"-" + REMOTE_SERVER_ADDRESS, expected.getConnectionPoolConfig().getServerAddress(),
-			"-" + RECEIVER_FILE, expected.getReceiverWriterConfig().getFilePath().toAbsolutePath().toString(),
-			"-" + SENDER_FILE, expected.getSenderWriterConfig().getFilePath().toAbsolutePath().toString(),
-			"-" + SENDER_THREADS, expected.getSenderConfig().getThreads() + "",
-			"-" + RECEIVER_THREADS, expected.getReceiverConfig().getThreads() + ""
+			"--" + LOCAL_SERVER_PORT, expected.getReceiverConfig().getPort() + "",
+			"--" + LOCAL_SERVER_ADDRESS, expected.getReceiverConfig().getServerAddress(),
+			"--" + REMOTE_SERVER_PORT, expected.getConnectionPoolConfig().getPort() + "",
+			"--" + REMOTE_SERVER_ADDRESS, expected.getConnectionPoolConfig().getServerAddress(),
+			"--" + RECEIVER_FILE, expected.getReceiverWriterConfig().getFilePath().toAbsolutePath().toString(),
+			"--" + SENDER_FILE, expected.getSenderWriterConfig().getFilePath().toAbsolutePath().toString(),
+			"--" + SENDER_THREADS, expected.getSenderConfig().getThreads() + "",
+			"--" + RECEIVER_THREADS, expected.getReceiverConfig().getThreads() + ""
 		};
 
 		InitiatorConfigParser.Configs actual = parser.parse(params);

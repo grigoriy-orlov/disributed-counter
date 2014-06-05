@@ -25,18 +25,18 @@ public class ProxyConfigParserTest {
 			new SenderConfig(2)
 		);
 		String[] params = new String[]{
-			"-" + ECHO_SERVER_PORT, expected.getEchoConnectionPoolConfig().getPort() + "",
-			"-" + ECHO_SERVER_ADDRESS, expected.getEchoConnectionPoolConfig().getServerAddress(),
-			"-" + INITIATOR_SERVER_PORT, expected.getInitiatorConnectionPoolConfig().getPort() + "",
-			"-" + INITIATOR_SERVER_ADDRESS, expected.getInitiatorConnectionPoolConfig().getServerAddress(),
-			"-" + LOCAL_SERVER_PORT_FOR_ECHO, expected.getEchoReceiverConfig().getPort() + "",
-			"-" + LOCAL_SERVER_ADDRESS_FOR_ECHO, expected.getEchoReceiverConfig().getServerAddress(),
-			"-" + LOCAL_SERVER_PORT_FOR_INITIATOR, expected.getInitiatorReceiverConfig().getPort() + "",
-			"-" + LOCAL_SERVER_ADDRESS_FOR_INITIATOR, expected.getInitiatorReceiverConfig().getServerAddress(),
-			"-" + ECHO_SENDER_THREADS, expected.getEchoSenderConfig().getThreads() + "",
-			"-" + ECHO_RECEIVER_THREADS, expected.getEchoReceiverConfig().getThreads() + "",
-			"-" + INITIATOR_SENDER_THREADS, expected.getInitiatorSenderConfig().getThreads() + "",
-			"-" + INITIATOR_RECEIVER_THREADS, expected.getInitiatorReceiverConfig().getThreads() + ""
+			"--" + ECHO_SERVER_PORT, expected.getEchoConnectionPoolConfig().getPort() + "",
+			"--" + ECHO_SERVER_ADDRESS, expected.getEchoConnectionPoolConfig().getServerAddress(),
+			"--" + INITIATOR_SERVER_PORT, expected.getInitiatorConnectionPoolConfig().getPort() + "",
+			"--" + INITIATOR_SERVER_ADDRESS, expected.getInitiatorConnectionPoolConfig().getServerAddress(),
+			"--" + LOCAL_SERVER_PORT_FOR_ECHO, expected.getEchoReceiverConfig().getPort() + "",
+			"--" + LOCAL_SERVER_ADDRESS_FOR_ECHO, expected.getEchoReceiverConfig().getServerAddress(),
+			"--" + LOCAL_SERVER_PORT_FOR_INITIATOR, expected.getInitiatorReceiverConfig().getPort() + "",
+			"--" + LOCAL_SERVER_ADDRESS_FOR_INITIATOR, expected.getInitiatorReceiverConfig().getServerAddress(),
+			"--" + ECHO_SENDER_THREADS, expected.getEchoSenderConfig().getThreads() + "",
+			"--" + ECHO_RECEIVER_THREADS, expected.getEchoReceiverConfig().getThreads() + "",
+			"--" + INITIATOR_SENDER_THREADS, expected.getInitiatorSenderConfig().getThreads() + "",
+			"--" + INITIATOR_RECEIVER_THREADS, expected.getInitiatorReceiverConfig().getThreads() + ""
 		};
 
 		Configs actual = parser.parse(params);

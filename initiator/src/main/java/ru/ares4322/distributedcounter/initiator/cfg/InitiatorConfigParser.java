@@ -40,14 +40,16 @@ class InitiatorConfigParser {
 		Path senderFilePath;
 		Path receiverFilePath;
 
-		OptionParser parser = new OptionParser(
-			format(
-				"%s::%s::%s::%s::%s:%s:%s:%s:",
-				LOCAL_SERVER_PORT, LOCAL_SERVER_ADDRESS, REMOTE_SERVER_PORT, REMOTE_SERVER_ADDRESS, SENDER_FILE,
-				RECEIVER_FILE, SENDER_THREADS, RECEIVER_THREADS
-			)
-		);
-		parser.accepts(HELP);
+		OptionParser parser = new OptionParser();
+		parser.accepts(LOCAL_SERVER_ADDRESS).withRequiredArg().required();
+		parser.accepts(LOCAL_SERVER_PORT).withRequiredArg().required();
+		parser.accepts(REMOTE_SERVER_ADDRESS).withRequiredArg().required();
+		parser.accepts(REMOTE_SERVER_PORT).withRequiredArg().required();
+		parser.accepts(SENDER_FILE).withRequiredArg();
+		parser.accepts(RECEIVER_FILE).withRequiredArg();
+		parser.accepts(SENDER_THREADS).withRequiredArg();
+		parser.accepts(RECEIVER_THREADS).withRequiredArg();
+		parser.accepts(HELP).isForHelp();
 		OptionSet optionSet = parser.parse(params);
 
 		if (optionSet.has(HELP)) {

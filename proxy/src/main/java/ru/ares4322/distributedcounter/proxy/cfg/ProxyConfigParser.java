@@ -34,16 +34,20 @@ public class ProxyConfigParser {
 		int echoServerPort = 0;
 		String echoServerAddress = null;
 
-		OptionParser parser = new OptionParser(
-			format(
-				"%s::%s::%s::%s::%s::%s::%s::%s::%s:%s:%s:%s:",
-				INITIATOR_SERVER_PORT, INITIATOR_SERVER_ADDRESS, ECHO_SERVER_PORT, ECHO_SERVER_ADDRESS,
-				LOCAL_SERVER_PORT_FOR_ECHO, LOCAL_SERVER_ADDRESS_FOR_ECHO, LOCAL_SERVER_PORT_FOR_INITIATOR,
-				LOCAL_SERVER_ADDRESS_FOR_INITIATOR,ECHO_SENDER_THREADS, INITIATOR_SENDER_THREADS,
-				ECHO_RECEIVER_THREADS, INITIATOR_RECEIVER_THREADS
-			)
-		);
-		parser.accepts(HELP);
+		OptionParser parser = new OptionParser();
+		parser.accepts(INITIATOR_SERVER_ADDRESS).withRequiredArg().required();
+		parser.accepts(INITIATOR_SERVER_PORT).withRequiredArg().required();
+		parser.accepts(ECHO_SERVER_ADDRESS).withRequiredArg().required();
+		parser.accepts(ECHO_SERVER_PORT).withRequiredArg().required();
+		parser.accepts(LOCAL_SERVER_ADDRESS_FOR_ECHO).withRequiredArg().required();
+		parser.accepts(LOCAL_SERVER_PORT_FOR_ECHO).withRequiredArg().required();
+		parser.accepts(LOCAL_SERVER_ADDRESS_FOR_INITIATOR).withRequiredArg().required();
+		parser.accepts(LOCAL_SERVER_PORT_FOR_INITIATOR).withRequiredArg().required();
+		parser.accepts(ECHO_SENDER_THREADS).withRequiredArg();
+		parser.accepts(ECHO_RECEIVER_THREADS).withRequiredArg();
+		parser.accepts(INITIATOR_SENDER_THREADS).withRequiredArg();
+		parser.accepts(INITIATOR_RECEIVER_THREADS).withRequiredArg();
+		parser.accepts(HELP).isForHelp();
 		OptionSet optionSet = parser.parse(params);
 
 		if (optionSet.has(HELP)) {
