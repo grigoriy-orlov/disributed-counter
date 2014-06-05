@@ -57,17 +57,18 @@ class ControllableImpl implements Controllable {
 
 	@Override
 	public void init() {
-		log.info("init counter sender");
+		log.info("init initiator...");
 		initiatorService.init();
 		senderService.init();
 		receiverService.init();
 		connectionPool.init();
 		exitService.init();
+		log.info("initiator inited");
 	}
 
 	@Override
 	public void start() {
-		log.info("startUp counter sender");
+		log.info("start initiator...");
 		senderService.startUp();
 		receiverService.startUp();
 		senderSorterService.startUp();
@@ -75,17 +76,19 @@ class ControllableImpl implements Controllable {
 		connectionPool.start();
 		initiatorService.startUp();
 		exitService.startUp();
+		log.info("initiator started");
 	}
 
 	@Override
 	public void stop() {
-		log.info("stop counter sender");
+		log.info("stop initiator...");
 		initiatorService.stop();
+		log.info("initiator stopped");
 	}
 
 	@Override
 	public void exit() {
-		log.info("exit counter sender");
+		log.info("exit initiator...");
 		initiatorService.shutDown();
 		awaitUninterruptibly(exitLatch, 3, SECONDS);
 		sleepUninterruptibly(3, SECONDS);
@@ -99,6 +102,6 @@ class ControllableImpl implements Controllable {
 		} catch (IOException e) {
 			log.error("connection pool closing error", e);
 		}
-		log.info("finish counter sender");
+		log.info("initiator exited");
 	}
 }

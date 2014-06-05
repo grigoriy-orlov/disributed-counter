@@ -43,34 +43,36 @@ class ControllableImpl implements Controllable {
 
 	@Override
 	public void init() {
-		log.info("init app");
+		log.info("proxy init...");
 		echoSenderService.init();
 		initiatorSenderService.init();
 		echoReceiverService.init();
 		initiatorReceiverService.init();
 		echoConnectionPool.init();
 		initiatorConnectionPool.init();
+		log.info("proxy inited");
 	}
 
 	@Override
 	public void start() {
-		log.info("start app");
+		log.info("proxy start...");
 		echoSenderService.startUp();
 		initiatorSenderService.startUp();
 		echoReceiverService.startUp();
 		initiatorReceiverService.startUp();
 		echoConnectionPool.start();
 		initiatorConnectionPool.start();
+		log.info("proxy started");
 	}
 
 	@Override
 	public void stop() {
-		log.info("app stop is not supported");
+		log.info("proxy stop is not supported");
 	}
 
 	@Override
 	public void exit() {
-		log.info("exit app");
+		log.info("proxy exit...");
 		echoSenderService.shutDown();
 		initiatorSenderService.shutDown();
 		echoReceiverService.shutDown();
@@ -85,5 +87,6 @@ class ControllableImpl implements Controllable {
 		} catch (IOException e) {
 			log.error("initiator connection pool closing error", e);
 		}
+		log.info("proxy exited");
 	}
 }

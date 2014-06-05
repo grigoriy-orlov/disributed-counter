@@ -36,29 +36,31 @@ class ControllableImpl implements Controllable {
 
 	@Override
 	public void init() {
-		log.info("init counter sender");
+		log.info("init echo...");
 		senderService.init();
 		receiverService.init();
 		connectionPool.init();
+		log.info("echo inited");
 	}
 
 	@Override
 	public void start() {
-		log.info("startUp counter sender");
+		log.info("start echo...");
 		senderService.startUp();
 		receiverService.startUp();
 		sorterService.startUp();
 		connectionPool.start();
+		log.info("echo started");
 	}
 
 	@Override
 	public void stop() {
-		log.info("stop counter sender");
+		log.info("echo stop not supported");
 	}
 
 	@Override
 	public void exit() {
-		log.info("exit counter sender");
+		log.info("echo exit...");
 		senderService.shutDown();
 		receiverService.shutDown();
 		sorterService.shutDown();
@@ -67,5 +69,6 @@ class ControllableImpl implements Controllable {
 		} catch (IOException e) {
 			log.error("connection pool closing error", e);
 		}
+		log.info("echo exited");
 	}
 }
