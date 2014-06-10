@@ -50,7 +50,6 @@ public class ReceiverTaskImpl implements ReceiverTask {
 	private void logState(Packet packet) {
 		switch (packet.getState()) {
 			case 0:
-				log.info("initiator init");
 				break;
 			case 1:
 				log.info("initiator start");
