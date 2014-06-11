@@ -16,6 +16,7 @@ import ru.ares4322.distributedcounter.common.receiver.ReceiverService;
 import ru.ares4322.distributedcounter.common.sender.Sender;
 import ru.ares4322.distributedcounter.common.sorter.ReceiverWriter;
 import ru.ares4322.distributedcounter.common.sorter.WriterConfig;
+import ru.ares4322.distributedcounter.initiator.QueueModule;
 import ru.ares4322.distributedcounter.initiator.cfg.ConfigModule;
 import ru.ares4322.distributedcounter.initiator.pool.ConnectionPoolModule;
 import ru.ares4322.distributedcounter.initiator.sender.SenderModule;
@@ -43,7 +44,8 @@ import static ru.ares4322.distributedcounter.initiator.cfg.CliParams.*;
 	modules = {
 		ConnectionPoolModule.class,
 		ReceiverModule.class,
-		SenderModule.class
+		SenderModule.class,
+		QueueModule.class
 	},
 	moduleFactory = ReceiverServiceImplTest.ConfigModuleFactory.class
 )

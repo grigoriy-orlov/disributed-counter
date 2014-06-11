@@ -11,17 +11,19 @@ import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 import ru.ares4322.distributedcounter.common.cli.Controllable;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
-import ru.ares4322.distributedcounter.common.receiver.ReceiverService;
-import ru.ares4322.distributedcounter.common.sender.SenderService;
 import ru.ares4322.distributedcounter.common.sorter.ReceiverWriter;
 import ru.ares4322.distributedcounter.common.sorter.SenderWriter;
 import ru.ares4322.distributedcounter.common.sorter.SorterService;
 import ru.ares4322.distributedcounter.common.sorter.WriterConfig;
+import ru.ares4322.distributedcounter.initiator.QueueModule;
+import ru.ares4322.distributedcounter.initiator.ReceiverSorter;
 import ru.ares4322.distributedcounter.initiator.cfg.ConfigModule;
 import ru.ares4322.distributedcounter.initiator.cli.CliModule;
+import ru.ares4322.distributedcounter.initiator.initiator.InitiatorModule;
 import ru.ares4322.distributedcounter.initiator.pool.ConnectionPoolModule;
 import ru.ares4322.distributedcounter.initiator.receiver.ReceiverModule;
 import ru.ares4322.distributedcounter.initiator.sorter.ReceiverSorterModule;
+import ru.ares4322.distributedcounter.initiator.sorter.SenderSorterModule;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -46,7 +48,10 @@ import static ru.ares4322.distributedcounter.initiator.cfg.CliParams.*;
 		ConnectionPoolModule.class,
 		ReceiverModule.class,
 		ReceiverSorterModule.class,
-		SenderModule.class
+		QueueModule.class,
+		SenderModule.class,
+		SenderSorterModule.class,
+		InitiatorModule.class
 	},
 	moduleFactory = SenderReceiverTest.ConfigModuleFactory.class
 )
@@ -55,12 +60,7 @@ public class SenderReceiverTest {
 	private static final Logger log = getLogger(SenderReceiverTest.class);
 
 	@Inject
-	private ReceiverService receiverService;
-
-	@Inject
-	private SenderService senderService;
-
-	@Inject
+	@ReceiverSorter
 	private SorterService sorterService;
 
 	@Inject

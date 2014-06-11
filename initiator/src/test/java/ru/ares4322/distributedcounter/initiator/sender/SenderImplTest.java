@@ -12,6 +12,7 @@ import org.testng.annotations.Test;
 import ru.ares4322.distributedcounter.common.domain.Packet;
 import ru.ares4322.distributedcounter.common.pool.ConnectionPool;
 import ru.ares4322.distributedcounter.common.sender.Sender;
+import ru.ares4322.distributedcounter.initiator.QueueModule;
 import ru.ares4322.distributedcounter.initiator.cfg.ConfigModule;
 
 import javax.inject.Inject;
@@ -25,6 +26,7 @@ import static ru.ares4322.distributedcounter.initiator.cfg.CliParams.*;
 @Guice(
 	modules = {
 		SenderModule.class,
+		QueueModule.class,
 		SenderImplTest.TestModule.class
 	},
 	moduleFactory = SenderImplTest.ConfigModuleFactory.class
