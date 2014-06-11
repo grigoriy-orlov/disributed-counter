@@ -37,7 +37,6 @@ public class SenderImpl implements Sender {
 
 			outputStream.write(packetToBytes(packet));
 			outputStream.flush();  //TODO remove
-			//TODO need close?
 		} catch (IOException e) {
 			log.error("socket writing error", e);
 		} finally {

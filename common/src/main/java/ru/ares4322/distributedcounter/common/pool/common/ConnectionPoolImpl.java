@@ -58,7 +58,7 @@ public class ConnectionPoolImpl implements ConnectionPool {
 
 	@Override
 	//TODO add @Nullable to API
-	//TODO maybe poll -> take?
+	//TODO poll -> take
 	public Socket get() {
 		return queue.poll();
 	}
